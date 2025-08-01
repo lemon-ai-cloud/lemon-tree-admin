@@ -1,0 +1,113 @@
+// 全局样式文件
+@use './theme.scss' as *;
+
+// 全局应用柠檬主题
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: $bg-primary;
+  color: $text-primary;
+}
+
+#app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// 全局滚动条样式
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $bg-secondary;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $primary-color;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: $primary-dark;
+}
+
+// 全局过渡效果
+* {
+  transition: all 0.2s ease;
+}
+
+// 全局按钮样式
+.v-btn--variant-elevated {
+  box-shadow: $shadow-medium;
+}
+
+.v-btn--variant-elevated:hover {
+  box-shadow: $shadow-heavy;
+}
+
+// 修复按钮文字颜色
+.v-btn {
+  color: inherit !important;
+}
+
+.v-btn--color-primary,
+.v-btn--variant-elevated,
+.v-btn--variant-filled {
+  color: white !important;
+}
+
+.v-btn--color-secondary {
+  color: white !important;
+}
+
+.v-btn--color-success {
+  color: white !important;
+}
+
+.v-btn--color-error {
+  color: white !important;
+}
+
+// 更具体的按钮样式
+.v-btn.v-btn--color-primary,
+.v-btn.v-btn--variant-elevated,
+.v-btn.v-btn--variant-filled {
+  color: white !important;
+}
+
+// 确保所有主要按钮都是白色文字
+.v-btn[color="primary"],
+.v-btn[color="secondary"],
+.v-btn[color="success"],
+.v-btn[color="error"] {
+  color: white !important;
+}
+
+// 全局卡片样式
+.v-card {
+  border-radius: $border-radius-large;
+  box-shadow: $shadow-medium;
+}
+
+// 全局输入框样式
+.v-text-field .v-field {
+  border-radius: $border-radius;
+}
+
+// 全局对话框样式
+.v-dialog .v-card {
+  border-radius: $border-radius-large;
+}
+
+// 全局抽屉样式
+.v-navigation-drawer {
+  border-radius: 0;
+} 

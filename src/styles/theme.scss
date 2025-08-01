@@ -1,0 +1,175 @@
+// Lemon Tree 主题色彩系统
+// 黄绿色主题，体现柠檬树的特色
+
+// 主色调 - 柠檬绿
+$primary-color: #8BC34A;        // 主绿色
+$primary-light: #A5D6A7;        // 浅绿色
+$primary-dark: #689F38;         // 深绿色
+
+// 辅助色 - 柠檬黄
+$secondary-color: #FFC107;      // 柠檬黄
+$secondary-light: #FFD54F;      // 浅黄色
+$secondary-dark: #FF8F00;       // 深黄色
+
+// 渐变色彩
+$gradient-primary: linear-gradient(135deg, #8BC34A 0%, #94c35e 100%);
+$gradient-light: linear-gradient(135deg, #A5D6A7 0%, #FFD54F 100%);
+$gradient-soft: linear-gradient(135deg, #E8F5E8 0%, #FFF8E1 100%);
+
+// 文字颜色
+$text-primary: #2E7D32;         // 深绿色文字
+$text-secondary: #558B2F;       // 中等绿色文字
+$text-light: #81C784;           // 浅绿色文字
+
+// 背景色
+$bg-primary: #F1F8E9;          // 主背景色
+$bg-secondary: #F9FBE7;        // 次要背景色
+$bg-card: #FFFFFF;              // 卡片背景色
+
+// 边框色
+$border-color: #C8E6C9;        // 边框色
+$border-light: #E8F5E8;        // 浅边框色
+
+// 状态色
+$success-color: #4CAF50;        // 成功色
+$warning-color: #FF9800;        // 警告色
+$error-color: #F44336;          // 错误色
+$info-color: #2196F3;           // 信息色
+
+// 阴影
+$shadow-light: 0 2px 8px rgba(139, 195, 74, 0.1);
+$shadow-medium: 0 4px 16px rgba(139, 195, 74, 0.15);
+$shadow-heavy: 0 8px 24px rgba(139, 195, 74, 0.2);
+
+// 圆角
+$border-radius: 8px;
+$border-radius-large: 12px;
+
+// 间距
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+
+// 字体大小
+$font-size-xs: 12px;
+$font-size-sm: 14px;
+$font-size-md: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-xxl: 24px;
+
+// 混合器
+@mixin page-header {
+  background: $gradient-soft;
+  color: $text-primary;
+  padding: $spacing-xl 0;
+  margin-bottom: $spacing-xl;
+  border-bottom: 1px solid $border-light;
+}
+
+@mixin card-style {
+  border-radius: $border-radius-large;
+  overflow: hidden;
+  box-shadow: $shadow-medium;
+  background-color: $bg-card;
+}
+
+@mixin button-primary {
+  background: $gradient-primary;
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-heavy;
+  }
+}
+
+@mixin drawer-header {
+  background: $gradient-soft;
+  color: $text-primary;
+  padding: $spacing-lg $spacing-xl;
+  border-bottom: 1px solid $border-light;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+@mixin drawer-content {
+  padding: $spacing-xl;
+  flex: 1;
+  overflow-y: auto;
+}
+
+@mixin drawer-actions {
+  padding: $spacing-lg $spacing-xl;
+  background-color: $bg-secondary;
+  border-top: 1px solid $border-light;
+  flex-shrink: 0;
+}
+
+// 全局样式类
+.lemon-theme {
+  // 页面头部样式
+  .page-header {
+    @include page-header;
+  }
+  
+  // 卡片样式
+  .theme-card {
+    @include card-style;
+  }
+  
+  // 按钮样式
+  .btn-primary {
+    @include button-primary;
+  }
+  
+  // 抽屉样式
+  .drawer-header {
+    @include drawer-header;
+  }
+  
+  .drawer-content {
+    @include drawer-content;
+  }
+  
+  .drawer-actions {
+    @include drawer-actions;
+  }
+  
+  // 背景色
+  .bg-primary {
+    background-color: $bg-primary;
+  }
+  
+  .bg-secondary {
+    background-color: $bg-secondary;
+  }
+  
+  // 文字颜色
+  .text-primary {
+    color: $text-primary;
+  }
+  
+  .text-secondary {
+    color: $text-secondary;
+  }
+  
+  // 渐变背景
+  .gradient-primary {
+    background: $gradient-primary;
+  }
+  
+  .gradient-light {
+    background: $gradient-light;
+  }
+  
+  .gradient-soft {
+    background: $gradient-soft;
+  }
+} 
