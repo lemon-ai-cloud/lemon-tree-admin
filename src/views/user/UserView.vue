@@ -146,6 +146,7 @@
                 density="comfortable"
                 prepend-inner-icon="mdi-account"
                 required
+                :model-value="form.name"
               />
             </v-col>
             
@@ -158,6 +159,7 @@
                 density="comfortable"
                 prepend-inner-icon="mdi-account-key"
                 required
+                :model-value="form.number"
               />
             </v-col>
             
@@ -170,6 +172,7 @@
                 density="comfortable"
                 prepend-inner-icon="mdi-email"
                 required
+                :model-value="form.email"
               />
             </v-col>
             
@@ -191,7 +194,7 @@
       </div>
       
       <div class="drawer-actions">
-        <div class="d-flex gap-3">
+        <div class="d-flex">
           <v-btn
             variant="outlined"
             color="grey"
@@ -205,7 +208,7 @@
             color="primary"
             :loading="saving"
             @click="saveUser"
-            class="flex-1"
+            class="flex-1 ml-6"
           >
             {{ editingUser ? '更新' : '创建' }}
           </v-btn>
@@ -253,7 +256,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, nextTick } from 'vue'
 import type { SystemUser } from '@/types/user'
 import userService from '@/services/userService'
 
@@ -344,14 +347,21 @@ const closeDrawer = () => {
 }
 
 // 编辑用户
-const editUser = (user: SystemUser) => {
+const editUser = async (user: SystemUser) => {
+  console.log('编辑用户数据:', user)
   editingUser.value = user
+  showDrawer.value = true
+  
+  // 等待抽屉打开后再设置表单值
+  await nextTick()
+  
   form.id = user.id
   form.name = user.name
   form.number = user.number
   form.email = user.email
   form.password = ''
-  showDrawer.value = true
+  
+  console.log('表单数据:', form)
 }
 
 // 删除用户
