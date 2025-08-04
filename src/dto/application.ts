@@ -1,14 +1,11 @@
 // 应用相关类型定义
 
-// 应用模型
-export interface Application {
-  id: string
+import type { BaseModelDto } from './base'
+
+// 应用DTO（与后台ApplicationDto对应）
+export interface Application extends BaseModelDto {
   name: string
   description: string
-  status?: 'active' | 'inactive'
-  version?: string
-  created_at: string
-  updated_at: string
 }
 
 // 应用列表响应
@@ -21,11 +18,9 @@ export interface ApplicationDetailResponse {
   application: Application
 }
 
-// 保存应用请求参数
+// 保存应用请求参数（与后台ApplicationSaveDto对应）
 export interface SaveApplicationRequest {
-  id?: string
+  id?: string // 应用ID（更新时提供）
   name: string
   description: string
-  status?: 'active' | 'inactive'
-  version?: string
 } 

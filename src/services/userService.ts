@@ -9,7 +9,7 @@ import type {
   UserDetailResponse,
   CurrentUserResponse,
   SystemUser
-} from '@/types/user'
+} from '@/dto/user.ts'
 
 export class UserService {
   // 用户登录
@@ -31,19 +31,19 @@ export class UserService {
 
   // 获取所有用户
   async getAllUsers(): Promise<UserListResponse> {
-    const response = await apiClient.get<UserListResponse>('/users')
+    const response = await apiClient.get<{ users: SystemUser[] }>('/users')
     return response.data
   }
 
   // 根据ID获取用户详情
   async getUserById(id: string): Promise<UserDetailResponse> {
-    const response = await apiClient.get<UserDetailResponse>(`/users/${id}`)
+    const response = await apiClient.get<{ user: SystemUser }>(`/users/${id}`)
     return response.data
   }
 
   // 保存用户（创建或更新）
-  async saveUser(userData: SaveUserRequest): Promise<{ message: string; user: SystemUser }> {
-    const response = await apiClient.post<{ message: string; user: SystemUser }>('/users/save', userData)
+  async saveUser(userData: SaveUserRequest): Promise<{ user: SystemUser }> {
+    const response = await apiClient.post<{ user: SystemUser }>('/users/save', userData)
     return response.data
   }
 }

@@ -1,15 +1,13 @@
 // 用户相关类型定义
 
-// 系统用户模型
-export interface SystemUser {
-  id: string
+import type { BaseModelDto } from './base'
+
+// 系统用户DTO（与后台SystemUserDto对应）
+export interface SystemUser extends BaseModelDto {
   name: string
   number: string
   email: string
-  password?: string
-  password_salt?: string
-  created_at: string
-  updated_at: string
+  // 注意：密码相关字段不包含在DTO中，避免安全风险
 }
 
 // 登录请求参数
@@ -25,13 +23,13 @@ export interface LoginResponse {
   token: string
 }
 
-// 保存用户请求参数
+// 保存用户请求参数（与后台SystemUserSaveDto对应）
 export interface SaveUserRequest {
-  id?: string
+  id?: string // 用户ID（更新时提供）
   name: string
   number: string
   email: string
-  password?: string
+  password: string
 }
 
 // 用户列表响应

@@ -204,7 +204,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
-import type { Application } from '@/types/application'
+import type { Application } from '@/dto/application.ts'
 import applicationService from '@/services/applicationService'
 
 // 状态

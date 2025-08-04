@@ -217,7 +217,7 @@
 import {computed, onMounted, reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {useUserStore} from '@/stores/userStore.ts'
-import type {Application} from '@/types/application.ts'
+import type {Application} from '@/dto/application.ts'
 import applicationService from '@/services/applicationService.ts'
 
 const router = useRouter()
