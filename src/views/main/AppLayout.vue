@@ -2,7 +2,7 @@
   <v-app class="lemon-theme">
     <!-- 顶部工具栏 -->
     <v-app-bar color="primary" dark class="main-navbar">
-      <img src="@/assets/images/common/logo-horizontal-banner.png" class="logo-image"/>
+      <img src="../../assets/images/common/logo-horizontal-banner.png" class="logo-image"/>
 
       <v-spacer></v-spacer>
 
@@ -94,26 +94,6 @@
       </v-menu>
     </v-app-bar>
 
-    <!-- 左侧导航菜单 -->
-    <v-navigation-drawer
-        v-model="drawer"
-        location="left"
-        permanent
-        class="left-nav"
-    >
-      <v-list>
-        <v-list-item
-            v-for="item in menuItems"
-            :key="item.title"
-            :to="item.to"
-            :prepend-icon="item.icon"
-            :title="item.title"
-            :disabled="item.requiresApp && !selectedApp"
-            class="mb-1"
-        />
-      </v-list>
-    </v-navigation-drawer>
-
     <!-- 主内容区域 -->
     <v-main class="main-content">
       <div class="content-wrapper">
@@ -186,10 +166,7 @@
               <p class="text-body-1 text-medium-emphasis mb-4">
                 在顶部导航栏中选择一个应用开始管理
               </p>
-              <v-btn
-                  color="primary"
-                  @click="showAppMenu = true"
-              >
+              <v-btn color="primary" @click="showAppMenu = true">
                 选择应用
               </v-btn>
             </v-card>
@@ -239,9 +216,9 @@
 <script setup lang="ts">
 import {computed, onMounted, reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
-import {useUserStore} from '@/stores/userStore'
-import type {Application} from '@/types/application'
-import applicationService from '@/services/applicationService'
+import {useUserStore} from '@/stores/userStore.ts'
+import type {Application} from '@/types/application.ts'
+import applicationService from '@/services/applicationService.ts'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -350,7 +327,7 @@ onMounted(async () => {
 </script>
 
 <style scoped lang="scss">
-@use '@/styles/theme.scss' as *;
+@use '@/styles/theme' as *;
 
 .secondary-nav {
   border-right: 1px solid $border-light;

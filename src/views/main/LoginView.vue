@@ -7,9 +7,9 @@
             <!-- Logo和标题区域 -->
             <div class="text-center pa-8 pb-4">
               <v-icon
-                size="64"
-                color="primary"
-                class="mb-4"
+                  size="64"
+                  color="primary"
+                  class="mb-4"
               >
                 mdi-leaf
               </v-icon>
@@ -25,40 +25,40 @@
             <v-card-text class="pa-8 pt-0">
               <v-form @submit.prevent="handleLogin" ref="loginForm">
                 <v-text-field
-                  v-model="form.number"
-                  label="账号"
-                  name="number"
-                  prepend-inner-icon="mdi-account"
-                  type="text"
-                  :rules="[rules.required]"
-                  variant="outlined"
-                  size="large"
-                  required
-                  class="mb-4"
+                    v-model="form.number"
+                    label="账号"
+                    name="number"
+                    prepend-inner-icon="mdi-account"
+                    type="text"
+                    :rules="[rules.required]"
+                    variant="outlined"
+                    size="large"
+                    required
+                    class="mb-4"
                 />
 
                 <v-text-field
-                  v-model="form.password"
-                  label="密码"
-                  name="password"
-                  prepend-inner-icon="mdi-lock"
-                  type="password"
-                  :rules="[rules.required]"
-                  variant="outlined"
-                  size="large"
-                  required
-                  class="mb-6"
+                    v-model="form.password"
+                    label="密码"
+                    name="password"
+                    prepend-inner-icon="mdi-lock"
+                    type="password"
+                    :rules="[rules.required]"
+                    variant="outlined"
+                    size="large"
+                    required
+                    class="mb-6"
                 />
 
                 <v-btn
-                  color="primary"
-                  size="large"
-                  :loading="userStore.isLoading"
-                  :disabled="userStore.isLoading"
-                  @click="handleLogin"
-                  block
-                  class="mb-4"
-                  elevation="2"
+                    color="primary"
+                    size="large"
+                    :loading="userStore.isLoading"
+                    :disabled="userStore.isLoading"
+                    @click="handleLogin"
+                    block
+                    class="mb-4"
+                    elevation="2"
                 >
                   {{ userStore.isLoading ? '登录中...' : '登录' }}
                 </v-btn>
@@ -68,10 +68,10 @@
             <!-- 错误提示 -->
             <v-card-text v-if="error" class="pa-8 pt-0">
               <v-alert
-                type="error"
-                variant="tonal"
-                class="mb-0"
-                density="compact"
+                  type="error"
+                  variant="tonal"
+                  class="mb-0"
+                  density="compact"
               >
                 {{ error }}
               </v-alert>
@@ -84,9 +84,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
+import {reactive, ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {useUserStore} from '@/stores/userStore.ts'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -112,14 +112,14 @@ const loginForm = ref()
 const handleLogin = async () => {
   try {
     error.value = ''
-    
+
     // 验证表单
-    const { valid } = await loginForm.value.validate()
+    const {valid} = await loginForm.value.validate()
     if (!valid) return
-    
+
     // 执行登录
     await userStore.login(form.number, form.password)
-    
+
     // 登录成功，跳转到首页
     router.push('/')
   } catch (err: any) {
