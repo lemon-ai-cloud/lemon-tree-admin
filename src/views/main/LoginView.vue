@@ -1,92 +1,83 @@
 <template>
   <div class="login-container">
-    <v-container fluid class="fill-height">
-      <v-row align="center" justify="center">
-        <v-col cols="12" sm="8" md="6" lg="4">
-          <v-card class="login-card" elevation="8">
-            <!-- Logo和标题区域 -->
-            <div class="text-center pa-8 pb-4">
-              <v-icon
-                  size="64"
-                  color="primary"
-                  class="mb-4"
-              >
-                mdi-leaf
-              </v-icon>
-              <h1 class="text-h4 font-weight-light text-primary mb-2">
-                Lemon Tree
-              </h1>
-              <p class="text-body-1 text-medium-emphasis">
-                智能管理平台
-              </p>
-            </div>
+    <div class="login-content">
+      <a-card class="login-card" :bordered="false">
+        <!-- Logo和标题区域 -->
+        <div class="login-header">
+          <a-typography-title :level="1" class="login-title">
+            <template #icon>
+              <BranchesOutlined class="login-icon" />
+            </template>
+            Lemon Tree
+          </a-typography-title>
+          <a-typography-text class="login-subtitle">
+            智能管理平台
+          </a-typography-text>
+        </div>
 
-            <!-- 登录表单 -->
-            <v-card-text class="pa-8 pt-0">
-              <v-form @submit.prevent="handleLogin" ref="loginForm">
-                <v-text-field
-                    v-model="form.number"
-                    label="账号"
-                    name="number"
-                    prepend-inner-icon="mdi-account"
-                    type="text"
-                    :rules="[rules.required]"
-                    variant="outlined"
-                    size="large"
-                    required
-                    class="mb-4"
-                />
+        <!-- 登录表单 -->
+        <a-form
+          :model="form"
+          :rules="rules"
+          @finish="handleLogin"
+          layout="vertical"
+          class="login-form"
+        >
+          <a-form-item name="number" label="账号">
+            <a-input
+              v-model:value="form.number"
+              size="large"
+              placeholder="请输入账号"
+              :prefix="h(UserOutlined)"
+            />
+          </a-form-item>
 
-                <v-text-field
-                    v-model="form.password"
-                    label="密码"
-                    name="password"
-                    prepend-inner-icon="mdi-lock"
-                    type="password"
-                    :rules="[rules.required]"
-                    variant="outlined"
-                    size="large"
-                    required
-                    class="mb-6"
-                />
+          <a-form-item name="password" label="密码">
+            <a-input-password
+              v-model:value="form.password"
+              size="large"
+              placeholder="请输入密码"
+              :prefix="h(LockOutlined)"
+            />
+          </a-form-item>
 
-                <v-btn
-                    color="primary"
-                    size="large"
-                    :loading="userStore.isLoading"
-                    :disabled="userStore.isLoading"
-                    @click="handleLogin"
-                    block
-                    class="mb-4"
-                    elevation="2"
-                >
-                  {{ userStore.isLoading ? '登录中...' : '登录' }}
-                </v-btn>
-              </v-form>
-            </v-card-text>
+          <a-form-item>
+            <a-button
+              type="primary"
+              html-type="submit"
+              size="large"
+              :loading="userStore.isLoading"
+              :disabled="userStore.isLoading"
+              block
+              class="login-button"
+            >
+              {{ userStore.isLoading ? '登录中...' : '登录' }}
+            </a-button>
+          </a-form-item>
+        </a-form>
 
-            <!-- 错误提示 -->
-            <v-card-text v-if="error" class="pa-8 pt-0">
-              <v-alert
-                  type="error"
-                  variant="tonal"
-                  class="mb-0"
-                  density="compact"
-              >
-                {{ error }}
-              </v-alert>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
+        <!-- 错误提示 -->
+        <a-alert
+          v-if="error"
+          type="error"
+          :message="error"
+          show-icon
+          class="login-error"
+        />
+      </a-card>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {reactive, ref} from 'vue'
-import {useRouter} from 'vue-router'
-import {useUserStore} from '@/stores/userStore.ts'
+import { reactive, ref, h } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore.ts'
+import { 
+  UserOutlined, 
+  LockOutlined, 
+  BranchesOutlined 
+} from '@ant-design/icons-vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -99,26 +90,24 @@ const form = reactive({
 
 // 表单验证规则
 const rules = {
-  required: (value: string) => !!value || '此字段为必填项'
+  number: [
+    { required: true, message: '请输入账号', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' }
+  ]
 }
 
 // 错误信息
 const error = ref('')
 
-// 登录表单引用
-const loginForm = ref()
-
 // 处理登录
-const handleLogin = async () => {
+const handleLogin = async (values: any) => {
   try {
     error.value = ''
 
-    // 验证表单
-    const {valid} = await loginForm.value.validate()
-    if (!valid) return
-
     // 执行登录
-    await userStore.login(form.number, form.password)
+    await userStore.login(values.number, values.password)
 
     // 登录成功，跳转到首页
     router.push('/')
@@ -132,18 +121,74 @@ const handleLogin = async () => {
 .login-container {
   min-height: 100vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-content {
+  width: 100%;
+  max-width: 400px;
 }
 
 .login-card {
   border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
   background: rgba(255, 255, 255, 0.95);
 }
 
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-title {
+  color: #8BC34A !important;
+  margin-bottom: 8px !important;
+  font-weight: 300 !important;
+}
+
+.login-icon {
+  font-size: 48px;
+  color: #8BC34A;
+  margin-right: 12px;
+}
+
+.login-subtitle {
+  color: #666;
+  font-size: 16px;
+}
+
+.login-form {
+  margin-bottom: 16px;
+}
+
+.login-button {
+  height: 48px;
+  font-size: 16px;
+  background: #8BC34A;
+  border-color: #8BC34A;
+}
+
+.login-button:hover {
+  background: #7CB342;
+  border-color: #7CB342;
+}
+
+.login-error {
+  margin-top: 16px;
+}
+
 /* 响应式设计 */
 @media (max-width: 600px) {
+  .login-content {
+    max-width: 100%;
+  }
+  
   .login-card {
-    margin: 16px;
+    margin: 0;
     border-radius: 12px;
   }
 }

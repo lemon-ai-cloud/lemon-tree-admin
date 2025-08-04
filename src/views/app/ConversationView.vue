@@ -1,151 +1,251 @@
 <template>
-  <div>
-    <v-row>
-      <v-col cols="12">
-        <div class="d-flex justify-space-between align-center mb-4">
-          <h1 class="text-h4">对话管理</h1>
-          <v-btn
-            color="primary"
-            prepend-icon="mdi-plus"
-            @click="showDialog = true"
-          >
-            创建对话
-          </v-btn>
-        </div>
-      </v-col>
-    </v-row>
+  <div class="conversation-management">
+    <div class="page-header">
+      <div class="header-content">
+        <a-typography-title :level="2" class="page-title">
+          对话管理
+        </a-typography-title>
+        <a-button
+          type="primary"
+          @click="showDialog = true"
+          class="create-btn"
+        >
+          <template #icon>
+            <PlusOutlined />
+          </template>
+          创建对话
+        </a-button>
+      </div>
+    </div>
 
-    <v-row>
-      <v-col cols="12">
-        <v-card>
-          <v-card-title>
-            <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="搜索对话"
-              single-line
-              hide-details
-              variant="outlined"
-              density="compact"
-            />
-          </v-card-title>
-          
-          <v-data-table
-            :headers="headers"
-            :items="conversations"
-            :search="search"
-            :loading="loading"
-            class="elevation-1"
+    <div class="content-area">
+      <a-card>
+        <template #title>
+          <a-input
+            v-model:value="search"
+            placeholder="搜索对话"
+            size="large"
+            allow-clear
           >
-            <template v-slot:item.actions="{ item }">
-              <v-btn
-                icon="mdi-eye"
-                size="small"
-                color="info"
-                variant="text"
-                @click="viewConversation(item)"
-              />
-              <v-btn
-                icon="mdi-delete"
-                size="small"
-                color="error"
-                variant="text"
-                @click="deleteConversation(item)"
-              />
+            <template #prefix>
+              <SearchOutlined />
             </template>
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
+          </a-input>
+        </template>
+        
+        <a-table
+          :columns="columns"
+          :data-source="filteredConversations"
+          :loading="loading"
+          :pagination="false"
+          row-key="id"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'actions'">
+              <div class="action-buttons">
+                <a-button
+                  type="text"
+                  size="small"
+                  @click="viewConversation(record)"
+                  class="action-btn"
+                >
+                  <template #icon>
+                    <EyeOutlined />
+                  </template>
+                </a-button>
+                <a-button
+                  type="text"
+                  size="small"
+                  danger
+                  @click="deleteConversation(record)"
+                  class="action-btn"
+                >
+                  <template #icon>
+                    <DeleteOutlined />
+                  </template>
+                </a-button>
+              </div>
+            </template>
+          </template>
+        </a-table>
+      </a-card>
+    </div>
 
     <!-- 查看对话详情对话框 -->
-    <v-dialog v-model="showDialog" max-width="800px">
-      <v-card>
-        <v-card-title>
-          对话详情
-        </v-card-title>
+    <a-modal
+      v-model:open="showDialog"
+      title="对话详情"
+      :footer="null"
+      width="800px"
+    >
+      <div v-if="selectedConversation" class="conversation-detail">
+        <a-descriptions :column="1" bordered>
+          <a-descriptions-item label="对话标题">
+            {{ selectedConversation.title }}
+          </a-descriptions-item>
+          <a-descriptions-item label="智能体">
+            {{ selectedConversation.agentName }}
+          </a-descriptions-item>
+          <a-descriptions-item label="创建时间">
+            {{ selectedConversation.createdAt }}
+          </a-descriptions-item>
+        </a-descriptions>
         
-        <v-card-text>
-          <v-list>
-            <v-list-item>
-              <v-list-item-title>对话标题</v-list-item-title>
-              <v-list-item-subtitle>{{ selectedConversation?.title }}</v-list-item-subtitle>
-            </v-list-item>
-            
-            <v-list-item>
-              <v-list-item-title>智能体</v-list-item-title>
-              <v-list-item-subtitle>{{ selectedConversation?.agentName }}</v-list-item-subtitle>
-            </v-list-item>
-            
-            <v-list-item>
-              <v-list-item-title>创建时间</v-list-item-title>
-              <v-list-item-subtitle>{{ selectedConversation?.createdAt }}</v-list-item-subtitle>
-            </v-list-item>
-          </v-list>
-          
-          <v-divider class="my-4"></v-divider>
-          
-          <h3 class="text-h6 mb-3">消息记录</h3>
-          <v-timeline>
-            <v-timeline-item
-              v-for="message in selectedConversation?.messages"
+        <a-divider />
+        
+        <a-typography-title :level="4" class="messages-title">
+          消息记录
+        </a-typography-title>
+        
+        <div class="messages-container">
+          <a-timeline>
+            <a-timeline-item
+              v-for="message in selectedConversation.messages"
               :key="message.id"
-              :dot-color="message.role === 'user' ? 'primary' : 'success'"
-              size="small"
+              :color="message.role === 'user' ? '#1890ff' : '#52c41a'"
             >
-              <v-card>
-                <v-card-text>
-                  <div class="d-flex align-center mb-2">
-                    <v-avatar size="24" class="mr-2">
-                      <v-icon v-if="message.role === 'user'">mdi-account</v-icon>
-                      <v-icon v-else>mdi-robot</v-icon>
-                    </v-avatar>
-                    <span class="text-caption">{{ message.role === 'user' ? '用户' : '智能体' }}</span>
-                    <v-spacer></v-spacer>
-                    <span class="text-caption">{{ message.createdAt }}</span>
-                  </div>
-                  <p class="mb-0">{{ message.content }}</p>
-                </v-card-text>
-              </v-card>
-            </v-timeline-item>
-          </v-timeline>
-        </v-card-text>
-        
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="grey" @click="showDialog = false">关闭</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+              <a-card size="small" class="message-card">
+                <div class="message-header">
+                  <a-avatar size="small" class="message-avatar">
+                    <template #icon>
+                      <UserOutlined v-if="message.role === 'user'" />
+                      <RobotOutlined v-else />
+                    </template>
+                  </a-avatar>
+                  <span class="message-role">
+                    {{ message.role === 'user' ? '用户' : '智能体' }}
+                  </span>
+                  <span class="message-time">
+                    {{ message.timestamp }}
+                  </span>
+                </div>
+                <div class="message-content">
+                  {{ message.content }}
+                </div>
+              </a-card>
+            </a-timeline-item>
+          </a-timeline>
+        </div>
+      </div>
+    </a-modal>
+
+    <!-- 删除确认对话框 -->
+    <a-modal
+      v-model:open="showDeleteDialog"
+      title="确认删除"
+      @ok="confirmDelete"
+      :confirm-loading="deleting"
+      ok-text="删除"
+      cancel-text="取消"
+      ok-type="danger"
+    >
+      <div class="delete-content">
+        <ExclamationCircleOutlined class="delete-icon" />
+        <p>确定要删除对话 "{{ conversationToDelete?.title }}" 吗？此操作不可恢复。</p>
+      </div>
+    </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import {
+  PlusOutlined,
+  SearchOutlined,
+  EyeOutlined,
+  DeleteOutlined,
+  UserOutlined,
+  RobotOutlined,
+  ExclamationCircleOutlined
+} from '@ant-design/icons-vue'
 
 // 状态
-const conversations = ref([])
 const loading = ref(false)
-const search = ref('')
+const deleting = ref(false)
 const showDialog = ref(false)
+const showDeleteDialog = ref(false)
+const conversations = ref<any[]>([])
 const selectedConversation = ref<any>(null)
+const conversationToDelete = ref<any>(null)
+const search = ref('')
 
-// 表格头部
-const headers = [
-  { title: 'ID', key: 'id', sortable: false },
-  { title: '标题', key: 'title', sortable: true },
-  { title: '智能体', key: 'agentName', sortable: true },
-  { title: '消息数', key: 'messageCount', sortable: true },
-  { title: '创建时间', key: 'createdAt', sortable: true },
-  { title: '操作', key: 'actions', sortable: false }
+// 表格列定义
+const columns = [
+  {
+    title: '对话标题',
+    dataIndex: 'title',
+    key: 'title',
+    width: 250
+  },
+  {
+    title: '智能体',
+    dataIndex: 'agentName',
+    key: 'agentName',
+    width: 150
+  },
+  {
+    title: '消息数量',
+    dataIndex: 'messageCount',
+    key: 'messageCount',
+    width: 100
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'createdAt',
+    key: 'createdAt',
+    width: 180
+  },
+  {
+    title: '操作',
+    key: 'actions',
+    width: 120,
+    fixed: 'right'
+  }
 ]
+
+// 过滤后的对话列表
+const filteredConversations = computed(() => {
+  if (!search.value) return conversations.value
+  
+  const searchLower = search.value.toLowerCase()
+  return conversations.value.filter(conversation => 
+    conversation.title.toLowerCase().includes(searchLower) ||
+    conversation.agentName.toLowerCase().includes(searchLower)
+  )
+})
 
 // 获取对话列表
 const fetchConversations = async () => {
   try {
     loading.value = true
-    // 这里调用API获取对话列表
-    conversations.value = []
+    // 这里需要调用实际的API
+    // const response = await conversationService.getAllConversations()
+    // conversations.value = response.conversations
+    
+    // 模拟数据
+    conversations.value = [
+      {
+        id: '1',
+        title: '客服咨询对话',
+        agentName: '客服助手',
+        messageCount: 5,
+        createdAt: '2024-01-01 10:00:00',
+        messages: [
+          {
+            id: '1',
+            role: 'user',
+            content: '你好，我想咨询一下产品信息',
+            timestamp: '10:00:00'
+          },
+          {
+            id: '2',
+            role: 'assistant',
+            content: '您好！很高兴为您服务，请问您想了解哪个产品呢？',
+            timestamp: '10:00:05'
+          }
+        ]
+      }
+    ]
   } catch (error) {
     console.error('获取对话列表失败:', error)
   } finally {
@@ -160,18 +260,150 @@ const viewConversation = (conversation: any) => {
 }
 
 // 删除对话
-const deleteConversation = async (conversation: any) => {
-  if (confirm(`确定要删除对话 "${conversation.title}" 吗？`)) {
-    try {
-      // 这里调用API删除对话
-      await fetchConversations()
-    } catch (error) {
-      console.error('删除对话失败:', error)
-    }
+const deleteConversation = (conversation: any) => {
+  conversationToDelete.value = conversation
+  showDeleteDialog.value = true
+}
+
+// 确认删除
+const confirmDelete = async () => {
+  if (!conversationToDelete.value) return
+  
+  try {
+    deleting.value = true
+    // 这里需要调用实际的删除API
+    // await conversationService.deleteConversation(conversationToDelete.value.id)
+    await fetchConversations()
+    showDeleteDialog.value = false
+    conversationToDelete.value = null
+  } catch (error) {
+    console.error('删除对话失败:', error)
+  } finally {
+    deleting.value = false
   }
 }
 
+// 初始化
 onMounted(() => {
   fetchConversations()
 })
-</script> 
+</script>
+
+<style scoped lang="scss">
+.conversation-management {
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-title {
+  margin-bottom: 0 !important;
+  color: #333 !important;
+}
+
+.create-btn {
+  height: 40px;
+  padding: 0 24px;
+}
+
+.content-area {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 4px;
+  min-width: 32px;
+  height: 32px;
+}
+
+.conversation-detail {
+  .messages-title {
+    margin-bottom: 16px !important;
+  }
+  
+  .messages-container {
+    max-height: 400px;
+    overflow-y: auto;
+  }
+}
+
+.message-card {
+  margin-bottom: 8px;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.message-avatar {
+  background: #f0f0f0;
+}
+
+.message-role {
+  font-weight: 500;
+  color: #333;
+}
+
+.message-time {
+  font-size: 12px;
+  color: #999;
+  margin-left: auto;
+}
+
+.message-content {
+  color: #333;
+  line-height: 1.5;
+}
+
+.delete-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .delete-icon {
+    font-size: 24px;
+    color: #ff4d4f;
+  }
+  
+  p {
+    margin: 0;
+    color: #333;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .conversation-management {
+    padding: 16px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+</style> 

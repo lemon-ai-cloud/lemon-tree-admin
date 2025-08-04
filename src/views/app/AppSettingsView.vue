@@ -1,164 +1,171 @@
 <template>
-  <div>
-    <v-row>
-      <v-col cols="12">
-        <h1 class="text-h4 mb-4">应用设置</h1>
-      </v-col>
-    </v-row>
+  <div class="app-settings">
+    <div class="page-header">
+      <a-typography-title :level="2" class="page-title">
+        应用设置
+      </a-typography-title>
+    </div>
 
-    <v-row>
-      <v-col cols="12" md="8">
-        <v-card>
-          <v-card-title>基本信息</v-card-title>
-          <v-card-text>
-            <v-form ref="form">
-              <v-text-field
-                v-model="form.name"
-                label="应用名称"
-                :rules="[rules.required]"
-                variant="outlined"
-                required
-              />
-              
-              <v-textarea
-                v-model="form.description"
-                label="应用描述"
-                :rules="[rules.required]"
-                variant="outlined"
-                required
-              />
-            </v-form>
-          </v-card-text>
-          
-          <v-card-actions>
-            <v-spacer />
-            <v-btn
-              color="primary"
-              :loading="saving"
-              @click="saveSettings"
+    <div class="settings-content">
+      <a-row :gutter="24">
+        <a-col :span="16">
+          <a-card title="基本信息" class="settings-card">
+            <a-form
+              ref="formRef"
+              :model="form"
+              :rules="rules"
+              layout="vertical"
+              @finish="saveSettings"
             >
-              保存设置
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-col>
+              <a-form-item name="name" label="应用名称">
+                <a-input
+                  v-model:value="form.name"
+                  placeholder="请输入应用名称"
+                  size="large"
+                />
+              </a-form-item>
+              
+              <a-form-item name="description" label="应用描述">
+                <a-textarea
+                  v-model:value="form.description"
+                  placeholder="请输入应用描述"
+                  :rows="4"
+                  size="large"
+                />
+              </a-form-item>
+              
+              <a-form-item>
+                <a-button
+                  type="primary"
+                  :loading="saving"
+                  html-type="submit"
+                  size="large"
+                >
+                  保存设置
+                </a-button>
+              </a-form-item>
+            </a-form>
+          </a-card>
+        </a-col>
 
-      <v-col cols="12" md="4">
-        <v-card>
-          <v-card-title>存储配置</v-card-title>
-          <v-card-text>
-            <v-select
-              v-model="storageConfig.type"
-              label="存储类型"
-              :items="storageTypes"
-              variant="outlined"
-            />
-            
-            <v-text-field
-              v-if="storageConfig.type === 'file_system'"
-              v-model="storageConfig.rootPath"
-              label="根路径"
-              variant="outlined"
-            />
-            
-            <v-text-field
-              v-if="storageConfig.type === 's3'"
-              v-model="storageConfig.endpoint"
-              label="S3 Endpoint"
-              variant="outlined"
-            />
-            
-            <v-text-field
-              v-if="storageConfig.type === 's3'"
-              v-model="storageConfig.bucketName"
-              label="Bucket名称"
-              variant="outlined"
-            />
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+        <a-col :span="8">
+          <a-card title="存储配置" class="settings-card">
+            <a-form layout="vertical">
+              <a-form-item label="存储类型">
+                <a-select
+                  v-model:value="storageConfig.type"
+                  placeholder="请选择存储类型"
+                  size="large"
+                >
+                  <a-select-option value="file_system">文件系统</a-select-option>
+                  <a-select-option value="s3">S3存储</a-select-option>
+                  <a-select-option value="minio">MinIO</a-select-option>
+                </a-select>
+              </a-form-item>
+              
+              <a-form-item v-if="storageConfig.type === 'file_system'" label="根路径">
+                <a-input
+                  v-model:value="storageConfig.rootPath"
+                  placeholder="请输入根路径"
+                  size="large"
+                />
+              </a-form-item>
+              
+              <a-form-item v-if="storageConfig.type === 's3'" label="S3 Endpoint">
+                <a-input
+                  v-model:value="storageConfig.endpoint"
+                  placeholder="请输入S3 Endpoint"
+                  size="large"
+                />
+              </a-form-item>
+              
+              <a-form-item v-if="storageConfig.type === 's3'" label="Bucket名称">
+                <a-input
+                  v-model:value="storageConfig.bucketName"
+                  placeholder="请输入Bucket名称"
+                  size="large"
+                />
+              </a-form-item>
+            </a-form>
+          </a-card>
+        </a-col>
+      </a-row>
 
-    <v-row>
-      <v-col cols="12" md="6">
-        <v-card>
-          <v-card-title>网络搜索配置</v-card-title>
-          <v-card-text>
-            <v-select
-              v-model="netSearchConfig.type"
-              label="搜索类型"
-              :items="searchTypes"
-              variant="outlined"
-            />
-            
-            <v-text-field
-              v-model="netSearchConfig.apiUrl"
-              label="API URL"
-              variant="outlined"
-            />
-            
-            <v-text-field
-              v-model="netSearchConfig.apiKey"
-              label="API Key"
-              type="password"
-              variant="outlined"
-            />
-            
-            <v-text-field
-              v-model.number="netSearchConfig.searchResultCount"
-              label="搜索结果数量"
-              type="number"
-              variant="outlined"
-            />
-          </v-card-text>
-        </v-card>
-      </v-col>
+      <a-row :gutter="24" style="margin-top: 24px;">
+        <a-col :span="12">
+          <a-card title="网络搜索配置" class="settings-card">
+            <a-form layout="vertical">
+              <a-form-item label="搜索类型">
+                <a-select
+                  v-model:value="netSearchConfig.type"
+                  placeholder="请选择搜索类型"
+                  size="large"
+                >
+                  <a-select-option value="bing">Bing搜索</a-select-option>
+                  <a-select-option value="google">Google搜索</a-select-option>
+                  <a-select-option value="custom">自定义API</a-select-option>
+                </a-select>
+              </a-form-item>
+              
+              <a-form-item label="API URL">
+                <a-input
+                  v-model:value="netSearchConfig.apiUrl"
+                  placeholder="请输入API URL"
+                  size="large"
+                />
+              </a-form-item>
+              
+              <a-form-item label="API密钥">
+                <a-input-password
+                  v-model:value="netSearchConfig.apiKey"
+                  placeholder="请输入API密钥"
+                  size="large"
+                />
+              </a-form-item>
+            </a-form>
+          </a-card>
+        </a-col>
 
-      <v-col cols="12" md="6">
-        <v-card>
-          <v-card-title>MCP服务器配置</v-card-title>
-          <v-card-text>
-            <v-text-field
-              v-model="mcpConfig.name"
-              label="服务器名称"
-              variant="outlined"
-            />
-            
-            <v-text-field
-              v-model="mcpConfig.version"
-              label="版本"
-              variant="outlined"
-            />
-            
-            <v-select
-              v-model="mcpConfig.connectType"
-              label="连接方式"
-              :items="connectTypes"
-              variant="outlined"
-            />
-            
-            <v-text-field
-              v-if="mcpConfig.connectType === 'sse' || mcpConfig.connectType === 'streamable-http'"
-              v-model="mcpConfig.serverUrl"
-              label="服务器URL"
-              variant="outlined"
-            />
-            
-            <v-text-field
-              v-if="mcpConfig.connectType === 'stdio'"
-              v-model="mcpConfig.serverCommand"
-              label="服务器命令"
-              variant="outlined"
-            />
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+        <a-col :span="12">
+          <a-card title="MCP服务器配置" class="settings-card">
+            <a-form layout="vertical">
+              <a-form-item label="服务器地址">
+                <a-input
+                  v-model:value="mcpConfig.serverUrl"
+                  placeholder="请输入服务器地址"
+                  size="large"
+                />
+              </a-form-item>
+              
+              <a-form-item label="端口">
+                <a-input-number
+                  v-model:value="mcpConfig.port"
+                  placeholder="请输入端口号"
+                  size="large"
+                  style="width: 100%"
+                  :min="1"
+                  :max="65535"
+                />
+              </a-form-item>
+              
+              <a-form-item label="认证令牌">
+                <a-input-password
+                  v-model:value="mcpConfig.authToken"
+                  placeholder="请输入认证令牌"
+                  size="large"
+                />
+              </a-form-item>
+            </a-form>
+          </a-card>
+        </a-col>
+      </a-row>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
+import { message } from 'ant-design-vue'
 
 // 状态
 const saving = ref(false)
@@ -168,6 +175,16 @@ const form = reactive({
   name: '',
   description: ''
 })
+
+// 表单验证规则
+const rules = {
+  name: [
+    { required: true, message: '请输入应用名称', trigger: 'blur' }
+  ],
+  description: [
+    { required: true, message: '请输入应用描述', trigger: 'blur' }
+  ]
+}
 
 // 存储配置
 const storageConfig = reactive({
@@ -181,78 +198,105 @@ const storageConfig = reactive({
 const netSearchConfig = reactive({
   type: 'bing',
   apiUrl: '',
-  apiKey: '',
-  searchResultCount: 5
+  apiKey: ''
 })
 
-// MCP配置
+// MCP服务器配置
 const mcpConfig = reactive({
-  name: '',
-  version: '',
-  connectType: 'sse',
   serverUrl: '',
-  serverCommand: ''
+  port: 3000,
+  authToken: ''
 })
-
-// 表单验证规则
-const rules = {
-  required: (value: string) => !!value || '此字段为必填项'
-}
-
-// 选项
-const storageTypes = [
-  { title: '文件系统', value: 'file_system' },
-  { title: 'S3存储', value: 's3' }
-]
-
-const searchTypes = [
-  { title: 'Bing搜索', value: 'bing' },
-  { title: 'Google搜索', value: 'google' }
-]
-
-const connectTypes = [
-  { title: 'SSE', value: 'sse' },
-  { title: 'HTTP流', value: 'streamable-http' },
-  { title: '标准输入输出', value: 'stdio' }
-]
 
 // 表单引用
 const formRef = ref()
 
 // 保存设置
-const saveSettings = async () => {
+const saveSettings = async (values: any) => {
   try {
-    const { valid } = await formRef.value.validate()
-    if (!valid) return
-    
     saving.value = true
     
     // 这里调用API保存设置
-    console.log('保存应用设置:', {
-      form,
+    console.log('保存设置:', {
+      ...values,
       storageConfig,
       netSearchConfig,
       mcpConfig
     })
     
+    message.success('设置保存成功')
   } catch (error) {
     console.error('保存设置失败:', error)
+    message.error('保存设置失败')
   } finally {
     saving.value = false
   }
 }
 
-// 获取应用设置
+// 获取当前设置
 const fetchSettings = async () => {
   try {
-    // 这里调用API获取应用设置
-    // 暂时使用默认值
+    // 这里调用API获取当前设置
+    // const response = await settingsService.getSettings()
+    
+    // 模拟数据
+    form.name = 'Lemon Tree Admin'
+    form.description = '智能管理平台'
+    storageConfig.type = 'file_system'
+    storageConfig.rootPath = '/data/storage'
+    netSearchConfig.type = 'bing'
+    netSearchConfig.apiUrl = 'https://api.bing.com/search'
+    mcpConfig.serverUrl = 'localhost'
+    mcpConfig.port = 3000
   } catch (error) {
-    console.error('获取应用设置失败:', error)
+    console.error('获取设置失败:', error)
   }
 }
 
+// 初始化
 onMounted(() => {
   fetchSettings()
 })
-</script> 
+</script>
+
+<style scoped lang="scss">
+.app-settings {
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  margin-bottom: 0 !important;
+  color: #333 !important;
+}
+
+.settings-content {
+  .settings-card {
+    height: 100%;
+    
+    .ant-card-head {
+      border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .ant-card-body {
+      padding: 24px;
+    }
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .app-settings {
+    padding: 16px;
+  }
+  
+  .settings-content {
+    .ant-col {
+      margin-bottom: 16px;
+    }
+  }
+}
+</style> 

@@ -1,155 +1,156 @@
 <template>
-  <v-app class="lemon-theme">
+  <a-layout class="lemon-theme">
     <!-- 顶部工具栏 -->
-    <v-app-bar color="primary" dark class="main-navbar">
-      <img src="../../assets/images/common/logo-horizontal-banner.png" class="logo-image"/>
+    <a-layout-header class="main-navbar">
+      <div class="header-content">
+        <img src="../../assets/images/common/logo-horizontal-banner.png" class="logo-image" alt="Logo"/>
 
-      <v-spacer></v-spacer>
+        <div class="header-actions">
+          <!-- 应用选择下拉菜单 -->
+          <a-dropdown v-model:open="showAppMenu" placement="bottomRight">
+            <a-button type="text" class="app-select-btn">
+              <template #icon>
+                <AppstoreOutlined />
+              </template>
+              {{ selectedApp ? selectedApp.name : '选择应用' }}
+              <DownOutlined />
+            </a-button>
+            <template #overlay>
+              <a-menu class="app-menu">
+                <a-menu-item-group title="应用列表">
+                  <a-menu-item
+                    v-for="app in applications"
+                    :key="app.id"
+                    @click="selectApp(app)"
+                    :class="{ 'ant-menu-item-selected': selectedApp?.id === app.id }"
+                  >
+                    <div class="app-menu-item">
+                      <div class="app-name">{{ app.name }}</div>
+                      <div class="app-description">{{ app.description }}</div>
+                    </div>
+                  </a-menu-item>
+                </a-menu-item-group>
+                <a-menu-divider />
+                <a-menu-item @click="$router.push('/applications')">
+                  <template #icon>
+                    <SettingOutlined />
+                  </template>
+                  应用管理
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
 
-      <!-- 应用选择下拉菜单 -->
-      <v-menu v-model="showAppMenu" :close-on-content-click="false">
-        <template v-slot:activator="{ props }">
-          <v-btn
-              v-bind="props"
-              variant="text"
-              class="mr-4"
-              prepend-icon="mdi-apps"
-          >
-            {{ selectedApp ? selectedApp.name : '选择应用' }}
-            <v-icon end>mdi-chevron-down</v-icon>
-          </v-btn>
-        </template>
+          <!-- 用户系统管理下拉菜单 -->
+          <a-dropdown placement="bottomRight">
+            <a-button type="text" class="system-btn">
+              <template #icon>
+                <UserOutlined />
+              </template>
+              系统管理
+              <DownOutlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item @click="$router.push('/users')">
+                  <template #icon>
+                    <TeamOutlined />
+                  </template>
+                  用户管理
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
 
-        <v-card min-width="300">
-          <v-list>
-            <v-list-subheader>应用列表</v-list-subheader>
-            <v-list-item
-                v-for="app in applications"
-                :key="app.id"
-                @click="selectApp(app)"
-                :active="selectedApp?.id === app.id"
-            >
-              <v-list-item-title>{{ app.name }}</v-list-item-title>
-              <v-list-item-subtitle>{{ app.description }}</v-list-item-subtitle>
-            </v-list-item>
-
-            <v-divider class="my-2"></v-divider>
-
-            <v-list-item @click="$router.push('/applications')">
-              <v-list-item-title class="text-primary">
-                <v-icon start>mdi-cog</v-icon>
-                应用管理
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-menu>
-
-      <!-- 用户系统管理下拉菜单 -->
-      <v-menu>
-        <template v-slot:activator="{ props }">
-          <v-btn
-              v-bind="props"
-              variant="text"
-              class="mr-4"
-              prepend-icon="mdi-account-cog"
-          >
-            系统管理
-            <v-icon end>mdi-chevron-down</v-icon>
-          </v-btn>
-        </template>
-
-        <v-card min-width="200">
-          <v-list>
-            <v-list-item @click="$router.push('/users')">
-              <v-list-item-title>
-                <v-icon start>mdi-account-group</v-icon>
-                用户管理
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-card>
-      </v-menu>
-
-      <!-- 用户菜单 -->
-      <v-menu>
-        <template v-slot:activator="{ props }">
-          <v-btn icon v-bind="props">
-            <v-icon>mdi-account-circle</v-icon>
-          </v-btn>
-        </template>
-
-        <v-list>
-          <v-list-item>
-            <v-list-item-title>{{ userStore.userFullName }}</v-list-item-title>
-            <v-list-item-subtitle>当前用户</v-list-item-subtitle>
-          </v-list-item>
-
-          <v-divider></v-divider>
-
-          <v-list-item @click="handleLogout">
-            <v-list-item-title>退出登录</v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-menu>
-    </v-app-bar>
+          <!-- 用户菜单 -->
+          <a-dropdown placement="bottomRight">
+            <a-button type="text" class="user-btn">
+              <UserOutlined />
+            </a-button>
+            <template #overlay>
+              <a-menu>
+                <a-menu-item disabled>
+                  <div class="user-info">
+                    <div class="user-name">{{ userStore.userFullName }}</div>
+                    <div class="user-subtitle">当前用户</div>
+                  </div>
+                </a-menu-item>
+                <a-menu-divider />
+                <a-menu-item @click="handleLogout">
+                  退出登录
+                </a-menu-item>
+              </a-menu>
+            </template>
+          </a-dropdown>
+        </div>
+      </div>
+    </a-layout-header>
 
     <!-- 主内容区域 -->
-    <v-main class="main-content">
+    <a-layout class="main-content">
       <div class="content-wrapper">
         <!-- 当选择了应用时显示左侧导航和内容 -->
         <div v-if="selectedApp" class="app-layout">
           <!-- 左侧二级导航菜单 -->
-          <v-navigation-drawer
-              v-model="secondaryNavVisible"
-              location="left"
-              width="250"
-              class="secondary-nav"
-              temporary
+          <a-layout-sider
+            v-model:collapsed="secondaryNavCollapsed"
+            :trigger="null"
+            collapsible
+            width="250"
+            class="secondary-nav"
           >
             <!-- 二级导航头部 -->
             <div class="secondary-nav-header">
-              <div class="d-flex align-center">
-                <v-icon class="mr-2">mdi-apps</v-icon>
-                <span class="text-h6">{{ selectedApp.name }}</span>
+              <div class="nav-header-content">
+                <AppstoreOutlined class="nav-icon" />
+                <span class="nav-title">{{ selectedApp.name }}</span>
               </div>
-              <v-btn
-                  icon="mdi-close"
-                  variant="text"
-                  @click="toggleSecondaryNav"
-                  class="nav-toggle-btn"
-              />
+              <a-button
+                type="text"
+                @click="toggleSecondaryNav"
+                class="nav-toggle-btn"
+              >
+                <MenuFoldOutlined v-if="!secondaryNavCollapsed" />
+                <MenuUnfoldOutlined v-else />
+              </a-button>
             </div>
 
-            <v-list>
-              <v-list-item
-                  v-for="item in appMenuItems"
-                  :key="item.title"
-                  :to="item.to"
-                  :prepend-icon="item.icon"
-                  :title="item.title"
-                  class="mb-1"
-              />
-            </v-list>
-          </v-navigation-drawer>
+            <a-menu
+              mode="inline"
+              :selected-keys="[$route.path]"
+              class="secondary-menu"
+            >
+              <a-menu-item
+                v-for="item in appMenuItems"
+                :key="item.to"
+                @click="$router.push(item.to)"
+              >
+                <template #icon>
+                  <component :is="item.icon" />
+                </template>
+                {{ item.title }}
+              </a-menu-item>
+            </a-menu>
+          </a-layout-sider>
 
           <!-- 右侧内容区域 -->
-          <div class="app-content">
+          <a-layout class="app-content">
             <!-- 内容区域头部，显示菜单按钮 -->
-            <div class="content-header">
-              <v-btn
-                  icon="mdi-menu"
-                  variant="text"
-                  @click="toggleSecondaryNav"
-                  class="content-menu-btn"
-              />
+            <a-layout-header class="content-header">
+              <a-button
+                type="text"
+                @click="toggleSecondaryNav"
+                class="content-menu-btn"
+              >
+                <MenuOutlined />
+              </a-button>
               <span class="content-title">{{ selectedApp.name }}</span>
-            </div>
+            </a-layout-header>
 
-            <div class="content-body">
+            <a-layout-content class="content-body">
               <router-view/>
-            </div>
-          </div>
+            </a-layout-content>
+          </a-layout>
         </div>
 
         <!-- 当没有选择应用时，根据当前路由决定显示内容 -->
@@ -159,66 +160,81 @@
             <router-view/>
           </div>
           <!-- 其他页面显示选择应用提示 -->
-          <div v-else class="d-flex align-center justify-center" style="height: 60vh;">
-            <v-card class="pa-8 text-center" max-width="400">
-              <v-icon size="64" color="grey-lighten-1" class="mb-4">mdi-apps</v-icon>
-              <h2 class="text-h5 mb-2">请先选择要管理的应用</h2>
-              <p class="text-body-1 text-medium-emphasis mb-4">
-                在顶部导航栏中选择一个应用开始管理
-              </p>
-              <v-btn color="primary" @click="showAppMenu = true">
-                选择应用
-              </v-btn>
-            </v-card>
+          <div v-else class="select-app-prompt">
+            <a-card class="prompt-card">
+              <template #cover>
+                <div class="prompt-icon">
+                  <AppstoreOutlined />
+                </div>
+              </template>
+              <a-card-meta
+                title="请先选择要管理的应用"
+                description="在顶部导航栏中选择一个应用开始管理"
+              />
+              <template #actions>
+                <a-button type="primary" @click="showAppMenu = true">
+                  选择应用
+                </a-button>
+              </template>
+            </a-card>
           </div>
         </div>
       </div>
-    </v-main>
+    </a-layout>
 
     <!-- 创建应用对话框 -->
-    <v-dialog v-model="showCreateAppDialog" max-width="500px">
-      <v-card>
-        <v-card-title>创建新应用</v-card-title>
-        <v-card-text>
-          <v-form ref="createAppForm">
-            <v-text-field
-                v-model="newApp.name"
-                label="应用名称"
-                :rules="[rules.required]"
-                variant="outlined"
-                required
-            />
-            <v-textarea
-                v-model="newApp.description"
-                label="应用描述"
-                :rules="[rules.required]"
-                variant="outlined"
-                required
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer/>
-          <v-btn color="grey" @click="showCreateAppDialog = false">取消</v-btn>
-          <v-btn
-              color="primary"
-              :loading="creatingApp"
-              @click="createApp"
-          >
-            创建
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-app>
+    <a-modal
+      v-model:open="showCreateAppDialog"
+      title="创建新应用"
+      @ok="createApp"
+      :confirm-loading="creatingApp"
+      :ok-text="'创建'"
+      :cancel-text="'取消'"
+    >
+      <a-form
+        ref="createAppForm"
+        :model="newApp"
+        :rules="rules"
+        layout="vertical"
+      >
+        <a-form-item name="name" label="应用名称">
+          <a-input
+            v-model:value="newApp.name"
+            placeholder="请输入应用名称"
+            size="large"
+          />
+        </a-form-item>
+        <a-form-item name="description" label="应用描述">
+          <a-textarea
+            v-model:value="newApp.description"
+            placeholder="请输入应用描述"
+            :rows="4"
+            size="large"
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+  </a-layout>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref} from 'vue'
-import {useRouter} from 'vue-router'
-import {useUserStore} from '@/stores/userStore.ts'
-import type {Application} from '@/dto/application.ts'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/userStore.ts'
+import type { Application } from '@/dto/application.ts'
 import applicationService from '@/services/applicationService.ts'
+import {
+  AppstoreOutlined,
+  DownOutlined,
+  SettingOutlined,
+  UserOutlined,
+  TeamOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  MenuOutlined,
+  RobotOutlined,
+  MessageOutlined
+} from '@ant-design/icons-vue'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -229,7 +245,7 @@ const showCreateAppDialog = ref(false)
 const creatingApp = ref(false)
 const applications = ref<Application[]>([])
 const selectedApp = ref<Application | null>(null)
-const secondaryNavVisible = ref(true)
+const secondaryNavCollapsed = ref(false)
 
 // 新应用表单
 const newApp = reactive({
@@ -239,24 +255,29 @@ const newApp = reactive({
 
 // 表单验证规则
 const rules = {
-  required: (value: string) => !!value || '此字段为必填项'
+  name: [
+    { required: true, message: '请输入应用名称', trigger: 'blur' }
+  ],
+  description: [
+    { required: true, message: '请输入应用描述', trigger: 'blur' }
+  ]
 }
 
 // 应用菜单项（二级导航）
 const appMenuItems = computed(() => [
   {
     title: '智能体管理',
-    icon: 'mdi-robot',
+    icon: RobotOutlined,
     to: '/app/agents'
   },
   {
     title: '对话管理',
-    icon: 'mdi-chat',
+    icon: MessageOutlined,
     to: '/app/conversations'
   },
   {
     title: '应用设置',
-    icon: 'mdi-cog',
+    icon: SettingOutlined,
     to: '/app/settings'
   }
 ])
@@ -281,7 +302,7 @@ const selectApp = (app: Application) => {
 
 // 切换二级导航
 const toggleSecondaryNav = () => {
-  secondaryNavVisible.value = !secondaryNavVisible.value
+  secondaryNavCollapsed.value = !secondaryNavCollapsed.value
 }
 
 // 创建应用
@@ -329,42 +350,84 @@ onMounted(async () => {
 <style scoped lang="scss">
 @use '@/styles/theme' as *;
 
-.secondary-nav {
-  border-right: 1px solid $border-light;
-}
-
-.secondary-nav-header {
-  background: $gradient-soft;
-  color: $text-primary;
-  padding: $spacing-md $spacing-lg;
-  border-bottom: 1px solid $border-light;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.nav-toggle-btn {
-  color: $text-primary !important;
+.lemon-theme {
+  min-height: 100vh;
 }
 
 .main-navbar {
   background: $gradient-primary !important;
+  padding: 0;
+  height: 64px;
+  line-height: 64px;
+  border-bottom: 1px solid $border-light;
+}
 
-  .logo-image {
-    height: 60px;
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: 0 24px;
+}
+
+.logo-image {
+  height: 60px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-select-btn,
+.system-btn,
+.user-btn {
+  color: white !important;
+  border: none !important;
+  height: 40px;
+  padding: 0 12px;
+}
+
+.app-select-btn:hover,
+.system-btn:hover,
+.user-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: white !important;
+}
+
+.app-menu {
+  min-width: 300px;
+}
+
+.app-menu-item {
+  .app-name {
+    font-weight: 500;
+    color: $text-primary;
   }
-
-  .v-btn--variant-text {
-    color: white !important;
+  
+  .app-description {
+    font-size: 12px;
+    color: $text-secondary;
+    margin-top: 2px;
   }
+}
 
-  .v-menu .v-list-item-title {
-    color: $text-primary !important;
+.user-info {
+  .user-name {
+    font-weight: 500;
+    color: $text-primary;
+  }
+  
+  .user-subtitle {
+    font-size: 12px;
+    color: $text-secondary;
+    margin-top: 2px;
   }
 }
 
 .main-content {
-  height: calc(100vh - 64px); /* 减去导航栏高度 */
+  height: calc(100vh - 64px);
   overflow: hidden;
 }
 
@@ -379,6 +442,49 @@ onMounted(async () => {
   height: 100%;
 }
 
+.secondary-nav {
+  border-right: 1px solid $border-light;
+  background: $bg-secondary;
+}
+
+.secondary-nav-header {
+  background: $gradient-soft;
+  color: $text-primary;
+  padding: 16px 24px;
+  border-bottom: 1px solid $border-light;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+}
+
+.nav-header-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-icon {
+  font-size: 18px;
+  color: $text-primary;
+}
+
+.nav-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: $text-primary;
+}
+
+.nav-toggle-btn {
+  color: $text-primary !important;
+  border: none !important;
+}
+
+.secondary-menu {
+  border-right: none;
+  background: transparent;
+}
+
 .app-content {
   background-color: $bg-primary;
   flex: 1;
@@ -389,20 +495,22 @@ onMounted(async () => {
 
 .content-header {
   background: $bg-secondary;
-  padding: $spacing-md $spacing-lg;
+  padding: 16px 24px;
   border-bottom: 1px solid $border-light;
   display: flex;
   align-items: center;
-  gap: $spacing-md;
-  flex-shrink: 0;
+  gap: 16px;
+  height: 64px;
+  line-height: 64px;
 }
 
 .content-menu-btn {
   color: $text-primary !important;
+  border: none !important;
 }
 
 .content-title {
-  font-size: $font-size-lg;
+  font-size: 18px;
   font-weight: 500;
   color: $text-primary;
 }
@@ -417,21 +525,47 @@ onMounted(async () => {
   height: 100%;
   overflow-y: auto;
 }
-</style>
 
-
-<style scoped>
-.top-nav {
-  height: 64px !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.12);
+.select-app-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
 }
 
-.top-nav .v-list {
-  padding: 0;
+.prompt-card {
+  max-width: 400px;
+  text-align: center;
 }
 
-.top-nav .v-list-item {
-  min-height: 64px;
-  padding: 0 16px;
+.prompt-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+  background: #f5f5f5;
+  
+  .anticon {
+    font-size: 64px;
+    color: #d9d9d9;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .header-content {
+    padding: 0 16px;
+  }
+  
+  .app-select-btn,
+  .system-btn {
+    display: none;
+  }
+  
+  .secondary-nav {
+    position: fixed;
+    z-index: 1000;
+    height: 100vh;
+  }
 }
 </style> 

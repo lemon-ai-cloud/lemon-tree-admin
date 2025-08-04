@@ -1,135 +1,170 @@
 <template>
-  <div>
-    <v-row>
-      <v-col cols="12">
-        <div class="d-flex justify-space-between align-center mb-4">
-          <h1 class="text-h4">智能体管理</h1>
-          <v-btn
-            color="primary"
-            prepend-icon="mdi-plus"
-            @click="showDialog = true"
-          >
-            创建智能体
-          </v-btn>
-        </div>
-      </v-col>
-    </v-row>
+  <div class="agent-management">
+    <div class="page-header">
+      <div class="header-content">
+        <a-typography-title :level="2" class="page-title">
+          智能体管理
+        </a-typography-title>
+        <a-button
+          type="primary"
+          @click="showDialog = true"
+          class="create-btn"
+        >
+          <template #icon>
+            <PlusOutlined />
+          </template>
+          创建智能体
+        </a-button>
+      </div>
+    </div>
 
-    <v-row>
-      <v-col cols="12">
-        <v-card>
-          <v-card-title>
-            <v-text-field
-              v-model="search"
-              append-icon="mdi-magnify"
-              label="搜索智能体"
-              single-line
-              hide-details
-              variant="outlined"
-              density="compact"
-            />
-          </v-card-title>
-          
-          <v-data-table
-            :headers="headers"
-            :items="agents"
-            :search="search"
-            :loading="loading"
-            class="elevation-1"
+    <div class="content-area">
+      <a-card>
+        <template #title>
+          <a-input
+            v-model:value="search"
+            placeholder="搜索智能体"
+            size="large"
+            allow-clear
           >
-            <template v-slot:item.actions="{ item }">
-              <v-btn
-                icon="mdi-pencil"
-                size="small"
-                color="primary"
-                variant="text"
-                @click="editAgent(item)"
-              />
-              <v-btn
-                icon="mdi-delete"
-                size="small"
-                color="error"
-                variant="text"
-                @click="deleteAgent(item)"
-              />
+            <template #prefix>
+              <SearchOutlined />
             </template>
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
+          </a-input>
+        </template>
+        
+        <a-table
+          :columns="columns"
+          :data-source="filteredAgents"
+          :loading="loading"
+          :pagination="false"
+          row-key="id"
+        >
+          <template #bodyCell="{ column, record }">
+            <template v-if="column.key === 'actions'">
+              <div class="action-buttons">
+                <a-button
+                  type="text"
+                  size="small"
+                  @click="editAgent(record)"
+                  class="action-btn"
+                >
+                  <template #icon>
+                    <EditOutlined />
+                  </template>
+                </a-button>
+                <a-button
+                  type="text"
+                  size="small"
+                  danger
+                  @click="deleteAgent(record)"
+                  class="action-btn"
+                >
+                  <template #icon>
+                    <DeleteOutlined />
+                  </template>
+                </a-button>
+              </div>
+            </template>
+          </template>
+        </a-table>
+      </a-card>
+    </div>
 
     <!-- 创建/编辑智能体对话框 -->
-    <v-dialog v-model="showDialog" max-width="600px">
-      <v-card>
-        <v-card-title>
-          {{ editingAgent ? '编辑智能体' : '创建智能体' }}
-        </v-card-title>
+    <a-modal
+      v-model:open="showDialog"
+      :title="editingAgent ? '编辑智能体' : '创建智能体'"
+      @ok="saveAgent"
+      :confirm-loading="saving"
+      :ok-text="editingAgent ? '更新' : '创建'"
+      :cancel-text="'取消'"
+      width="600px"
+    >
+      <a-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        layout="vertical"
+        @finish="saveAgent"
+      >
+        <a-form-item name="name" label="智能体名称">
+          <a-input
+            v-model:value="form.name"
+            placeholder="请输入智能体名称"
+            size="large"
+          />
+        </a-form-item>
         
-        <v-card-text>
-          <v-form ref="form">
-            <v-text-field
-              v-model="form.name"
-              label="智能体名称"
-              :rules="[rules.required]"
-              variant="outlined"
-              required
-            />
-            
-            <v-textarea
-              v-model="form.description"
-              label="智能体描述"
-              :rules="[rules.required]"
-              variant="outlined"
-              required
-            />
-            
-            <v-text-field
-              v-model="form.avatarUrl"
-              label="头像URL"
-              variant="outlined"
-            />
-            
-            <v-textarea
-              v-model="form.systemPrompt"
-              label="系统提示词"
-              :rules="[rules.required]"
-              variant="outlined"
-              required
-              rows="4"
-            />
-          </v-form>
-        </v-card-text>
+        <a-form-item name="description" label="智能体描述">
+          <a-textarea
+            v-model:value="form.description"
+            placeholder="请输入智能体描述"
+            :rows="3"
+            size="large"
+          />
+        </a-form-item>
         
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="grey" @click="showDialog = false">取消</v-btn>
-          <v-btn
-            color="primary"
-            :loading="saving"
-            @click="saveAgent"
-          >
-            保存
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        <a-form-item name="avatarUrl" label="头像URL">
+          <a-input
+            v-model:value="form.avatarUrl"
+            placeholder="请输入头像URL"
+            size="large"
+          />
+        </a-form-item>
+        
+        <a-form-item name="systemPrompt" label="系统提示词">
+          <a-textarea
+            v-model:value="form.systemPrompt"
+            placeholder="请输入系统提示词"
+            :rows="4"
+            size="large"
+          />
+        </a-form-item>
+      </a-form>
+    </a-modal>
+
+    <!-- 删除确认对话框 -->
+    <a-modal
+      v-model:open="showDeleteDialog"
+      title="确认删除"
+      @ok="confirmDelete"
+      :confirm-loading="deleting"
+      ok-text="删除"
+      cancel-text="取消"
+      ok-type="danger"
+    >
+      <div class="delete-content">
+        <ExclamationCircleOutlined class="delete-icon" />
+        <p>确定要删除智能体 "{{ agentToDelete?.name }}" 吗？此操作不可恢复。</p>
+      </div>
+    </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
+import {
+  PlusOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined
+} from '@ant-design/icons-vue'
 
 // 状态
-const agents = ref([])
 const loading = ref(false)
 const saving = ref(false)
-const search = ref('')
+const deleting = ref(false)
 const showDialog = ref(false)
-const editingAgent = ref(null)
+const showDeleteDialog = ref(false)
+const agents = ref<any[]>([])
+const editingAgent = ref<any>(null)
+const agentToDelete = ref<any>(null)
+const search = ref('')
 
 // 表单数据
 const form = reactive({
-  id: '',
   name: '',
   description: '',
   avatarUrl: '',
@@ -138,27 +173,75 @@ const form = reactive({
 
 // 表单验证规则
 const rules = {
-  required: (value: string) => !!value || '此字段为必填项'
+  name: [
+    { required: true, message: '请输入智能体名称', trigger: 'blur' }
+  ],
+  description: [
+    { required: true, message: '请输入智能体描述', trigger: 'blur' }
+  ],
+  systemPrompt: [
+    { required: true, message: '请输入系统提示词', trigger: 'blur' }
+  ]
 }
 
-// 表格头部
-const headers = [
-  { title: 'ID', key: 'id', sortable: false },
-  { title: '名称', key: 'name', sortable: true },
-  { title: '描述', key: 'description', sortable: false },
-  { title: '创建时间', key: 'created_at', sortable: true },
-  { title: '操作', key: 'actions', sortable: false }
+// 表格列定义
+const columns = [
+  {
+    title: '智能体名称',
+    dataIndex: 'name',
+    key: 'name',
+    width: 200
+  },
+  {
+    title: '智能体描述',
+    dataIndex: 'description',
+    key: 'description',
+    width: 300
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'created_at',
+    key: 'created_at',
+    width: 180
+  },
+  {
+    title: '操作',
+    key: 'actions',
+    width: 120,
+    fixed: 'right'
+  }
 ]
 
-// 表单引用
-const formRef = ref()
+// 过滤后的智能体列表
+const filteredAgents = computed(() => {
+  if (!search.value) return agents.value
+  
+  const searchLower = search.value.toLowerCase()
+  return agents.value.filter(agent => 
+    agent.name.toLowerCase().includes(searchLower) ||
+    agent.description.toLowerCase().includes(searchLower)
+  )
+})
 
 // 获取智能体列表
 const fetchAgents = async () => {
   try {
     loading.value = true
-    // 这里调用API获取智能体列表
-    agents.value = []
+    // 这里需要调用实际的API
+    // const response = await agentService.getAllAgents()
+    // agents.value = response.agents
+    
+    // 模拟数据
+    agents.value = [
+      {
+        id: '1',
+        name: '客服助手',
+        description: '专业的客服智能体，能够回答用户问题',
+        avatarUrl: '',
+        systemPrompt: '你是一个专业的客服助手',
+        created_at: '2024-01-01 10:00:00'
+      }
+    ]
   } catch (error) {
     console.error('获取智能体列表失败:', error)
   } finally {
@@ -169,48 +252,52 @@ const fetchAgents = async () => {
 // 编辑智能体
 const editAgent = (agent: any) => {
   editingAgent.value = agent
-  form.id = agent.id
   form.name = agent.name
   form.description = agent.description
   form.avatarUrl = agent.avatarUrl || ''
-  form.systemPrompt = agent.systemPrompt || ''
+  form.systemPrompt = agent.systemPrompt
   showDialog.value = true
 }
 
 // 删除智能体
-const deleteAgent = async (agent: any) => {
-  if (confirm(`确定要删除智能体 "${agent.name}" 吗？`)) {
-    try {
-      // 这里调用API删除智能体
-      await fetchAgents()
-    } catch (error) {
-      console.error('删除智能体失败:', error)
-    }
+const deleteAgent = (agent: any) => {
+  agentToDelete.value = agent
+  showDeleteDialog.value = true
+}
+
+// 确认删除
+const confirmDelete = async () => {
+  if (!agentToDelete.value) return
+  
+  try {
+    deleting.value = true
+    // 这里需要调用实际的删除API
+    // await agentService.deleteAgent(agentToDelete.value.id)
+    await fetchAgents()
+    showDeleteDialog.value = false
+    agentToDelete.value = null
+  } catch (error) {
+    console.error('删除智能体失败:', error)
+  } finally {
+    deleting.value = false
   }
 }
 
 // 保存智能体
-const saveAgent = async () => {
+const saveAgent = async (values: any) => {
   try {
-    const { valid } = await formRef.value.validate()
-    if (!valid) return
-    
     saving.value = true
     
-    // 这里调用API保存智能体
-    console.log('保存智能体:', form)
+    if (editingAgent.value) {
+      // 更新智能体
+      // await agentService.updateAgent(editingAgent.value.id, values)
+    } else {
+      // 创建智能体
+      // await agentService.createAgent(values)
+    }
     
-    // 重置表单
-    form.id = ''
-    form.name = ''
-    form.description = ''
-    form.avatarUrl = ''
-    form.systemPrompt = ''
-    editingAgent.value = null
-    showDialog.value = false
-    
-    // 刷新列表
     await fetchAgents()
+    closeDialog()
   } catch (error) {
     console.error('保存智能体失败:', error)
   } finally {
@@ -218,7 +305,95 @@ const saveAgent = async () => {
   }
 }
 
+// 关闭对话框
+const closeDialog = () => {
+  showDialog.value = false
+  editingAgent.value = null
+  form.name = ''
+  form.description = ''
+  form.avatarUrl = ''
+  form.systemPrompt = ''
+}
+
+// 初始化
 onMounted(() => {
   fetchAgents()
 })
-</script> 
+</script>
+
+<style scoped lang="scss">
+.agent-management {
+  padding: 24px;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.page-title {
+  margin-bottom: 0 !important;
+  color: #333 !important;
+}
+
+.create-btn {
+  height: 40px;
+  padding: 0 24px;
+}
+
+.content-area {
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 4px;
+  min-width: 32px;
+  height: 32px;
+}
+
+.delete-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .delete-icon {
+    font-size: 24px;
+    color: #ff4d4f;
+  }
+  
+  p {
+    margin: 0;
+    color: #333;
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .agent-management {
+    padding: 16px;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+</style> 

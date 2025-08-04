@@ -4,246 +4,267 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <v-icon size="32" color="primary" class="mr-3">mdi-account-group</v-icon>
+          <TeamOutlined class="header-icon" />
           <div>
-            <h1 class="text-h4 font-weight-bold mb-1">用户管理</h1>
-            <p class="text-body-2 text-medium-emphasis">管理系统用户账号和权限</p>
+            <a-typography-title :level="2" class="header-title">
+              用户管理
+            </a-typography-title>
+            <a-typography-text class="header-subtitle">
+              管理系统用户账号和权限
+            </a-typography-text>
           </div>
         </div>
-        <v-btn
-            color="primary"
-            size="large"
-            prepend-icon="mdi-plus"
-            @click="showDrawer = true"
-            class="create-btn"
+        <a-button
+          type="primary"
+          size="large"
+          @click="showDrawer = true"
+          class="create-btn"
         >
+          <template #icon>
+            <PlusOutlined />
+          </template>
           创建用户
-        </v-btn>
+        </a-button>
       </div>
     </div>
 
     <!-- 主要内容区域 -->
     <div class="content-area">
-      <v-card class="user-card" elevation="2">
+      <a-card class="user-card">
         <!-- 搜索栏 -->
         <div class="search-section">
-          <v-text-field
-              v-model="search"
-              prepend-inner-icon="mdi-magnify"
-              label="搜索用户姓名、账号或邮箱"
-              variant="outlined"
-              density="comfortable"
-              hide-details
-              class="search-field"
-              clearable
-          />
+          <a-input
+            v-model:value="search"
+            placeholder="搜索用户姓名、账号或邮箱"
+            size="large"
+            class="search-field"
+            allow-clear
+          >
+            <template #prefix>
+              <SearchOutlined />
+            </template>
+          </a-input>
         </div>
 
         <!-- 用户列表 -->
         <div class="table-section">
-          <v-data-table
-              :headers="headers"
-              :items="users"
-              :search="search"
-              :loading="loading"
-              class="user-table"
-              hover
-              item-value="id"
+          <a-table
+            :columns="columns"
+            :data-source="filteredUsers"
+            :loading="loading"
+            :pagination="false"
+            class="user-table"
+            row-key="id"
           >
             <!-- 创建时间列 -->
-            <template v-slot:item.created_at="{ item }">
-              <span class="text-body-2 text-medium-emphasis">
-                {{ formatDate(item.created_at) }}
-              </span>
-            </template>
-
-            <!-- 操作列 -->
-            <template v-slot:item.actions="{ item }">
-              <div class="action-buttons">
-                <v-btn
-                    icon="mdi-pencil"
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.key === 'created_at'">
+                <span class="text-secondary">
+                  {{ formatDate(record.created_at) }}
+                </span>
+              </template>
+              
+              <!-- 操作列 -->
+              <template v-if="column.key === 'actions'">
+                <div class="action-buttons">
+                  <a-button
+                    type="text"
                     size="small"
-                    color="primary"
-                    variant="text"
-                    @click="editUser(item)"
+                    @click="editUser(record)"
                     class="action-btn"
-                />
-                <v-btn
-                    icon="mdi-delete"
+                  >
+                    <template #icon>
+                      <EditOutlined />
+                    </template>
+                  </a-button>
+                  <a-button
+                    type="text"
                     size="small"
-                    color="error"
-                    variant="text"
-                    @click="deleteUser(item)"
+                    danger
+                    @click="deleteUser(record)"
                     class="action-btn"
-                />
-              </div>
+                  >
+                    <template #icon>
+                      <DeleteOutlined />
+                    </template>
+                  </a-button>
+                </div>
+              </template>
             </template>
 
             <!-- 空状态 -->
-            <template v-slot:no-data>
+            <template #emptyText>
               <div class="empty-state">
-                <v-icon size="48" color="grey-lighten-1" class="mb-3">mdi-account-group-outline</v-icon>
-                <h3 class="text-h6 mb-2">暂无用户数据</h3>
-                <p class="text-body-2 text-medium-emphasis mb-4">点击"创建用户"按钮添加第一个用户</p>
-                <v-btn
-                    color="primary"
-                    prepend-icon="mdi-plus"
-                    @click="showDrawer = true"
+                <TeamOutlined class="empty-icon" />
+                <a-typography-title :level="4" class="empty-title">
+                  暂无用户数据
+                </a-typography-title>
+                <a-typography-text class="empty-subtitle">
+                  点击"创建用户"按钮添加第一个用户
+                </a-typography-text>
+                <a-button
+                  type="primary"
+                  @click="showDrawer = true"
+                  class="empty-action"
                 >
+                  <template #icon>
+                    <PlusOutlined />
+                  </template>
                   创建用户
-                </v-btn>
+                </a-button>
               </div>
             </template>
-          </v-data-table>
+          </a-table>
         </div>
-      </v-card>
+      </a-card>
     </div>
 
     <!-- 创建/编辑用户抽屉 -->
-    <v-navigation-drawer
-        v-model="showDrawer"
-        location="right"
-        temporary
-        width="500"
-        class="user-drawer"
+    <a-drawer
+      v-model:open="showDrawer"
+      placement="right"
+      width="500"
+      class="user-drawer"
+      :title="editingUser ? '编辑用户' : '创建用户'"
+      :footer="false"
     >
-      <div class="drawer-header">
-        <div class="d-flex align-center">
-          <v-icon size="24" color="primary" class="mr-3">
-            {{ editingUser ? 'mdi-pencil' : 'mdi-plus' }}
-          </v-icon>
-          <span class="text-h5 font-weight-bold">
-            {{ editingUser ? '编辑用户' : '创建用户' }}
-          </span>
-        </div>
-        <v-btn
-            icon="mdi-close"
-            variant="text"
-            @click="closeDrawer"
-        />
-      </div>
+      <a-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        layout="vertical"
+        @finish="saveUser"
+      >
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item name="name" label="用户姓名">
+              <a-input
+                v-model:value="form.name"
+                placeholder="请输入用户姓名"
+                size="large"
+              >
+                <template #prefix>
+                  <UserOutlined />
+                </template>
+              </a-input>
+            </a-form-item>
+          </a-col>
 
-      <div class="drawer-content">
-        <v-form ref="formRef" @submit.prevent="saveUser">
-          <v-row>
-            <v-col cols="12" md="6">
-              <v-text-field
-                  v-model="form.name" label="用户姓名"
-                  :rules="[rules.required]" variant="outlined"
-                  density="comfortable" prepend-inner-icon="mdi-account"
-                  required/>
-            </v-col>
+          <a-col :span="12">
+            <a-form-item name="number" label="用户账号">
+              <a-input
+                v-model:value="form.number"
+                placeholder="请输入用户账号"
+                size="large"
+              >
+                <template #prefix>
+                  <KeyOutlined />
+                </template>
+              </a-input>
+            </a-form-item>
+          </a-col>
 
-            <v-col cols="12" md="6">
-              <v-text-field
-                  v-model="form.number" label="用户账号"
-                  :rules="[rules.required]" variant="outlined" density="comfortable"
-                  prepend-inner-icon="mdi-account-key"
-                  required/>
-            </v-col>
+          <a-col :span="24">
+            <a-form-item name="email" label="用户邮箱">
+              <a-input
+                v-model:value="form.email"
+                placeholder="请输入用户邮箱"
+                size="large"
+              >
+                <template #prefix>
+                  <MailOutlined />
+                </template>
+              </a-input>
+            </a-form-item>
+          </a-col>
 
-            <v-col cols="12">
-              <v-text-field
-                  v-model="form.email" label="用户邮箱" :rules="[rules.required, rules.email]" variant="outlined"
-                  density="comfortable" prepend-inner-icon="mdi-email" required/>
-            </v-col>
+          <a-col :span="24">
+            <a-form-item 
+              name="password" 
+              label="密码"
+              :rules="editingUser ? [] : rules.password"
+            >
+              <a-input-password
+                v-model:value="form.password"
+                :placeholder="editingUser ? '留空则不修改密码' : '请输入密码'"
+                size="large"
+              >
+                <template #prefix>
+                  <LockOutlined />
+                </template>
+              </a-input-password>
+            </a-form-item>
+          </a-col>
+        </a-row>
 
-            <v-col cols="12">
-              <v-text-field
-                  v-model="form.password"
-                  label="密码(留空则不修改密码)"
-                  :rules="editingUser ? [] : [rules.required]"
-                  variant="outlined"
-                  density="comfortable"
-                  type="password"
-                  prepend-inner-icon="mdi-lock"
-                  :required="!editingUser"
-                  :placeholder="editingUser ? '留空则不修改密码' : '请输入密码'"
-              />
-            </v-col>
-          </v-row>
-        </v-form>
-      </div>
-
-      <div class="drawer-actions">
-        <div class="d-flex">
-          <v-btn
-              variant="outlined"
-              color="grey"
-              @click="closeDrawer"
-              :disabled="saving"
-              class="flex-1"
-          >
-            取消
-          </v-btn>
-          <v-btn
-              color="primary"
+        <div class="drawer-actions">
+          <a-space>
+            <a-button @click="closeDrawer" :disabled="saving">
+              取消
+            </a-button>
+            <a-button
+              type="primary"
               :loading="saving"
-              @click="saveUser"
-              class="flex-1 ml-6"
-          >
-            {{ editingUser ? '更新' : '创建' }}
-          </v-btn>
+              html-type="submit"
+            >
+              {{ editingUser ? '更新' : '创建' }}
+            </a-button>
+          </a-space>
         </div>
-      </div>
-    </v-navigation-drawer>
+      </a-form>
+    </a-drawer>
 
     <!-- 删除确认对话框 -->
-    <v-dialog v-model="showDeleteDialog" max-width="400px" persistent>
-      <v-card>
-        <v-card-title class="text-h6">
-          <v-icon color="error" class="mr-2">mdi-alert-circle</v-icon>
-          确认删除
-        </v-card-title>
-
-        <v-card-text>
-          <p class="text-body-1">
-            确定要删除用户 <strong>"{{ deletingUser?.name }}"</strong> 吗？
-          </p>
-          <p class="text-body-2 text-medium-emphasis mt-2">
-            此操作无法撤销，删除后该用户将无法登录系统。
-          </p>
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer/>
-          <v-btn
-              variant="outlined"
-              color="grey"
-              @click="showDeleteDialog = false"
-          >
-            取消
-          </v-btn>
-          <v-btn
-              color="error"
-              @click="confirmDeleteUser"
-              class="ml-3"
-          >
-            确认删除
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <a-modal
+      v-model:open="showDeleteDialog"
+      title="确认删除"
+      @ok="confirmDelete"
+      :confirm-loading="deleting"
+      ok-text="删除"
+      cancel-text="取消"
+      ok-type="danger"
+    >
+      <div class="delete-content">
+        <ExclamationCircleOutlined class="delete-icon" />
+        <p>确定要删除用户 "{{ userToDelete?.name }}" 吗？此操作不可恢复。</p>
+      </div>
+    </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import {nextTick, onMounted, ref} from 'vue'
-import type {SaveUserRequest, SystemUser} from '@/dto/user.ts'
-import userService from '@/services/userService'
+import { computed, onMounted, reactive, ref } from 'vue'
+import { useUserStore } from '@/stores/userStore.ts'
+import userService from '@/services/userService.ts'
+import type { SystemUser } from '@/dto/user.ts'
+import {
+  TeamOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  UserOutlined,
+  KeyOutlined,
+  MailOutlined,
+  LockOutlined,
+  ExclamationCircleOutlined
+} from '@ant-design/icons-vue'
+
+const userStore = useUserStore()
 
 // 状态
-const users = ref<SystemUser[]>([])
 const loading = ref(false)
 const saving = ref(false)
-const search = ref('')
+const deleting = ref(false)
 const showDrawer = ref(false)
-const editingUser = ref<SystemUser | null>(null)
 const showDeleteDialog = ref(false)
-const deletingUser = ref<SystemUser | null>(null)
+const users = ref<SystemUser[]>([])
+const editingUser = ref<SystemUser | null>(null)
+const userToDelete = ref<SystemUser | null>(null)
+const search = ref('')
 
 // 表单数据
-const form = ref<SaveUserRequest>({
+const form = reactive({
   name: '',
   number: '',
   email: '',
@@ -252,145 +273,137 @@ const form = ref<SaveUserRequest>({
 
 // 表单验证规则
 const rules = {
-  required: (value: string) => !!value || '此字段为必填项',
-  email: (value: string) => {
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return pattern.test(value) || '请输入有效的邮箱地址'
-  }
+  name: [
+    { required: true, message: '请输入用户姓名', trigger: 'blur' }
+  ],
+  number: [
+    { required: true, message: '请输入用户账号', trigger: 'blur' }
+  ],
+  email: [
+    { required: true, message: '请输入用户邮箱', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' }
+  ]
 }
 
-// 表格头部
-const headers = [
-  {title: '姓名', key: 'name', sortable: true, width: '20%'},
-  {title: '账号', key: 'number', sortable: true, width: '20%'},
-  {title: '邮箱', key: 'email', sortable: true, width: '25%'},
-  {title: '创建时间', key: 'created_at', sortable: true, width: '15%'},
-  {title: '操作', key: 'actions', sortable: false, width: '10%'}
+// 表格列定义
+const columns = [
+  {
+    title: '用户姓名',
+    dataIndex: 'name',
+    key: 'name',
+    width: 150
+  },
+  {
+    title: '用户账号',
+    dataIndex: 'number',
+    key: 'number',
+    width: 150
+  },
+  {
+    title: '用户邮箱',
+    dataIndex: 'email',
+    key: 'email',
+    width: 200
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'created_at',
+    key: 'created_at',
+    width: 180
+  },
+  {
+    title: '操作',
+    key: 'actions',
+    width: 120,
+    fixed: 'right'
+  }
 ]
 
-// 表单引用
-const formRef = ref()
+// 过滤后的用户列表
+const filteredUsers = computed(() => {
+  if (!search.value) return users.value
+  
+  const searchLower = search.value.toLowerCase()
+  return users.value.filter(user => 
+    user.name.toLowerCase().includes(searchLower) ||
+    user.number.toLowerCase().includes(searchLower) ||
+    user.email.toLowerCase().includes(searchLower)
+  )
+})
 
 // 格式化日期
 const formatDate = (dateString: string) => {
-  if (!dateString) return '-'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return new Date(dateString).toLocaleString('zh-CN')
 }
 
 // 获取用户列表
 const fetchUsers = async () => {
   try {
     loading.value = true
-    console.log('开始获取用户列表...')
     const response = await userService.getAllUsers()
-    console.log('获取用户列表成功:', response)
     users.value = response.users
   } catch (error) {
     console.error('获取用户列表失败:', error)
-    // 添加更详细的错误信息
-    if (error.response) {
-      console.error('错误响应:', error.response.data)
-      console.error('错误状态:', error.response.status)
-    }
   } finally {
     loading.value = false
   }
 }
 
-// 关闭抽屉
-const closeDrawer = () => {
-  showDrawer.value = false
-  editingUser.value = null
-  // 重置表单
-  form.value.id = ''
-  form.value.name = ''
-  form.value.number = ''
-  form.value.email = ''
-  form.value.password = ''
-}
-
 // 编辑用户
-const editUser = async (user: SystemUser) => {
-  console.log('编辑用户数据:', user)
+const editUser = (user: SystemUser) => {
   editingUser.value = user
+  form.name = user.name
+  form.number = user.number
+  form.email = user.email
+  form.password = ''
   showDrawer.value = true
-
-  // 等待抽屉打开后再设置表单值
-  await nextTick()
-
-  form.value.id = user.id
-  form.value.name = user.name
-  form.value.number = user.number
-  form.value.email = user.email
-  form.value.password = ''
-
-  console.log('表单数据:', form)
 }
 
 // 删除用户
-const deleteUser = async (user: SystemUser) => {
-  // 检查是否是当前用户
-  const currentUser = JSON.parse(localStorage.getItem('user') || '{}')
-  if (user.id === currentUser.id) {
-    alert('不能删除当前登录用户')
-    return
-  }
-
-  // 检查是否只剩一个用户
-  if (users.value.length <= 1) {
-    alert('系统中至少需要保留一个用户')
-    return
-  }
-
-  deletingUser.value = user
+const deleteUser = (user: SystemUser) => {
+  userToDelete.value = user
   showDeleteDialog.value = true
 }
 
-// 确认删除用户
-const confirmDeleteUser = async () => {
-  if (!deletingUser.value) return
-
+// 确认删除
+const confirmDelete = async () => {
+  if (!userToDelete.value) return
+  
   try {
-    // 这里需要添加删除用户的API
-    console.log('删除用户:', deletingUser.value.id)
+    deleting.value = true
+    // await userService.deleteUser(userToDelete.value.id)
     await fetchUsers()
     showDeleteDialog.value = false
-    deletingUser.value = null
+    userToDelete.value = null
   } catch (error) {
     console.error('删除用户失败:', error)
+  } finally {
+    deleting.value = false
   }
 }
 
 // 保存用户
-const saveUser = async () => {
+const saveUser = async (values: any) => {
   try {
-    const {valid} = await formRef.value.validate()
-    if (!valid) return
-
     saving.value = true
-
-    const userData: SaveUserRequest = {
-      id: form.value.id || undefined,
-      name: form.value.name,
-      number: form.value.number,
-      email: form.value.email,
-      password: form.value.password || ''
+    
+    if (editingUser.value) {
+      // 更新用户
+      await userService.saveUser({
+        id: editingUser.value.id,
+        ...values,
+        password: values.password || undefined
+      })
+    } else {
+      // 创建用户
+      await userService.saveUser(values)
     }
-
-    await userService.saveUser(userData)
-
-    // 关闭抽屉
-    closeDrawer()
-
-    // 刷新列表
+    
     await fetchUsers()
+    closeDrawer()
   } catch (error) {
     console.error('保存用户失败:', error)
   } finally {
@@ -398,24 +411,36 @@ const saveUser = async () => {
   }
 }
 
+// 关闭抽屉
+const closeDrawer = () => {
+  showDrawer.value = false
+  editingUser.value = null
+  form.name = ''
+  form.number = ''
+  form.email = ''
+  form.password = ''
+}
+
+// 初始化
 onMounted(() => {
   fetchUsers()
 })
 </script>
 
 <style scoped lang="scss">
-@use '@/styles/theme.scss' as *;
+@use '@/styles/theme' as *;
 
 .user-management {
-  height: 100%;
-  background-color: $bg-primary;
-  overflow-y: auto;
+  padding: 24px;
+  background: $bg-primary;
+  min-height: 100vh;
+}
+
+.page-header {
+  margin-bottom: 24px;
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -424,32 +449,42 @@ onMounted(() => {
 .header-left {
   display: flex;
   align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  font-size: 32px;
+  color: $primary-color;
+}
+
+.header-title {
+  margin-bottom: 4px !important;
+  color: $text-primary !important;
+}
+
+.header-subtitle {
+  color: $text-secondary;
+  font-size: 14px;
 }
 
 .create-btn {
-  box-shadow: $shadow-medium;
-  transition: all 0.3s ease;
-}
-
-.create-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: $shadow-heavy;
+  height: 40px;
+  padding: 0 24px;
 }
 
 .content-area {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .user-card {
-  @include card-style;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .search-section {
-  padding: 1.5rem 2rem;
-  background-color: $bg-secondary;
-  border-bottom: 1px solid $border-light;
+  padding: 24px 24px 0;
 }
 
 .search-field {
@@ -457,69 +492,106 @@ onMounted(() => {
 }
 
 .table-section {
-  padding: 0;
+  padding: 0 24px 24px;
 }
 
 .user-table {
-  border-radius: 0;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: $text-secondary;
+  .ant-table-thead > tr > th {
+    background: #fafafa;
+    font-weight: 500;
+  }
 }
 
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .action-btn {
-  transition: all 0.2s ease;
+  padding: 4px;
+  min-width: 32px;
+  height: 32px;
 }
 
-.action-btn:hover {
-  transform: scale(1.1);
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  color: #d9d9d9;
+  margin-bottom: 16px;
+}
+
+.empty-title {
+  margin-bottom: 8px !important;
+  color: $text-secondary !important;
+}
+
+.empty-subtitle {
+  color: $text-secondary;
+  margin-bottom: 24px;
+  display: block;
+}
+
+.empty-action {
+  height: 40px;
+  padding: 0 24px;
 }
 
 .user-drawer {
-  border-radius: 0;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-
-.drawer-header {
-  @include drawer-header;
-}
-
-.drawer-content {
-  @include drawer-content;
+  .ant-drawer-header {
+    border-bottom: 1px solid $border-light;
+  }
+  
+  .ant-drawer-body {
+    padding: 24px;
+  }
 }
 
 .drawer-actions {
-  @include drawer-actions;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid $border-light;
+  text-align: right;
+}
+
+.delete-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .delete-icon {
+    font-size: 24px;
+    color: #ff4d4f;
+  }
+  
+  p {
+    margin: 0;
+    color: $text-primary;
+  }
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .user-management {
+    padding: 16px;
+  }
+  
   .header-content {
     flex-direction: column;
-    gap: 1rem;
-    text-align: center;
+    align-items: flex-start;
+    gap: 16px;
   }
-
-  .content-area {
-    padding: 0 1rem;
-  }
-
-  .search-section {
-    padding: 1rem;
-  }
-
+  
   .search-field {
     max-width: 100%;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
   }
 }
 </style> 

@@ -4,277 +4,306 @@
     <div class="page-header">
       <div class="header-content">
         <div class="header-left">
-          <v-icon size="32" color="primary" class="mr-3">mdi-apps</v-icon>
+          <AppstoreOutlined class="header-icon" />
           <div>
-            <h1 class="text-h4 font-weight-bold mb-1">应用管理</h1>
-            <p class="text-body-2 text-medium-emphasis">管理系统应用和配置</p>
+            <a-typography-title :level="2" class="header-title">
+              应用管理
+            </a-typography-title>
+            <a-typography-text class="header-subtitle">
+              管理系统应用和配置
+            </a-typography-text>
           </div>
         </div>
-        <v-btn
-          color="primary"
+        <a-button
+          type="primary"
           size="large"
-          prepend-icon="mdi-plus"
           @click="showDialog = true"
           class="create-btn"
         >
+          <template #icon>
+            <PlusOutlined />
+          </template>
           创建应用
-        </v-btn>
+        </a-button>
       </div>
     </div>
 
     <!-- 主要内容区域 -->
     <div class="content-area">
-      <v-card class="application-card" elevation="2">
+      <a-card class="application-card">
         <!-- 搜索栏 -->
         <div class="search-section">
-          <v-text-field
-            v-model="search"
-            prepend-inner-icon="mdi-magnify"
-            label="搜索应用名称或描述"
-            variant="outlined"
-            density="comfortable"
-            hide-details
+          <a-input
+            v-model:value="search"
+            placeholder="搜索应用名称或描述"
+            size="large"
             class="search-field"
-            clearable
-          />
+            allow-clear
+          >
+            <template #prefix>
+              <SearchOutlined />
+            </template>
+          </a-input>
         </div>
         
         <!-- 应用列表 -->
         <div class="table-section">
-          <v-data-table
-            :headers="headers"
-            :items="applications"
-            :search="search"
+          <a-table
+            :columns="columns"
+            :data-source="filteredApplications"
             :loading="loading"
+            :pagination="false"
             class="application-table"
-            hover
-            item-value="id"
+            row-key="id"
           >
             <!-- 应用状态列 -->
-            <template v-slot:item.status="{ item }">
-              <v-chip
-                :color="item.status === 'active' ? 'success' : 'warning'"
-                size="small"
-                variant="flat"
-              >
-                {{ item.status === 'active' ? '活跃' : '非活跃' }}
-              </v-chip>
-            </template>
-            
-            <!-- 创建时间列 -->
-            <template v-slot:item.created_at="{ item }">
-              <span class="text-body-2 text-medium-emphasis">
-                {{ formatDate(item.created_at) }}
-              </span>
-            </template>
-            
-            <!-- 操作列 -->
-            <template v-slot:item.actions="{ item }">
-              <div class="action-buttons">
-                <v-btn
-                  icon="mdi-pencil"
+            <template #bodyCell="{ column, record }">
+              <template v-if="column.key === 'status'">
+                <a-tag
+                  :color="record.status === 'active' ? 'success' : 'warning'"
                   size="small"
-                  color="primary"
-                  variant="text"
-                  @click="editApplication(item)"
-                  class="action-btn"
-                />
-                <v-btn
-                  icon="mdi-delete"
-                  size="small"
-                  color="error"
-                  variant="text"
-                  @click="deleteApplication(item)"
-                  class="action-btn"
-                />
-              </div>
+                >
+                  {{ record.status === 'active' ? '活跃' : '非活跃' }}
+                </a-tag>
+              </template>
+              
+              <!-- 创建时间列 -->
+              <template v-if="column.key === 'created_at'">
+                <span class="text-secondary">
+                  {{ formatDate(record.created_at) }}
+                </span>
+              </template>
+              
+              <!-- 操作列 -->
+              <template v-if="column.key === 'actions'">
+                <div class="action-buttons">
+                  <a-button
+                    type="text"
+                    size="small"
+                    @click="editApplication(record)"
+                    class="action-btn"
+                  >
+                    <template #icon>
+                      <EditOutlined />
+                    </template>
+                  </a-button>
+                  <a-button
+                    type="text"
+                    size="small"
+                    danger
+                    @click="deleteApplication(record)"
+                    class="action-btn"
+                  >
+                    <template #icon>
+                      <DeleteOutlined />
+                    </template>
+                  </a-button>
+                </div>
+              </template>
             </template>
             
             <!-- 空状态 -->
-            <template v-slot:no-data>
+            <template #emptyText>
               <div class="empty-state">
-                <v-icon size="48" color="grey-lighten-1" class="mb-3">mdi-apps-outline</v-icon>
-                <h3 class="text-h6 mb-2">暂无应用数据</h3>
-                <p class="text-body-2 text-medium-emphasis mb-4">点击"创建应用"按钮添加第一个应用</p>
-                <v-btn
-                  color="primary"
-                  prepend-icon="mdi-plus"
+                <AppstoreOutlined class="empty-icon" />
+                <a-typography-title :level="4" class="empty-title">
+                  暂无应用数据
+                </a-typography-title>
+                <a-typography-text class="empty-subtitle">
+                  点击"创建应用"按钮添加第一个应用
+                </a-typography-text>
+                <a-button
+                  type="primary"
                   @click="showDialog = true"
+                  class="empty-action"
                 >
+                  <template #icon>
+                    <PlusOutlined />
+                  </template>
                   创建应用
-                </v-btn>
+                </a-button>
               </div>
             </template>
-          </v-data-table>
+          </a-table>
         </div>
-      </v-card>
+      </a-card>
     </div>
 
     <!-- 创建/编辑应用对话框 -->
-    <v-dialog v-model="showDialog" max-width="600px" persistent>
-      <v-card class="application-dialog">
-        <v-card-title class="dialog-header">
-          <div class="d-flex align-center">
-            <v-icon size="24" color="primary" class="mr-3">
-              {{ editingApplication ? 'mdi-pencil' : 'mdi-plus' }}
-            </v-icon>
-            <span class="text-h5 font-weight-bold">
-              {{ editingApplication ? '编辑应用' : '创建应用' }}
-            </span>
-          </div>
-        </v-card-title>
-        
-        <v-card-text class="dialog-content">
-          <v-form ref="form" @submit.prevent="saveApplication">
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="form.name"
-                  label="应用名称"
-                  :rules="[rules.required]"
-                  variant="outlined"
-                  density="comfortable"
-                  prepend-inner-icon="mdi-apps"
-                  required
-                />
-              </v-col>
-              
-              <v-col cols="12">
-                <v-textarea
-                  v-model="form.description"
-                  label="应用描述"
-                  :rules="[rules.required]"
-                  variant="outlined"
-                  density="comfortable"
-                  prepend-inner-icon="mdi-text"
-                  rows="3"
-                  required
-                />
-              </v-col>
-              
-              <v-col cols="12" md="6">
-                <v-select
-                  v-model="form.status"
-                  label="应用状态"
-                  :items="statusOptions"
-                  variant="outlined"
-                  density="comfortable"
-                  prepend-inner-icon="mdi-toggle-switch"
-                  required
-                />
-              </v-col>
-              
-              <v-col cols="12" md="6">
-                <v-text-field
-                  v-model="form.version"
-                  label="版本号"
-                  variant="outlined"
-                  density="comfortable"
-                  prepend-inner-icon="mdi-tag"
-                  placeholder="1.0.0"
-                />
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-text>
-        
-        <v-card-actions class="dialog-actions">
-          <v-spacer />
-          <v-btn
-            variant="outlined"
-            color="grey"
-            @click="showDialog = false"
-            :disabled="saving"
-          >
-            取消
-          </v-btn>
-          <v-btn
-            color="primary"
-            :loading="saving"
-            @click="saveApplication"
-            class="ml-3"
-          >
-            {{ editingApplication ? '更新' : '创建' }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <a-modal
+      v-model:open="showDialog"
+      :title="editingApplication ? '编辑应用' : '创建应用'"
+      @ok="saveApplication"
+      :confirm-loading="saving"
+      :ok-text="editingApplication ? '更新' : '创建'"
+      :cancel-text="'取消'"
+      width="600px"
+    >
+      <a-form
+        ref="formRef"
+        :model="form"
+        :rules="rules"
+        layout="vertical"
+        @finish="saveApplication"
+      >
+        <a-row :gutter="16">
+          <a-col :span="12">
+            <a-form-item name="name" label="应用名称">
+              <a-input
+                v-model:value="form.name"
+                placeholder="请输入应用名称"
+                size="large"
+              />
+            </a-form-item>
+          </a-col>
+
+          <a-col :span="12">
+            <a-form-item name="status" label="应用状态">
+              <a-select
+                v-model:value="form.status"
+                placeholder="请选择应用状态"
+                size="large"
+              >
+                <a-select-option value="active">活跃</a-select-option>
+                <a-select-option value="inactive">非活跃</a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+
+          <a-col :span="24">
+            <a-form-item name="description" label="应用描述">
+              <a-textarea
+                v-model:value="form.description"
+                placeholder="请输入应用描述"
+                :rows="4"
+                size="large"
+              />
+            </a-form-item>
+          </a-col>
+        </a-row>
+      </a-form>
+    </a-modal>
+
+    <!-- 删除确认对话框 -->
+    <a-modal
+      v-model:open="showDeleteDialog"
+      title="确认删除"
+      @ok="confirmDelete"
+      :confirm-loading="deleting"
+      ok-text="删除"
+      cancel-text="取消"
+      ok-type="danger"
+    >
+      <div class="delete-content">
+        <ExclamationCircleOutlined class="delete-icon" />
+        <p>确定要删除应用 "{{ applicationToDelete?.name }}" 吗？此操作不可恢复。</p>
+      </div>
+    </a-modal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
+import applicationService from '@/services/applicationService.ts'
 import type { Application } from '@/dto/application.ts'
-import applicationService from '@/services/applicationService'
+import {
+  AppstoreOutlined,
+  PlusOutlined,
+  SearchOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined
+} from '@ant-design/icons-vue'
 
 // 状态
-const applications = ref<Application[]>([])
 const loading = ref(false)
 const saving = ref(false)
-const search = ref('')
+const deleting = ref(false)
 const showDialog = ref(false)
+const showDeleteDialog = ref(false)
+const applications = ref<Application[]>([])
 const editingApplication = ref<Application | null>(null)
+const applicationToDelete = ref<Application | null>(null)
+const search = ref('')
 
 // 表单数据
 const form = reactive({
-  id: '',
   name: '',
   description: '',
-  status: 'active',
-  version: ''
+  status: 'active'
 })
-
-// 状态选项
-const statusOptions = [
-  { title: '活跃', value: 'active' },
-  { title: '非活跃', value: 'inactive' }
-]
 
 // 表单验证规则
 const rules = {
-  required: (value: string) => !!value || '此字段为必填项'
+  name: [
+    { required: true, message: '请输入应用名称', trigger: 'blur' }
+  ],
+  description: [
+    { required: true, message: '请输入应用描述', trigger: 'blur' }
+  ],
+  status: [
+    { required: true, message: '请选择应用状态', trigger: 'change' }
+  ]
 }
 
-// 表格头部
-const headers = [
-  { title: '应用名称', key: 'name', sortable: true, width: '25%' },
-  { title: '描述', key: 'description', sortable: true, width: '35%' },
-  { title: '状态', key: 'status', sortable: true, width: '10%' },
-  { title: '版本', key: 'version', sortable: true, width: '10%' },
-  { title: '创建时间', key: 'created_at', sortable: true, width: '10%' },
-  { title: '操作', key: 'actions', sortable: false, width: '10%' }
+// 表格列定义
+const columns = [
+  {
+    title: '应用名称',
+    dataIndex: 'name',
+    key: 'name',
+    width: 200
+  },
+  {
+    title: '应用描述',
+    dataIndex: 'description',
+    key: 'description',
+    width: 300
+  },
+  {
+    title: '应用状态',
+    dataIndex: 'status',
+    key: 'status',
+    width: 120
+  },
+  {
+    title: '创建时间',
+    dataIndex: 'created_at',
+    key: 'created_at',
+    width: 180
+  },
+  {
+    title: '操作',
+    key: 'actions',
+    width: 120,
+    fixed: 'right'
+  }
 ]
 
-// 表单引用
-const formRef = ref()
+// 过滤后的应用列表
+const filteredApplications = computed(() => {
+  if (!search.value) return applications.value
+  
+  const searchLower = search.value.toLowerCase()
+  return applications.value.filter(app => 
+    app.name.toLowerCase().includes(searchLower) ||
+    app.description.toLowerCase().includes(searchLower)
+  )
+})
 
 // 格式化日期
 const formatDate = (dateString: string) => {
-  if (!dateString) return '-'
-  const date = new Date(dateString)
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-  })
+  return new Date(dateString).toLocaleString('zh-CN')
 }
 
 // 获取应用列表
 const fetchApplications = async () => {
   try {
     loading.value = true
-    console.log('开始获取应用列表...')
     const response = await applicationService.getAllApplications()
-    console.log('获取应用列表成功:', response)
     applications.value = response.applications
   } catch (error) {
     console.error('获取应用列表失败:', error)
-    if (error.response) {
-      console.error('错误响应:', error.response.data)
-      console.error('错误状态:', error.response.status)
-    }
   } finally {
     loading.value = false
   }
@@ -283,56 +312,50 @@ const fetchApplications = async () => {
 // 编辑应用
 const editApplication = (application: Application) => {
   editingApplication.value = application
-  form.id = application.id
   form.name = application.name
   form.description = application.description
-  form.status = application.status || 'active'
-  form.version = application.version || ''
+      form.status = 'active'
   showDialog.value = true
 }
 
 // 删除应用
-const deleteApplication = async (application: Application) => {
-  if (confirm(`确定要删除应用 "${application.name}" 吗？`)) {
-    try {
-      // 这里需要添加删除应用的API
-      console.log('删除应用:', application.id)
-      await fetchApplications()
-    } catch (error) {
-      console.error('删除应用失败:', error)
-    }
+const deleteApplication = (application: Application) => {
+  applicationToDelete.value = application
+  showDeleteDialog.value = true
+}
+
+// 确认删除
+const confirmDelete = async () => {
+  if (!applicationToDelete.value) return
+  
+  try {
+    deleting.value = true
+    await applicationService.deleteApplication(applicationToDelete.value.id)
+    await fetchApplications()
+    showDeleteDialog.value = false
+    applicationToDelete.value = null
+  } catch (error) {
+    console.error('删除应用失败:', error)
+  } finally {
+    deleting.value = false
   }
 }
 
 // 保存应用
-const saveApplication = async () => {
+const saveApplication = async (values: any) => {
   try {
-    const { valid } = await formRef.value.validate()
-    if (!valid) return
-    
     saving.value = true
     
-    const applicationData = {
-      id: form.id || undefined,
-      name: form.name,
-      description: form.description,
-      status: form.status,
-      version: form.version || undefined
+    if (editingApplication.value) {
+      // 更新应用
+      await applicationService.saveApplication(values)
+    } else {
+      // 创建应用
+      await applicationService.saveApplication(values)
     }
     
-    await applicationService.saveApplication(applicationData)
-    
-    // 重置表单
-    form.id = ''
-    form.name = ''
-    form.description = ''
-    form.status = 'active'
-    form.version = ''
-    editingApplication.value = null
-    showDialog.value = false
-    
-    // 刷新列表
     await fetchApplications()
+    closeDialog()
   } catch (error) {
     console.error('保存应用失败:', error)
   } finally {
@@ -340,24 +363,35 @@ const saveApplication = async () => {
   }
 }
 
+// 关闭对话框
+const closeDialog = () => {
+  showDialog.value = false
+  editingApplication.value = null
+  form.name = ''
+  form.description = ''
+  form.status = 'active'
+}
+
+// 初始化
 onMounted(() => {
   fetchApplications()
 })
 </script>
 
-<style scoped>
-@use '@/styles/theme.scss' as *;
+<style scoped lang="scss">
+@use '@/styles/theme' as *;
 
 .application-management {
-  height: 100%;
-  background-color: $bg-primary;
-  overflow-y: auto;
+  padding: 24px;
+  background: $bg-primary;
+  min-height: 100vh;
+}
+
+.page-header {
+  margin-bottom: 24px;
 }
 
 .header-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -366,32 +400,42 @@ onMounted(() => {
 .header-left {
   display: flex;
   align-items: center;
+  gap: 16px;
+}
+
+.header-icon {
+  font-size: 32px;
+  color: $primary-color;
+}
+
+.header-title {
+  margin-bottom: 4px !important;
+  color: $text-primary !important;
+}
+
+.header-subtitle {
+  color: $text-secondary;
+  font-size: 14px;
 }
 
 .create-btn {
-  box-shadow: $shadow-medium;
-  transition: all 0.3s ease;
-}
-
-.create-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: $shadow-heavy;
+  height: 40px;
+  padding: 0 24px;
 }
 
 .content-area {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .application-card {
-  @include card-style;
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .search-section {
-  padding: 1.5rem 2rem;
-  background-color: $bg-secondary;
-  border-bottom: 1px solid $border-light;
+  padding: 24px 24px 0;
 }
 
 .search-field {
@@ -399,68 +443,89 @@ onMounted(() => {
 }
 
 .table-section {
-  padding: 0;
+  padding: 0 24px 24px;
 }
 
 .application-table {
-  border-radius: 0;
-}
-
-.empty-state {
-  text-align: center;
-  padding: 4rem 2rem;
-  color: $text-secondary;
+  .ant-table-thead > tr > th {
+    background: #fafafa;
+    font-weight: 500;
+  }
 }
 
 .action-buttons {
   display: flex;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .action-btn {
-  transition: all 0.2s ease;
+  padding: 4px;
+  min-width: 32px;
+  height: 32px;
 }
 
-.action-btn:hover {
-  transform: scale(1.1);
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
 }
 
-.application-dialog {
-  border-radius: $border-radius-large;
+.empty-icon {
+  font-size: 48px;
+  color: #d9d9d9;
+  margin-bottom: 16px;
 }
 
-.dialog-header {
-  @include drawer-header;
+.empty-title {
+  margin-bottom: 8px !important;
+  color: $text-secondary !important;
 }
 
-.dialog-content {
-  padding: $spacing-xl;
+.empty-subtitle {
+  color: $text-secondary;
+  margin-bottom: 24px;
+  display: block;
 }
 
-.dialog-actions {
-  padding: $spacing-lg $spacing-xl;
-  background-color: $bg-secondary;
-  border-top: 1px solid $border-light;
+.empty-action {
+  height: 40px;
+  padding: 0 24px;
+}
+
+.delete-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  
+  .delete-icon {
+    font-size: 24px;
+    color: #ff4d4f;
+  }
+  
+  p {
+    margin: 0;
+    color: $text-primary;
+  }
 }
 
 /* 响应式设计 */
 @media (max-width: 768px) {
+  .application-management {
+    padding: 16px;
+  }
+  
   .header-content {
     flex-direction: column;
-    gap: 1rem;
-    text-align: center;
-  }
-  
-  .content-area {
-    padding: 0 1rem;
-  }
-  
-  .search-section {
-    padding: 1rem;
+    align-items: flex-start;
+    gap: 16px;
   }
   
   .search-field {
     max-width: 100%;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+    gap: 4px;
   }
 }
 </style> 

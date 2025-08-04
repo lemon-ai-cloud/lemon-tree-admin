@@ -1,49 +1,26 @@
-import { createApp } from 'vue'
+import { createApp, h } from 'vue'
 import { createPinia } from 'pinia'
 
-// Vuetify
-import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
-import * as components from 'vuetify/components'
-import * as directives from 'vuetify/directives'
-import '@mdi/font/css/materialdesignicons.css'
+// Ant Design Vue
+import Antd from 'ant-design-vue'
+import { ConfigProvider } from 'ant-design-vue'
+import 'ant-design-vue/dist/reset.css'
+
+// 主题配置
+import { theme } from './config/theme'
 
 import App from './App.vue'
 import router from './router'
 
-const vuetify = createVuetify({
-  components,
-  directives,
-  theme: {
-    defaultTheme: 'light',
-    themes: {
-      light: {
-        colors: {
-          primary: '#8BC34A',      // 柠檬绿
-          secondary: '#FFC107',    // 柠檬黄
-          accent: '#A5D6A7',       // 浅绿色
-          error: '#F44336',
-          warning: '#FF9800',
-          info: '#2196F3',
-          success: '#4CAF50',
-          surface: '#F1F8E9',      // 主背景色
-          background: '#F9FBE7',   // 次要背景色
-        }
-      }
-    }
-  },
-  defaults: {
-    VBtn: {
-      variant: 'elevated',
-      color: 'primary'
-    }
+// 使用 ConfigProvider 包装应用
+const app = createApp({
+  setup() {
+    return () => h(ConfigProvider, { theme }, () => h(App))
   }
 })
 
-const app = createApp(App)
-
 app.use(createPinia())
 app.use(router)
-app.use(vuetify)
+app.use(Antd)
 
 app.mount('#app')
