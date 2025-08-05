@@ -46,6 +46,11 @@ export class UserService {
     const response = await apiClient.post<{ user: SystemUser }>('/users/save', userData)
     return response.data
   }
+
+  // 删除用户
+  async deleteUser(id: string): Promise<void> {
+    await apiClient.delete(`/users/${id}`)
+  }
 }
 
 export default new UserService() 

@@ -1,10 +1,11 @@
 <template>
   <div class="agent-management">
-    <div class="page-header">
-      <div class="header-content">
-        <a-typography-title :level="2" class="page-title">
-          智能体管理
-        </a-typography-title>
+    <PageHeader
+      title="智能体管理"
+      subtitle="管理应用内的智能体配置"
+      :icon="RobotOutlined"
+    >
+      <template #actions>
         <a-button
           type="primary"
           @click="showDialog = true"
@@ -15,8 +16,8 @@
           </template>
           创建智能体
         </a-button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <div class="content-area">
       <a-card>
@@ -144,12 +145,14 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import PageHeader from '@/components/PageHeader.vue'
 import {
   PlusOutlined,
   SearchOutlined,
   EditOutlined,
   DeleteOutlined,
-  ExclamationCircleOutlined
+  ExclamationCircleOutlined,
+  RobotOutlined
 } from '@ant-design/icons-vue'
 
 // 状态
@@ -327,28 +330,10 @@ onMounted(() => {
   background: #FFFFFF;
 }
 
-.page-header {
-  margin-bottom: 24px;
-  background: #F5F5F5;
-  padding: 24px;
-  border-radius: 8px;
-  border: 1px solid #F0F0F0;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.page-title {
-  margin-bottom: 0 !important;
-  color: #333333 !important;
-}
-
 .create-btn {
-  height: 40px;
-  padding: 0 24px;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 14px;
 }
 
 .content-area {

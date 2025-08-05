@@ -27,6 +27,12 @@ export class ApplicationService {
     return response.data
   }
 
+  // 查询应用（动态查询）
+  async queryApplications(queryData: { name?: string; description?: string }): Promise<ApplicationListResponse> {
+    const response = await apiClient.post<{ applications: Application[] }>('/applications/query', queryData)
+    return response.data
+  }
+
   // 删除应用
   async deleteApplication(id: string): Promise<{ message: string }> {
     const response = await apiClient.delete<{ message: string }>(`/applications/${id}`)

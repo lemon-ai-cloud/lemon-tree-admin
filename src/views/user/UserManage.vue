@@ -1,19 +1,12 @@
 <template>
   <div class="user-management lemon-theme">
     <!-- 页面头部 -->
-    <div class="page-header">
-      <div class="header-content">
-        <div class="header-left">
-          <TeamOutlined class="header-icon" />
-          <div>
-            <a-typography-title :level="2" class="header-title">
-              用户管理
-            </a-typography-title>
-            <a-typography-text class="header-subtitle">
-              管理系统用户账号和权限
-            </a-typography-text>
-          </div>
-        </div>
+    <PageHeader
+      title="用户管理"
+      subtitle="管理系统用户账号和权限"
+      :icon="TeamOutlined"
+    >
+      <template #actions>
         <a-button
           type="primary"
           size="large"
@@ -25,8 +18,8 @@
           </template>
           创建用户
         </a-button>
-      </div>
-    </div>
+      </template>
+    </PageHeader>
 
     <!-- 主要内容区域 -->
     <div class="content-area">
@@ -234,9 +227,11 @@
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
+import { message } from 'ant-design-vue'
 import { useUserStore } from '@/stores/userStore.ts'
 import userService from '@/services/userService.ts'
 import type { SystemUser } from '@/dto/user.ts'
+import PageHeader from '@/components/PageHeader.vue'
 import {
   TeamOutlined,
   PlusOutlined,
@@ -374,12 +369,14 @@ const confirmDelete = async () => {
   
   try {
     deleting.value = true
-    // await userService.deleteUser(userToDelete.value.id)
+    await userService.deleteUser(userToDelete.value.id)
     await fetchUsers()
     showDeleteDialog.value = false
     userToDelete.value = null
+    message.success('用户删除成功')
   } catch (error) {
     console.error('删除用户失败:', error)
+    message.error('删除用户失败')
   } finally {
     deleting.value = false
   }
@@ -397,15 +394,18 @@ const saveUser = async (values: any) => {
         ...values,
         password: values.password || undefined
       })
+      message.success('用户更新成功')
     } else {
       // 创建用户
       await userService.saveUser(values)
+      message.success('用户创建成功')
     }
     
     await fetchUsers()
     closeDrawer()
   } catch (error) {
     console.error('保存用户失败:', error)
+    message.error('保存用户失败')
   } finally {
     saving.value = false
   }
@@ -436,44 +436,10 @@ onMounted(() => {
   min-height: 100vh;
 }
 
-.page-header {
-  margin-bottom: 24px;
-  background: #F5F5F5;
-  padding: 24px;
-  border-radius: 8px;
-  border: 1px solid #F0F0F0;
-}
-
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.header-icon {
-  font-size: 32px;
-  color: #5ab067;
-}
-
-.header-title {
-  margin-bottom: 4px !important;
-  color: #333333 !important;
-}
-
-.header-subtitle {
-  color: #666666;
-  font-size: 14px;
-}
-
 .create-btn {
-  height: 40px;
-  padding: 0 24px;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 14px;
 }
 
 .content-area {
