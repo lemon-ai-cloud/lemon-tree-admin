@@ -31,6 +31,11 @@ const router = createRouter({
                     name: 'applications',
                     component: () => import('@/views/application/ApplicationManage.vue')
                 },
+                {
+                    path: '/system/llm-provider-defines',
+                    name: 'llm-provider-defines',
+                    component: () => import('@/views/system/LlmProviderDefineManage.vue')
+                },
 
                 // 应用相关路由
                 {

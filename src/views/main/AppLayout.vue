@@ -87,6 +87,12 @@
                   </template>
                   用户管理
                 </a-menu-item>
+                <a-menu-item @click="$router.push('/system/llm-provider-defines')">
+                  <template #icon>
+                    <ApiOutlined />
+                  </template>
+                  大模型提供商定义管理
+                </a-menu-item>
               </a-menu>
             </template>
           </a-dropdown>
@@ -181,7 +187,8 @@ import {
   MenuOutlined,
   RobotOutlined,
   MessageOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  ApiOutlined
 } from '@ant-design/icons-vue'
 
 const router = useRouter()
