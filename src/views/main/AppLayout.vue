@@ -190,12 +190,14 @@
       :confirm-loading="creatingApp"
       :ok-text="'创建'"
       :cancel-text="'取消'"
+      width="500px"
     >
       <a-form
         ref="createAppForm"
         :model="newApp"
         :rules="rules"
         layout="vertical"
+        @finish="createApp"
       >
         <a-form-item name="name" label="应用名称">
           <a-input
@@ -352,14 +354,18 @@ onMounted(async () => {
 
 .lemon-theme {
   min-height: 100vh;
+  background: #FFFFFF;
 }
 
 .main-navbar {
-  background: $gradient-primary !important;
+  background: #FFFFFF !important;
   padding: 0;
   height: 64px;
   line-height: 64px;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid #F0F0F0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 1000;
 }
 
 .header-content {
@@ -383,7 +389,7 @@ onMounted(async () => {
 .app-select-btn,
 .system-btn,
 .user-btn {
-  color: white !important;
+  color: #333333 !important;
   border: none !important;
   height: 40px;
   padding: 0 12px;
@@ -392,8 +398,8 @@ onMounted(async () => {
 .app-select-btn:hover,
 .system-btn:hover,
 .user-btn:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
-  color: white !important;
+  background: #F8F8F8 !important;
+  color: #333333 !important;
 }
 
 .app-menu {
@@ -403,12 +409,12 @@ onMounted(async () => {
 .app-menu-item {
   .app-name {
     font-weight: 500;
-    color: $text-primary;
+    color: #333333;
   }
   
   .app-description {
     font-size: 12px;
-    color: $text-secondary;
+    color: #666666;
     margin-top: 2px;
   }
 }
@@ -416,12 +422,12 @@ onMounted(async () => {
 .user-info {
   .user-name {
     font-weight: 500;
-    color: $text-primary;
+    color: #333333;
   }
   
   .user-subtitle {
     font-size: 12px;
-    color: $text-secondary;
+    color: #666666;
     margin-top: 2px;
   }
 }
@@ -429,6 +435,7 @@ onMounted(async () => {
 .main-content {
   height: calc(100vh - 64px);
   overflow: hidden;
+  background: #FFFFFF;
 }
 
 .content-wrapper {
@@ -443,15 +450,18 @@ onMounted(async () => {
 }
 
 .secondary-nav {
-  border-right: 1px solid $border-light;
-  background: $bg-secondary;
+  border-right: 1px solid #F0F0F0;
+  background: #FFFFFF;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.12), 1px 0 3px rgba(0, 0, 0, 0.08);
+  position: relative;
+  z-index: 999;
 }
 
 .secondary-nav-header {
-  background: $gradient-soft;
-  color: $text-primary;
+  background: #FFFFFF;
+  color: #333333;
   padding: 16px 24px;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid #F0F0F0;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -466,17 +476,17 @@ onMounted(async () => {
 
 .nav-icon {
   font-size: 18px;
-  color: $text-primary;
+  color: #5ab067;
 }
 
 .nav-title {
   font-size: 16px;
   font-weight: 500;
-  color: $text-primary;
+  color: #333333;
 }
 
 .nav-toggle-btn {
-  color: $text-primary !important;
+  color: #666666 !important;
   border: none !important;
 }
 
@@ -486,7 +496,7 @@ onMounted(async () => {
 }
 
 .app-content {
-  background-color: $bg-primary;
+  background: #FFFFFF;
   flex: 1;
   overflow: hidden;
   display: flex;
@@ -494,9 +504,9 @@ onMounted(async () => {
 }
 
 .content-header {
-  background: $bg-secondary;
+  background: #FFFFFF;
   padding: 16px 24px;
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid #F0F0F0;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -505,25 +515,28 @@ onMounted(async () => {
 }
 
 .content-menu-btn {
-  color: $text-primary !important;
+  color: #666666 !important;
   border: none !important;
 }
 
 .content-title {
   font-size: 18px;
   font-weight: 500;
-  color: $text-primary;
+  color: #333333;
 }
 
 .content-body {
   flex: 1;
   overflow-y: auto;
   padding: 0;
+  background: #FFFFFF;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .standalone-content {
   height: 100%;
   overflow-y: auto;
+  background: #FFFFFF;
 }
 
 .select-app-prompt {
@@ -543,12 +556,35 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
   height: 120px;
-  background: #f5f5f5;
+  background: #F8F8F8;
   
   .anticon {
     font-size: 64px;
-    color: #d9d9d9;
+    color: #CCCCCC;
   }
+}
+
+/* 自定义滚动条样式 */
+.content-body::-webkit-scrollbar,
+.standalone-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.content-body::-webkit-scrollbar-track,
+.standalone-content::-webkit-scrollbar-track {
+  background: #F5F5F5;
+  border-radius: 4px;
+}
+
+.content-body::-webkit-scrollbar-thumb,
+.standalone-content::-webkit-scrollbar-thumb {
+  background: #CCCCCC;
+  border-radius: 4px;
+}
+
+.content-body::-webkit-scrollbar-thumb:hover,
+.standalone-content::-webkit-scrollbar-thumb:hover {
+  background: #BBBBBB;
 }
 
 /* 响应式设计 */

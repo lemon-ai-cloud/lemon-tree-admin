@@ -292,10 +292,15 @@ onMounted(() => {
 <style scoped lang="scss">
 .conversation-management {
   padding: 24px;
+  background: #FFFFFF;
 }
 
 .page-header {
   margin-bottom: 24px;
+  background: #F5F5F5;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #F0F0F0;
 }
 
 .header-content {
@@ -306,7 +311,7 @@ onMounted(() => {
 
 .page-title {
   margin-bottom: 0 !important;
-  color: #333 !important;
+  color: #333333 !important;
 }
 
 .create-btn {
@@ -315,9 +320,10 @@ onMounted(() => {
 }
 
 .content-area {
-  background: white;
+  background: #FFFFFF;
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #F0F0F0;
 }
 
 .action-buttons {
@@ -354,22 +360,22 @@ onMounted(() => {
 }
 
 .message-avatar {
-  background: #f0f0f0;
+  background: #F0F0F0;
 }
 
 .message-role {
   font-weight: 500;
-  color: #333;
+  color: #333333;
 }
 
 .message-time {
   font-size: 12px;
-  color: #999;
+  color: #999999;
   margin-left: auto;
 }
 
 .message-content {
-  color: #333;
+  color: #333333;
   line-height: 1.5;
 }
 
@@ -385,7 +391,7 @@ onMounted(() => {
   
   p {
     margin: 0;
-    color: #333;
+    color: #333333;
   }
 }
 

@@ -145,14 +145,14 @@ const handleLogin = async (values: any) => {
 }
 
 .login-title {
-  color: #8BC34A !important;
+  color: #5ab067 !important;
   margin-bottom: 8px !important;
   font-weight: 300 !important;
 }
 
 .login-icon {
   font-size: 48px;
-  color: #8BC34A;
+  color: #5ab067;
   margin-right: 12px;
 }
 
@@ -168,13 +168,13 @@ const handleLogin = async (values: any) => {
 .login-button {
   height: 48px;
   font-size: 16px;
-  background: #8BC34A;
-  border-color: #8BC34A;
+  background: #5ab067;
+  border-color: #5ab067;
 }
 
 .login-button:hover {
-  background: #7CB342;
-  border-color: #7CB342;
+  background: #4a9a57;
+  border-color: #4a9a57;
 }
 
 .login-error {

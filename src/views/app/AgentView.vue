@@ -324,10 +324,15 @@ onMounted(() => {
 <style scoped lang="scss">
 .agent-management {
   padding: 24px;
+  background: #FFFFFF;
 }
 
 .page-header {
   margin-bottom: 24px;
+  background: #F5F5F5;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #F0F0F0;
 }
 
 .header-content {
@@ -338,7 +343,7 @@ onMounted(() => {
 
 .page-title {
   margin-bottom: 0 !important;
-  color: #333 !important;
+  color: #333333 !important;
 }
 
 .create-btn {
@@ -347,9 +352,10 @@ onMounted(() => {
 }
 
 .content-area {
-  background: white;
+  background: #FFFFFF;
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #F0F0F0;
 }
 
 .action-buttons {
@@ -375,7 +381,7 @@ onMounted(() => {
   
   p {
     margin: 0;
-    color: #333;
+    color: #333333;
   }
 }
 

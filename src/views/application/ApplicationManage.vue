@@ -383,12 +383,16 @@ onMounted(() => {
 
 .application-management {
   padding: 24px;
-  background: $bg-primary;
+  background: #FFFFFF;
   min-height: 100vh;
 }
 
 .page-header {
   margin-bottom: 24px;
+  background: #F5F5F5;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #F0F0F0;
 }
 
 .header-content {
@@ -405,16 +409,16 @@ onMounted(() => {
 
 .header-icon {
   font-size: 32px;
-  color: $primary-color;
+  color: #5ab067;
 }
 
 .header-title {
   margin-bottom: 4px !important;
-  color: $text-primary !important;
+  color: #333333 !important;
 }
 
 .header-subtitle {
-  color: $text-secondary;
+  color: #666666;
   font-size: 14px;
 }
 
@@ -424,14 +428,15 @@ onMounted(() => {
 }
 
 .content-area {
-  background: white;
+  background: #FFFFFF;
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #F0F0F0;
 }
 
 .application-card {
   border: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
 .search-section {
@@ -448,7 +453,7 @@ onMounted(() => {
 
 .application-table {
   .ant-table-thead > tr > th {
-    background: #fafafa;
+    background: #FAFAFA;
     font-weight: 500;
   }
 }
@@ -471,17 +476,17 @@ onMounted(() => {
 
 .empty-icon {
   font-size: 48px;
-  color: #d9d9d9;
+  color: #CCCCCC;
   margin-bottom: 16px;
 }
 
 .empty-title {
   margin-bottom: 8px !important;
-  color: $text-secondary !important;
+  color: #666666 !important;
 }
 
 .empty-subtitle {
-  color: $text-secondary;
+  color: #666666;
   margin-bottom: 24px;
   display: block;
 }
@@ -503,7 +508,7 @@ onMounted(() => {
   
   p {
     margin: 0;
-    color: $text-primary;
+    color: #333333;
   }
 }
 

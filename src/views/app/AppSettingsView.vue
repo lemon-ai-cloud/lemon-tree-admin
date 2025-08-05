@@ -262,15 +262,20 @@ onMounted(() => {
 <style scoped lang="scss">
 .app-settings {
   padding: 24px;
+  background: #FFFFFF;
 }
 
 .page-header {
   margin-bottom: 24px;
+  background: #F5F5F5;
+  padding: 24px;
+  border-radius: 8px;
+  border: 1px solid #F0F0F0;
 }
 
 .page-title {
   margin-bottom: 0 !important;
-  color: #333 !important;
+  color: #333333 !important;
 }
 
 .settings-content {
@@ -278,7 +283,7 @@ onMounted(() => {
     height: 100%;
     
     .ant-card-head {
-      border-bottom: 1px solid #f0f0f0;
+      border-bottom: 1px solid #F0F0F0;
     }
     
     .ant-card-body {

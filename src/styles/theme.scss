@@ -1,20 +1,20 @@
 // Lemon Tree 主题色彩系统
 // 黄绿色主题，体现柠檬树的特色
 
-// 主色调 - 柠檬绿
-$primary-color: #8BC34A;        // 主绿色
-$primary-light: #A5D6A7;        // 浅绿色
-$primary-dark: #689F38;         // 深绿色
+// 主色调 - 新的主题色
+$primary-color: #5ab067;        // 主绿色
+$primary-light: #6bb077;        // 浅绿色
+$primary-dark: #4a9a57;         // 深绿色
 
 // 辅助色 - 柠檬黄
 $secondary-color: #FFC107;      // 柠檬黄
 $secondary-light: #FFD54F;      // 浅黄色
 $secondary-dark: #FF8F00;       // 深黄色
 
-// 渐变色彩
-$gradient-primary: linear-gradient(135deg, #8BC34A 0%, #94c35e 100%);
-$gradient-light: linear-gradient(135deg, #A5D6A7 0%, #FFD54F 100%);
-$gradient-soft: linear-gradient(135deg, #E8F5E8 0%, #FFF8E1 100%);
+// 渐变色彩 - 淡淡的灰色渐变
+$gradient-primary: linear-gradient(135deg, #F5F5F5 0%, #F0F0F0 100%);
+$gradient-light: linear-gradient(135deg, #F8F8F8 0%, #F5F5F5 100%);
+$gradient-soft: linear-gradient(135deg, #FAFAFA 0%, #F8F8F8 100%);
 
 // 文字颜色
 $text-primary: #2E7D32;         // 深绿色文字
@@ -64,7 +64,7 @@ $font-size-xxl: 24px;
 @mixin page-header {
   background: $gradient-soft;
   color: $text-primary;
-  padding: $spacing-xl 0;
+  padding: $spacing-xl 20px;
   margin-bottom: $spacing-xl;
   border-bottom: 1px solid $border-light;
 }
