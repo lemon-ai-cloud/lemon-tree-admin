@@ -100,6 +100,12 @@
                   </template>
                   编辑
                 </a-button>
+                <a-button type="link" size="small" @click="handleManageModels(record)">
+                  <template #icon>
+                    <ApiOutlined/>
+                  </template>
+                  模型管理
+                </a-button>
                 <a-popconfirm
                     title="确定要删除这个提供商吗？"
                     @confirm="handleDelete(record.id)"
@@ -207,12 +213,32 @@
       </a-form>
     </a-modal>
 
+    <!-- 模型管理对话框 -->
+    <a-modal
+        v-model:open="modelModalVisible"
+        title="模型管理"
+        width="800px"
+        :style="{ top: '20%' }"
+        :body-style="{ 
+          maxHeight: '60vh', 
+          overflow: 'auto',
+          padding: '16px'
+        }"
+        @cancel="handleModelModalCancel"
+        :footer="null"
+    >
+      <ApplicationLlmList 
+          v-if="modelModalVisible && selectedProvider"
+          :provider-id="selectedProvider.id"
+          :application-id="selectedProvider.application_id"
+      />
+    </a-modal>
 
   </div>
 </template>
 
 <script setup lang="ts">
-import {ref, reactive, onMounted, computed, watch} from 'vue'
+import {ref, reactive, onMounted, computed, watch, h} from 'vue'
 import {message} from 'ant-design-vue'
 import {
   PlusOutlined,
@@ -226,6 +252,7 @@ import type {LlmProvider, SaveLlmProviderRequest, QueryLlmProviderRequest} from 
 import llmProviderService from '@/services/llmProviderService'
 import {useApplicationStore} from '@/stores/applicationStore'
 import ResourceUtils from '@/utils/resource-utils'
+import ApplicationLlmList from './ApplicationLlmList.vue'
 
 // 应用状态管理
 const applicationStore = useApplicationStore()
@@ -236,6 +263,12 @@ const submitting = ref(false)
 const modalVisible = ref(false)
 const isEdit = ref(false)
 const fileList = ref<any[]>([])
+
+// 模型管理相关状态
+const modelModalVisible = ref(false)
+const selectedProvider = ref<LlmProvider | null>(null)
+
+
 
 // 表单数据
 const formData = reactive<SaveLlmProviderRequest>({
@@ -299,13 +332,6 @@ const columns = [
     width: 200
   },
   {
-    title: '创建时间',
-    dataIndex: 'created_at',
-    key: 'created_at',
-    width: 180,
-    customRender: ({text}: { text: string }) => formatDate(text)
-  },
-  {
     title: '操作',
     key: 'action',
     width: 200,
@@ -317,6 +343,10 @@ const columns = [
 // 计算属性
 const modalTitle = computed(() => isEdit.value ? '编辑提供商' : '新增提供商')
 const llmProviders = ref<LlmProvider[]>([])
+
+
+
+
 
 // 表单验证规则
 const formRules = {
@@ -451,6 +481,18 @@ const handleDelete = async (id: string) => {
     console.error('删除失败:', error)
     message.error('删除失败')
   }
+}
+
+// 模型管理处理
+const handleManageModels = (record: LlmProvider) => {
+  selectedProvider.value = record
+  modelModalVisible.value = true
+}
+
+// 模型管理对话框取消
+const handleModelModalCancel = () => {
+  modelModalVisible.value = false
+  selectedProvider.value = null
 }
 
 // 对话框确认
@@ -697,4 +739,6 @@ const formatDate = (dateStr: string) => {
     font-size: 12px;
   }
 }
+
+
 </style>
