@@ -23,10 +23,19 @@
                       v-for="app in applicationStore.applications"
                       :key="app.id"
                       @click="selectApp(app)"
-                      :class="{ 'ant-menu-item-selected': applicationStore.selectedApplication?.id === app.id }"
+                      :class="{ 
+                        'ant-menu-item-selected': applicationStore.selectedApplication?.id === app.id,
+                        'app-menu-item-selected': applicationStore.selectedApplication?.id === app.id 
+                      }"
                     >
                       <div class="app-menu-item">
-                        <div class="app-name">{{ app.name }}</div>
+                        <div class="app-name">
+                          {{ app.name }}
+                          <CheckOutlined 
+                            v-if="applicationStore.selectedApplication?.id === app.id" 
+                            class="selected-icon" 
+                          />
+                        </div>
                         <div class="app-description">{{ app.description }}</div>
                       </div>
                     </a-menu-item>
@@ -59,6 +68,35 @@
                 </template>
                 {{ item.title }}
               </a-menu-item>
+              
+              <!-- 应用设置二级菜单 -->
+              <a-sub-menu key="settings" class="settings-submenu">
+                <template #icon>
+                  <SettingOutlined />
+                </template>
+                <template #title>
+                  应用设置
+                  <DownOutlined class="submenu-arrow" />
+                </template>
+                <a-menu-item key="model-management" @click="$router.push('/app-settings/llm-manage')">
+                  <template #icon>
+                    <ApiOutlined />
+                  </template>
+                  模型管理
+                </a-menu-item>
+                <a-menu-item key="mcp-tools" @click="$router.push('/app-settings/mcp-tools-manage')">
+                  <template #icon>
+                    <ToolOutlined />
+                  </template>
+                  MCP工具管理
+                </a-menu-item>
+                <a-menu-item key="internal-tools" @click="$router.push('/app-settings/internal-tools-manage')">
+                  <template #icon>
+                    <AppstoreOutlined />
+                  </template>
+                  内部工具管理
+                </a-menu-item>
+              </a-sub-menu>
             </a-menu>
           </div>
         </div>
@@ -68,30 +106,30 @@
           <a-dropdown placement="bottomRight">
             <a-button type="text" class="system-btn">
               <template #icon>
-                <UserOutlined />
+                <SettingOutlined/>
               </template>
               系统管理
               <DownOutlined />
             </a-button>
             <template #overlay>
               <a-menu class="system-menu">
-                <a-menu-item @click="$router.push('/applications')">
+                <a-menu-item @click="$router.push('/system-settings/applications')">
                   <template #icon>
                     <AppstoreOutlined />
                   </template>
                   应用管理
                 </a-menu-item>
-                <a-menu-item @click="$router.push('/users')">
+                <a-menu-item @click="$router.push('/system-settings/users')">
                   <template #icon>
                     <TeamOutlined />
                   </template>
-                  用户管理
+                  系统用户管理
                 </a-menu-item>
-                <a-menu-item @click="$router.push('/system/llm-provider-defines')">
+                <a-menu-item @click="$router.push('/system-settings/llm-providers')">
                   <template #icon>
                     <ApiOutlined />
                   </template>
-                  大模型提供商定义管理
+                  大模型提供商管理
                 </a-menu-item>
               </a-menu>
             </template>
@@ -188,7 +226,9 @@ import {
   RobotOutlined,
   MessageOutlined,
   LogoutOutlined,
-  ApiOutlined
+  ApiOutlined,
+  CheckOutlined,
+  ToolOutlined
 } from '@ant-design/icons-vue'
 
 const router = useRouter()
@@ -221,18 +261,13 @@ const appMenuItems = computed(() => [
   {
     title: '智能体管理',
     icon: RobotOutlined,
-    to: '/app/agents'
+    to: '/app-agents'
   },
   {
     title: '对话管理',
     icon: MessageOutlined,
-    to: '/app/conversations'
+    to: '/app-conversations'
   },
-  {
-    title: '应用设置',
-    icon: SettingOutlined,
-    to: '/app/settings'
-  }
 ])
 
 // 选择应用
@@ -372,25 +407,31 @@ onMounted(async () => {
 }
 
 .system-menu {
+  background: #FFFFFF;
+  border: 1px solid #F0F0F0;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 160px;
   padding: 8px 0;
 }
 
 .system-menu .ant-menu-item {
-  height: 48px;
-  line-height: 48px;
-  padding: 0 20px;
+  height: 40px;
+  line-height: 40px;
+  padding: 0 16px;
   font-size: 14px;
   margin: 0;
-}
-
-.system-menu .ant-menu-item:hover {
-  background-color: #F5F5F5;
-}
-
-.system-menu .ant-menu-item .anticon {
-  font-size: 16px;
-  margin-right: 12px;
+  border-radius: 0;
+  
+  &:hover {
+    background-color: #F5F5F5;
+    color: #5ab067;
+  }
+  
+  .anticon {
+    font-size: 14px;
+    margin-right: 8px;
+  }
 }
 
 .user-menu {
@@ -424,12 +465,45 @@ onMounted(async () => {
   .app-name {
     font-weight: 500;
     color: #333333;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+    .selected-icon {
+      color: #5ab067;
+      font-size: 14px;
+      margin-left: 8px;
+    }
   }
   
   .app-description {
     font-size: 12px;
     color: #666666;
     margin-top: 2px;
+  }
+}
+
+// 选中状态的应用菜单项样式
+.app-menu-item-selected {
+  background-color: #f6ffed !important;
+  border-right: 3px solid #5ab067 !important;
+  
+  .app-name {
+    color: #5ab067 !important;
+    font-weight: 600 !important;
+  }
+  
+  .app-description {
+    color: #52c41a !important;
+  }
+}
+
+// 应用菜单项悬停效果
+.ant-menu-item:hover {
+  background-color: #f0f9ff !important;
+  
+  &.app-menu-item-selected {
+    background-color: #f6ffed !important;
   }
 }
 
@@ -526,5 +600,59 @@ onMounted(async () => {
     z-index: 1000;
     height: 100vh;
   }
+}
+
+/* 应用设置二级菜单样式 */
+.settings-submenu {
+  .ant-menu-submenu-title {
+    color: #333333;
+    border-bottom: 2px solid transparent;
+    margin: 0 8px;
+    padding: 0 16px;
+    white-space: nowrap;
+    
+    &:hover {
+      color: #5ab067;
+      border-bottom-color: #5ab067;
+    }
+  }
+  
+  &.ant-menu-submenu-open .ant-menu-submenu-title {
+    color: #5ab067;
+    border-bottom-color: #5ab067;
+  }
+}
+
+.settings-submenu .ant-menu-sub {
+  background: #FFFFFF;
+  border: 1px solid #F0F0F0;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 160px;
+  
+  .ant-menu-item {
+    height: 40px;
+    line-height: 40px;
+    padding: 0 16px;
+    margin: 0;
+    border-radius: 0;
+    
+    &:hover {
+      background-color: #F5F5F5;
+      color: #5ab067;
+    }
+    
+    .anticon {
+      margin-right: 8px;
+      font-size: 14px;
+    }
+  }
+}
+
+/* 二级菜单箭头样式 */
+.submenu-arrow {
+  margin-left: 4px;
+  font-size: 12px;
+  color: #666666;
 }
 </style> 

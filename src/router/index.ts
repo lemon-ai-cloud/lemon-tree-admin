@@ -22,32 +22,45 @@ const router = createRouter({
                     component: () => import('@/views/app/AgentView.vue')
                 },
                 {
-                    path: '/users',
+                    path: '/system-settings/users',
                     name: 'users',
-                    component: () => import('@/views/user/UserManage.vue')
+                    component: () => import('@/views/system-settings/UserManage.vue')
                 },
                 {
-                    path: '/applications',
+                    path: '/system-settings/applications',
                     name: 'applications',
-                    component: () => import('@/views/application/ApplicationManage.vue')
-                },
-                {
-                    path: '/system/llm-provider-defines',
-                    name: 'llm-provider-defines',
-                    component: () => import('@/views/system/LlmProviderDefineManage.vue')
+                    component: () => import('@/views/system-settings/ApplicationManage.vue')
                 },
 
                 // 应用相关路由
                 {
-                    path: '/app/agents',
+                    path: '/app-agents',
                     name: 'app-agents',
                     component: () => import('@/views/app/AgentView.vue'),
                     meta: {requiresApp: true}
                 },
                 {
-                    path: '/app/conversations',
+                    path: '/app-conversations',
                     name: 'app-conversations',
                     component: () => import('@/views/app/ConversationView.vue'),
+                    meta: {requiresApp: true}
+                },
+                {
+                    path: '/app-settings/llm-manage',
+                    name: 'app-llm-manage',
+                    component: () => import('@/views/app-settings/LlmManage.vue'),
+                    meta: {requiresApp: true}
+                },
+                {
+                    path: '/app-settings/mcp-tools-manage',
+                    name: 'app-mcp-tools-manage',
+                    component: () => import('@/views/app-settings/McpToolsManage.vue'),
+                    meta: {requiresApp: true}
+                },
+                {
+                    path: '/app-settings/internal-tools-manage',
+                    name: 'app-internal-tools-manage',
+                    component: () => import('@/views/app-settings/InternalToolsManage.vue'),
                     meta: {requiresApp: true}
                 }
             ]

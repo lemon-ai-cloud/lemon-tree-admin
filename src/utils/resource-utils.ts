@@ -1,6 +1,7 @@
 export default class ResourceUtils {
     public static getSystemPublicResourceBaseUrl() {
-        return 'http://localhost:12833/api/v1/resources/download?path='
+        const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:12833/api/v1'
+        return `${apiBaseUrl}/resources/download?path=`
     }
 
     public static getSystemPublicResourceRealUrl(resource: string) {
