@@ -217,12 +217,11 @@
     <a-modal
         v-model:open="modelModalVisible"
         title="模型管理"
-        width="800px"
+        width="880px"
         :style="{ top: '20%' }"
         :body-style="{ 
           maxHeight: '60vh', 
           overflow: 'auto',
-          padding: '16px'
         }"
         @cancel="handleModelModalCancel"
         :footer="null"
@@ -310,7 +309,6 @@ const columns = [
     title: '提供商名称',
     dataIndex: 'name',
     key: 'name',
-    width: 150
   },
   {
     title: '类型',
@@ -334,7 +332,7 @@ const columns = [
   {
     title: '操作',
     key: 'action',
-    width: 200,
+    width: 300,
     align: 'center',
     fixed: 'right'
   }

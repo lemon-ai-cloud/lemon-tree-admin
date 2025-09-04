@@ -39,6 +39,14 @@ class ApplicationLlmService {
     const response = await apiClient.get(`/application-llms/application/${applicationId}`)
     return response.data
   }
+
+  /**
+   * 获取并保存模型列表
+   */
+  async fetchAndSaveModels(providerId: string): Promise<{ message: string }> {
+    const response = await apiClient.post(`/application-llms/provider/${providerId}/fetch`)
+    return response.data
+  }
 }
 
 export default new ApplicationLlmService()
