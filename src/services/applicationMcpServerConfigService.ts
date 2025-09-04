@@ -2,7 +2,8 @@ import apiClient from './api'
 import type { 
   ApplicationMcpServerConfigDto, 
   SaveApplicationMcpServerConfigRequest, 
-  ApplicationMcpServerConfigListResponse 
+  ApplicationMcpServerConfigListResponse,
+  McpToolsResponse
 } from '@/dto/applicationMcpServerConfig'
 
 class ApplicationMcpServerConfigService {

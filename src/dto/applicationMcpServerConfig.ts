@@ -41,14 +41,18 @@ export interface SingleApplicationMcpServerConfigResponse {
 }
 
 // MCP工具信息
-export interface McpTool {
+export interface ApplicationMcpServerToolDto {
+  id: string
+  application_id: string
+  application_mcp_server_config_id: string
   name: string
+  title: string
   description: string
-  input_schema: Record<string, any>
-  parameters: Record<string, any>
+  created_at: string
+  updated_at: string
 }
 
 // MCP工具列表响应
 export interface McpToolsResponse {
-  tools: McpTool[]
+  tools: ApplicationMcpServerToolDto[]
 }

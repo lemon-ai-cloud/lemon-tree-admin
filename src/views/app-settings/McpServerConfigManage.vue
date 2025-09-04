@@ -234,24 +234,19 @@
         该 MCP 服务器暂无可用工具
       </div>
       <div v-else class="tools-list">
-        <div v-for="tool in tools" :key="tool.name" class="tool-item">
+        <div v-for="tool in tools" :key="tool.id" class="tool-item">
           <div class="tool-header">
             <h4 class="tool-name">{{ tool.name }}</h4>
             <a-tag color="blue" size="small">工具</a-tag>
           </div>
-          <div class="tool-description">{{ tool.description }}</div>
-          <div class="tool-parameters" v-if="tool.parameters && Object.keys(tool.parameters).length > 0">
-            <h5>参数：</h5>
-            <div class="parameter-list">
-              <div v-for="(type, name) in tool.parameters" :key="name" class="parameter-item">
-                <span class="parameter-name">{{ name }}:</span>
-                <span class="parameter-type">{{ type }}</span>
-              </div>
-            </div>
+          <div class="tool-title" v-if="tool.title && tool.title !== tool.name">
+            <strong>标题：</strong>{{ tool.title }}
           </div>
-          <div class="tool-schema" v-if="tool.input_schema">
-            <h5>输入模式：</h5>
-            <pre class="schema-json">{{ JSON.stringify(tool.input_schema, null, 2) }}</pre>
+          <div class="tool-description">{{ tool.description }}</div>
+          <div class="tool-meta">
+            <div class="meta-item">
+              <strong>工具ID：</strong>{{ tool.id }}
+            </div>
           </div>
         </div>
       </div>
@@ -270,7 +265,7 @@ import {
   DeleteOutlined,
   ToolOutlined
 } from '@ant-design/icons-vue'
-import type {ApplicationMcpServerConfigDto, SaveApplicationMcpServerConfigRequest, McpTool} from '@/dto/applicationMcpServerConfig'
+import type {ApplicationMcpServerConfigDto, SaveApplicationMcpServerConfigRequest, ApplicationMcpServerToolDto} from '@/dto/applicationMcpServerConfig'
 import applicationMcpServerConfigService from '@/services/applicationMcpServerConfigService'
 import {useApplicationStore} from '@/stores/applicationStore'
 
@@ -284,7 +279,7 @@ const modalVisible = ref(false)
 const isEdit = ref(false)
 const toolsModalVisible = ref(false)
 const toolsLoading = ref(false)
-const tools = ref<McpTool[]>([])
+const tools = ref<ApplicationMcpServerToolDto[]>([])
 
 // 表单数据
 const formData = reactive<SaveApplicationMcpServerConfigRequest>({
@@ -676,54 +671,30 @@ const getConnectTypeLabel = (type: string) => {
       }
     }
 
+    .tool-title {
+      color: #1890ff;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
     .tool-description {
       color: #595959;
       margin-bottom: 16px;
       line-height: 1.5;
     }
 
-    .tool-parameters {
-      margin-bottom: 16px;
+    .tool-meta {
+      border-top: 1px solid #f0f0f0;
+      padding-top: 12px;
 
-      h5 {
-        margin: 0 0 8px 0;
-        color: #262626;
-        font-size: 14px;
-      }
-
-      .parameter-list {
-        .parameter-item {
-          display: flex;
-          margin-bottom: 4px;
-
-          .parameter-name {
-            font-weight: 500;
-            margin-right: 8px;
-            min-width: 80px;
-          }
-
-          .parameter-type {
-            color: #595959;
-          }
-        }
-      }
-    }
-
-    .tool-schema {
-      h5 {
-        margin: 0 0 8px 0;
-        color: #262626;
-        font-size: 14px;
-      }
-
-      .schema-json {
-        background: #f5f5f5;
-        padding: 12px;
-        border-radius: 4px;
+      .meta-item {
+        margin-bottom: 6px;
         font-size: 12px;
-        color: #595959;
-        overflow-x: auto;
-        margin: 0;
+        color: #8c8c8c;
+
+        strong {
+          color: #595959;
+        }
       }
     }
   }
