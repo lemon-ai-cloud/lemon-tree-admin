@@ -2,8 +2,8 @@
   <div class="user-management lemon-theme">
     <!-- 页面头部 -->
     <PageHeader
-      title="系统用户管理"
-      subtitle="管理系统用户账号和权限"
+      :title="$v_translate('page_title')"
+      :subtitle="$v_translate('page_subtitle')"
       :icon="TeamOutlined"
     >
       <template #actions>
@@ -16,7 +16,7 @@
           <template #icon>
             <PlusOutlined />
           </template>
-          创建用户
+          {{ $v_translate('create_user') }}
         </a-button>
       </template>
     </PageHeader>
@@ -28,7 +28,7 @@
         <div class="search-section">
           <a-input
             v-model:value="search"
-            placeholder="搜索用户姓名、账号或邮箱"
+            :placeholder="$v_translate('search_placeholder')"
             size="large"
             class="search-field"
             allow-clear
@@ -90,10 +90,10 @@
               <div class="empty-state">
                 <TeamOutlined class="empty-icon" />
                 <a-typography-title :level="4" class="empty-title">
-                  暂无用户数据
+                  {{ $v_translate('no_data') }}
                 </a-typography-title>
                 <a-typography-text class="empty-subtitle">
-                  点击"创建用户"按钮添加第一个用户
+                  {{ $v_translate('no_data_hint') }}
                 </a-typography-text>
                 <a-button
                   type="primary"
@@ -103,7 +103,7 @@
                   <template #icon>
                     <PlusOutlined />
                   </template>
-                  创建用户
+                  {{ $v_translate('create_user') }}
                 </a-button>
               </div>
             </template>
@@ -118,7 +118,7 @@
       placement="right"
       width="500"
       class="user-drawer"
-      :title="editingUser ? '编辑用户' : '创建用户'"
+      :title="editingUser ? $v_translate('edit_user') : $v_translate('create_user_title')"
       :footer="false"
     >
       <a-form
@@ -130,10 +130,10 @@
       >
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item name="name" label="用户姓名">
+            <a-form-item name="name" :label="$v_translate('user_name')">
               <a-input
                 v-model:value="form.name"
-                placeholder="请输入用户姓名"
+                :placeholder="$v_translate('enter_user_name')"
                 size="large"
               >
                 <template #prefix>
@@ -144,10 +144,10 @@
           </a-col>
 
           <a-col :span="12">
-            <a-form-item name="number" label="用户账号">
+            <a-form-item name="number" :label="$v_translate('user_account')">
               <a-input
                 v-model:value="form.number"
-                placeholder="请输入用户账号"
+                :placeholder="$v_translate('enter_user_account')"
                 size="large"
               >
                 <template #prefix>
@@ -158,10 +158,10 @@
           </a-col>
 
           <a-col :span="24">
-            <a-form-item name="email" label="用户邮箱">
+            <a-form-item name="email" :label="$v_translate('user_email')">
               <a-input
                 v-model:value="form.email"
-                placeholder="请输入用户邮箱"
+                :placeholder="$v_translate('enter_user_email')"
                 size="large"
               >
                 <template #prefix>
@@ -174,12 +174,12 @@
           <a-col :span="24">
             <a-form-item 
               name="password" 
-              label="密码"
+              :label="$v_translate('password')"
               :rules="editingUser ? [] : rules.password"
             >
               <a-input-password
                 v-model:value="form.password"
-                :placeholder="editingUser ? '留空则不修改密码' : '请输入密码'"
+                :placeholder="editingUser ? $v_translate('password_placeholder_edit') : $v_translate('enter_password')"
                 size="large"
               >
                 <template #prefix>
@@ -193,14 +193,14 @@
         <div class="drawer-actions">
           <a-space>
             <a-button @click="closeDrawer" :disabled="saving">
-              取消
+              {{ $v_translate('cancel') }}
             </a-button>
             <a-button
               type="primary"
               :loading="saving"
               html-type="submit"
             >
-              {{ editingUser ? '更新' : '创建' }}
+              {{ editingUser ? $v_translate('update') : $v_translate('create') }}
             </a-button>
           </a-space>
         </div>
@@ -210,16 +210,16 @@
     <!-- 删除确认对话框 -->
     <a-modal
       v-model:open="showDeleteDialog"
-      title="确认删除"
+      :title="$v_translate('confirm_delete')"
       @ok="confirmDelete"
       :confirm-loading="deleting"
-      ok-text="删除"
-      cancel-text="取消"
+      :ok-text="$v_translate('delete')"
+      :cancel-text="$v_translate('cancel')"
       ok-type="danger"
     >
       <div class="delete-content">
         <ExclamationCircleOutlined class="delete-icon" />
-        <p>确定要删除用户 "{{ userToDelete?.name }}" 吗？此操作不可恢复。</p>
+        <p>{{ $v_translate('delete_confirm_message', { name: userToDelete?.name }) }}</p>
       </div>
     </a-modal>
   </div>
@@ -232,6 +232,7 @@ import { useUserStore } from '@/stores/userStore.ts'
 import userService from '@/services/userService.ts'
 import type { SystemUser } from '@/dto/user.ts'
 import PageHeader from '@/components/PageHeader.vue'
+import i18n from '@/i18n.ts'
 import {
   TeamOutlined,
   PlusOutlined,
@@ -244,6 +245,11 @@ import {
   LockOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons-vue'
+
+const v_scope = 'views.system_settings.user_manage.'
+defineExpose({
+  v_scope
+})
 
 const userStore = useUserStore()
 
@@ -269,48 +275,48 @@ const form = reactive({
 // 表单验证规则
 const rules = {
   name: [
-    { required: true, message: '请输入用户姓名', trigger: 'blur' }
+    { required: true, message: i18n.global.t(v_scope + 'enter_user_name'), trigger: 'blur' }
   ],
   number: [
-    { required: true, message: '请输入用户账号', trigger: 'blur' }
+    { required: true, message: i18n.global.t(v_scope + 'enter_user_account'), trigger: 'blur' }
   ],
   email: [
-    { required: true, message: '请输入用户邮箱', trigger: 'blur' },
-    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+    { required: true, message: i18n.global.t(v_scope + 'enter_user_email'), trigger: 'blur' },
+    { type: 'email', message: i18n.global.t(v_scope + 'email_format_error'), trigger: 'blur' }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' }
+    { required: true, message: i18n.global.t(v_scope + 'enter_password'), trigger: 'blur' }
   ]
 }
 
 // 表格列定义
 const columns = [
   {
-    title: '用户姓名',
+    title: i18n.global.t(v_scope + 'user_name'),
     dataIndex: 'name',
     key: 'name',
     width: 150
   },
   {
-    title: '用户账号',
+    title: i18n.global.t(v_scope + 'user_account'),
     dataIndex: 'number',
     key: 'number',
     width: 150
   },
   {
-    title: '用户邮箱',
+    title: i18n.global.t(v_scope + 'user_email'),
     dataIndex: 'email',
     key: 'email',
     width: 200
   },
   {
-    title: '创建时间',
+    title: i18n.global.t(v_scope + 'created_time'),
     dataIndex: 'created_at',
     key: 'created_at',
     width: 180
   },
   {
-    title: '操作',
+    title: i18n.global.t(v_scope + 'actions'),
     key: 'actions',
     width: 120,
     fixed: 'right'
@@ -373,10 +379,10 @@ const confirmDelete = async () => {
     await fetchUsers()
     showDeleteDialog.value = false
     userToDelete.value = null
-    message.success('用户删除成功')
+    message.success(i18n.global.t(v_scope + 'user_deleted_success'))
   } catch (error) {
     console.error('删除用户失败:', error)
-    message.error('删除用户失败')
+    message.error(i18n.global.t(v_scope + 'user_delete_failed'))
   } finally {
     deleting.value = false
   }
@@ -394,18 +400,18 @@ const saveUser = async (values: any) => {
         ...values,
         password: values.password || undefined
       })
-      message.success('用户更新成功')
+      message.success(i18n.global.t(v_scope + 'user_updated_success'))
     } else {
       // 创建用户
       await userService.saveUser(values)
-      message.success('用户创建成功')
+      message.success(i18n.global.t(v_scope + 'user_created_success'))
     }
     
     await fetchUsers()
     closeDrawer()
   } catch (error) {
     console.error('保存用户失败:', error)
-    message.error('保存用户失败')
+    message.error(i18n.global.t(v_scope + 'user_save_failed'))
   } finally {
     saving.value = false
   }

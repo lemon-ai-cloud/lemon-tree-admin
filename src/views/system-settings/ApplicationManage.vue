@@ -2,8 +2,8 @@
   <div class="application-management lemon-theme">
     <!-- 页面头部 -->
     <PageHeader
-        title="应用管理"
-        subtitle="管理系统应用和配置"
+        :title="$v_translate('page_title')"
+        :subtitle="$v_translate('page_subtitle')"
         :icon="AppstoreOutlined"
     >
       <template #actions>
@@ -15,7 +15,7 @@
           <template #icon>
             <PlusOutlined/>
           </template>
-          创建应用
+          {{ $v_translate('create_application') }}
         </a-button>
       </template>
     </PageHeader>
@@ -27,7 +27,7 @@
         <div class="search-section">
           <a-input
               v-model:value="search"
-              placeholder="搜索应用名称或描述"
+              :placeholder="$v_translate('search_placeholder')"
               size="large"
               class="search-field"
               allow-clear
@@ -89,10 +89,10 @@
               <div class="empty-state">
                 <AppstoreOutlined class="empty-icon"/>
                 <a-typography-title :level="4" class="empty-title">
-                  暂无应用数据
+                  {{ $v_translate('no_data') }}
                 </a-typography-title>
                 <a-typography-text class="empty-subtitle">
-                  点击"创建应用"按钮添加第一个应用
+                  {{ $v_translate('no_data_hint') }}
                 </a-typography-text>
                 <a-button
                     type="primary"
@@ -102,7 +102,7 @@
                   <template #icon>
                     <PlusOutlined/>
                   </template>
-                  创建应用
+                  {{ $v_translate('create_application') }}
                 </a-button>
               </div>
             </template>
@@ -114,11 +114,11 @@
     <!-- 创建/编辑应用对话框 -->
     <a-modal
         v-model:open="showDialog"
-        :title="editingApplication ? '编辑应用' : '创建应用'"
+        :title="editingApplication ? $v_translate('edit_application') : $v_translate('create_application_title')"
         @ok="saveApplication"
         :confirm-loading="applicationStore.isSaving"
-        :ok-text="editingApplication ? '更新' : '创建'"
-        :cancel-text="'取消'"
+        :ok-text="editingApplication ? $v_translate('update') : $v_translate('create')"
+        :cancel-text="$v_translate('cancel')"
         width="600px"
     >
       <a-form
@@ -130,20 +130,20 @@
       >
         <a-row :gutter="16">
           <a-col :span="24">
-            <a-form-item name="name" label="应用名称">
+            <a-form-item name="name" :label="$v_translate('application_name')">
               <a-input
                   v-model:value="form.name"
-                  placeholder="请输入应用名称"
+                  :placeholder="$v_translate('enter_application_name')"
                   size="large"
               />
             </a-form-item>
           </a-col>
 
           <a-col :span="24">
-            <a-form-item name="description" label="应用描述">
+            <a-form-item name="description" :label="$v_translate('application_description')">
               <a-textarea
                   v-model:value="form.description"
-                  placeholder="请输入应用描述"
+                  :placeholder="$v_translate('enter_application_description')"
                   :rows="4"
                   size="large"
               />
@@ -156,16 +156,16 @@
     <!-- 删除确认对话框 -->
     <a-modal
         v-model:open="showDeleteDialog"
-        title="确认删除"
+        :title="$v_translate('confirm_delete')"
         @ok="confirmDelete"
         :confirm-loading="applicationStore.isDeleting"
-        ok-text="删除"
-        cancel-text="取消"
+        :ok-text="$v_translate('delete')"
+        :cancel-text="$v_translate('cancel')"
         ok-type="danger"
     >
       <div class="delete-content">
         <ExclamationCircleOutlined class="delete-icon"/>
-        <p>确定要删除应用 "{{ applicationToDelete?.name }}" 吗？此操作不可恢复。</p>
+        <p>{{ $v_translate('delete_confirm_message', { name: applicationToDelete?.name }) }}</p>
       </div>
     </a-modal>
   </div>
@@ -176,6 +176,7 @@ import {computed, onMounted, reactive, ref} from 'vue'
 import {useApplicationStore} from '@/stores/applicationStore.ts'
 import type {Application} from '@/dto/application.ts'
 import PageHeader from '@/components/PageHeader.vue'
+import i18n from '@/i18n.ts'
 import {
   AppstoreOutlined,
   PlusOutlined,
@@ -184,6 +185,11 @@ import {
   DeleteOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons-vue'
+
+const v_scope = 'views.system_settings.application_manage.'
+defineExpose({
+  v_scope
+})
 
 const applicationStore = useApplicationStore()
 
@@ -203,35 +209,35 @@ const form = reactive({
 // 表单验证规则
 const rules = {
   name: [
-    {required: true, message: '请输入应用名称', trigger: 'blur'}
+    {required: true, message: i18n.global.t(v_scope + 'enter_application_name'), trigger: 'blur'}
   ],
   description: [
-    {required: true, message: '请输入应用描述', trigger: 'blur'}
+    {required: true, message: i18n.global.t(v_scope + 'enter_application_description'), trigger: 'blur'}
   ]
 }
 
 // 表格列定义
 const columns = [
   {
-    title: '应用名称',
+    title: i18n.global.t(v_scope + 'application_name'),
     dataIndex: 'name',
     key: 'name',
     width: 200
   },
   {
-    title: '应用描述',
+    title: i18n.global.t(v_scope + 'application_description'),
     dataIndex: 'description',
     key: 'description',
     width: 300
   },
   {
-    title: '创建时间',
+    title: i18n.global.t(v_scope + 'created_time'),
     dataIndex: 'created_at',
     key: 'created_at',
     width: 180
   },
   {
-    title: '操作',
+    title: i18n.global.t(v_scope + 'actions'),
     key: 'actions',
     width: 120,
     fixed: 'right'

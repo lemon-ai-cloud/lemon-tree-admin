@@ -11,7 +11,7 @@
             Lemon Tree
           </a-typography-title>
           <a-typography-text class="login-subtitle">
-            智能管理平台
+            {{ $v_translate('platform_subtitle') }}
           </a-typography-text>
         </div>
 
@@ -23,20 +23,20 @@
           layout="vertical"
           class="login-form"
         >
-          <a-form-item name="number" label="账号">
+          <a-form-item name="number" :label="$v_translate('account')">
             <a-input
               v-model:value="form.number"
               size="large"
-              placeholder="请输入账号"
+              :placeholder="$v_translate('enter_account')"
               :prefix="h(UserOutlined)"
             />
           </a-form-item>
 
-          <a-form-item name="password" label="密码">
+          <a-form-item name="password" :label="$v_translate('password')">
             <a-input-password
               v-model:value="form.password"
               size="large"
-              placeholder="请输入密码"
+              :placeholder="$v_translate('enter_password')"
               :prefix="h(LockOutlined)"
             />
           </a-form-item>
@@ -51,7 +51,7 @@
               block
               class="login-button"
             >
-              {{ userStore.isLoading ? '登录中...' : '登录' }}
+              {{ userStore.isLoading ? $v_translate('logging_in') : $v_translate('login') }}
             </a-button>
           </a-form-item>
         </a-form>
@@ -78,6 +78,12 @@ import {
   LockOutlined, 
   BranchesOutlined 
 } from '@ant-design/icons-vue'
+import i18n from '@/i18n.ts'
+
+const v_scope = 'views.main.login_view.'
+defineExpose({
+  v_scope
+})
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -91,10 +97,10 @@ const form = reactive({
 // 表单验证规则
 const rules = {
   number: [
-    { required: true, message: '请输入账号', trigger: 'blur' }
+    { required: true, message: i18n.global.t(v_scope + 'enter_account'), trigger: 'blur' }
   ],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' }
+    { required: true, message: i18n.global.t(v_scope + 'enter_password'), trigger: 'blur' }
   ]
 }
 
@@ -112,7 +118,7 @@ const handleLogin = async (values: any) => {
     // 登录成功，跳转到首页
     router.push('/')
   } catch (err: any) {
-    error.value = err.response?.data?.error || '登录失败，请检查账号密码'
+    error.value = err.response?.data?.error || i18n.global.t(v_scope + 'login_failed')
   }
 }
 </script>

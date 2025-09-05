@@ -3,15 +3,15 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="header-left">
-        <h1 class="page-title">LLM 提供商管理</h1>
-        <p class="page-description">管理应用下的所有大语言模型提供商配置</p>
+        <h1 class="page-title">{{ $v_translate('page_title') }}</h1>
+        <p class="page-description">{{ $v_translate('page_description') }}</p>
       </div>
       <div class="header-actions">
         <a-button type="primary" @click="showCreateModal">
           <template #icon>
             <PlusOutlined/>
           </template>
-          新增提供商
+          {{ $v_translate('add_provider') }}
         </a-button>
       </div>
     </div>
@@ -20,17 +20,17 @@
     <div class="search-section">
       <a-card>
         <a-form layout="inline" :model="searchForm" @finish="handleSearch">
-          <a-form-item name="name" label="提供商名称">
+          <a-form-item name="name" :label="$v_translate('provider_name')">
             <a-input
                 v-model:value="searchForm.name"
-                placeholder="请输入提供商名称"
+                :placeholder="$v_translate('enter_provider_name')"
                 allow-clear
             />
           </a-form-item>
-          <a-form-item name="type" label="提供商类型">
+          <a-form-item name="type" :label="$v_translate('provider_type')">
             <a-select
                 v-model:value="searchForm.type"
-                placeholder="请选择提供商类型"
+                :placeholder="$v_translate('select_provider_type')"
                 allow-clear
                 style="width: 200px"
             >
@@ -44,13 +44,13 @@
               <template #icon>
                 <SearchOutlined/>
               </template>
-              搜索
+              {{ $v_translate('search') }}
             </a-button>
             <a-button style="margin-left: 8px" @click="handleReset">
               <template #icon>
                 <ReloadOutlined/>
               </template>
-              重置
+              {{ $v_translate('reset') }}
             </a-button>
           </a-form-item>
         </a-form>
@@ -98,23 +98,23 @@
                   <template #icon>
                     <EditOutlined/>
                   </template>
-                  编辑
+                  {{ $v_translate('edit') }}
                 </a-button>
                 <a-button type="link" size="small" @click="handleManageModels(record)">
                   <template #icon>
                     <ApiOutlined/>
                   </template>
-                  模型管理
+                  {{ $v_translate('model_management_action') }}
                 </a-button>
                 <a-popconfirm
-                    title="确定要删除这个提供商吗？"
+                    :title="$v_translate('confirm_delete_provider')"
                     @confirm="handleDelete(record.id)"
                 >
                   <a-button type="link" size="small" danger>
                     <template #icon>
                       <DeleteOutlined/>
                     </template>
-                    删除
+                    {{ $v_translate('delete') }}
                   </a-button>
                 </a-popconfirm>
               </a-space>
@@ -141,18 +141,18 @@
       >
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item name="name" label="提供商名称">
+            <a-form-item name="name" :label="$v_translate('provider_name')">
               <a-input
                   v-model:value="formData.name"
-                  placeholder="请输入提供商名称"
+                  :placeholder="$v_translate('enter_provider_name')"
               />
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item name="type" label="提供商类型">
+            <a-form-item name="type" :label="$v_translate('provider_type')">
               <a-select
                   v-model:value="formData.type"
-                  placeholder="请选择提供商类型"
+                  :placeholder="$v_translate('select_provider_type')"
               >
                 <a-select-option value="openai_chat_completions_api">OpenAI Chat Completions Api</a-select-option>
                 <a-select-option value="openai_responses_api">OpenAI Responses Api</a-select-option>
@@ -162,29 +162,29 @@
           </a-col>
         </a-row>
 
-        <a-form-item name="description" label="提供商描述">
+        <a-form-item name="description" :label="$v_translate('provider_description')">
           <a-textarea
               v-model:value="formData.description"
-              placeholder="请输入提供商描述"
+              :placeholder="$v_translate('enter_provider_description')"
               :rows="3"
           />
         </a-form-item>
 
-        <a-form-item name="api_url" label="API URL">
+        <a-form-item name="api_url" :label="$v_translate('api_url')">
           <a-input
               v-model:value="formData.api_url"
-              placeholder="请输入API URL"
+              :placeholder="$v_translate('enter_api_url')"
           />
         </a-form-item>
 
-        <a-form-item name="api_key" label="API Key">
+        <a-form-item name="api_key" :label="$v_translate('api_key')">
           <a-input-password
               v-model:value="formData.api_key"
-              placeholder="请输入API Key"
+              :placeholder="$v_translate('enter_api_key')"
           />
         </a-form-item>
 
-        <a-form-item name="icon_url" label="提供商图标">
+        <a-form-item name="icon_url" :label="$v_translate('provider_icon')">
           <div class="icon-upload">
             <a-upload
                 v-model:file-list="fileList"
@@ -195,7 +195,7 @@
               <div class="upload-area">
                 <div v-if="!formData.icon_url" class="upload-placeholder">
                   <PlusOutlined/>
-                  <div>点击上传图标</div>
+                  <div>{{ $v_translate('click_upload_icon') }}</div>
                 </div>
                 <img
                     v-else
@@ -206,7 +206,7 @@
               </div>
             </a-upload>
             <div class="upload-tips">
-              支持 JPG、PNG、GIF 格式，文件大小不超过 5MB
+              {{ $v_translate('upload_tips') }}
             </div>
           </div>
         </a-form-item>
@@ -216,7 +216,7 @@
     <!-- 模型管理对话框 -->
     <a-modal
         v-model:open="modelModalVisible"
-        title="模型管理"
+        :title="$v_translate('model_management')"
         width="880px"
         :style="{ top: '20%' }"
         :body-style="{ 
@@ -239,6 +239,7 @@
 <script setup lang="ts">
 import {ref, reactive, onMounted, computed, watch, h} from 'vue'
 import {message} from 'ant-design-vue'
+import i18n from '@/i18n.ts'
 import {
   PlusOutlined,
   SearchOutlined,
@@ -252,6 +253,11 @@ import llmProviderService from '@/services/llmProviderService'
 import {useApplicationStore} from '@/stores/applicationStore'
 import ResourceUtils from '@/utils/resource-utils'
 import ApplicationLlmList from './ApplicationLlmList.vue'
+
+const v_scope = 'views.app_settings.llm_manage.'
+defineExpose({
+  v_scope
+})
 
 // 应用状态管理
 const applicationStore = useApplicationStore()
@@ -294,43 +300,43 @@ const pagination = reactive({
   total: 0,
   showSizeChanger: true,
   showQuickJumper: true,
-  showTotal: (total: number) => `共 ${total} 条记录`
+  showTotal: (total: number) => i18n.global.t(v_scope + 'total_records', { total })
 })
 
 // 表格列定义
 const columns = [
   {
-    title: '图标',
+    title: i18n.global.t(v_scope + 'icon'),
     key: 'icon',
     width: 80,
     align: 'center'
   },
   {
-    title: '提供商名称',
+    title: i18n.global.t(v_scope + 'provider_name'),
     dataIndex: 'name',
     key: 'name',
   },
   {
-    title: '类型',
+    title: i18n.global.t(v_scope + 'type'),
     key: 'type',
     width: 220,
     align: 'center'
   },
   {
-    title: '描述',
+    title: i18n.global.t(v_scope + 'description'),
     dataIndex: 'description',
     key: 'description',
     ellipsis: true
   },
   {
-    title: 'API URL',
+    title: i18n.global.t(v_scope + 'api_url'),
     dataIndex: 'api_url',
     key: 'api_url',
     ellipsis: true,
     width: 200
   },
   {
-    title: '操作',
+    title: i18n.global.t(v_scope + 'action'),
     key: 'action',
     width: 300,
     align: 'center',
@@ -339,7 +345,7 @@ const columns = [
 ]
 
 // 计算属性
-const modalTitle = computed(() => isEdit.value ? '编辑提供商' : '新增提供商')
+const modalTitle = computed(() => isEdit.value ? i18n.global.t(v_scope + 'edit_provider') : i18n.global.t(v_scope + 'add_provider'))
 const llmProviders = ref<LlmProvider[]>([])
 
 
@@ -348,12 +354,12 @@ const llmProviders = ref<LlmProvider[]>([])
 
 // 表单验证规则
 const formRules = {
-  name: [{required: true, message: '请输入提供商名称', trigger: 'blur'}],
-  type: [{required: true, message: '请选择提供商类型', trigger: 'change'}],
-  description: [{required: true, message: '请输入提供商描述', trigger: 'blur'}],
-  api_url: [{required: true, message: '请输入API URL', trigger: 'blur'}],
-  api_key: [{required: true, message: '请输入API Key', trigger: 'blur'}],
-  icon_url: [{required: true, message: '请上传提供商图标', trigger: 'change'}]
+  name: [{required: true, message: i18n.global.t(v_scope + 'enter_provider_name_required'), trigger: 'blur'}],
+  type: [{required: true, message: i18n.global.t(v_scope + 'select_provider_type_required'), trigger: 'change'}],
+  description: [{required: true, message: i18n.global.t(v_scope + 'enter_provider_description_required'), trigger: 'blur'}],
+  api_url: [{required: true, message: i18n.global.t(v_scope + 'enter_api_url_required'), trigger: 'blur'}],
+  api_key: [{required: true, message: i18n.global.t(v_scope + 'enter_api_key_required'), trigger: 'blur'}],
+  icon_url: [{required: true, message: i18n.global.t(v_scope + 'upload_provider_icon_required'), trigger: 'change'}]
 }
 
 // 表单引用
@@ -383,7 +389,7 @@ watch(
 // 加载数据
 const loadData = async () => {
   if (!applicationStore.selectedApplication?.id) {
-    message.warning('请先选择一个应用')
+    message.warning(i18n.global.t(v_scope + 'please_select_application'))
     return
   }
 
@@ -396,7 +402,7 @@ const loadData = async () => {
     pagination.total = response.llm_providers.length
   } catch (error) {
     console.error('加载数据失败:', error)
-    message.error('加载数据失败')
+    message.error(i18n.global.t(v_scope + 'load_data_failed'))
   } finally {
     loading.value = false
   }
@@ -428,7 +434,7 @@ const handleTableChange = (pag: any) => {
 // 显示新增对话框
 const showCreateModal = () => {
   if (!applicationStore.selectedApplication?.id) {
-    message.warning('请先选择一个应用')
+    message.warning(i18n.global.t(v_scope + 'please_select_application'))
     return
   }
 
@@ -473,11 +479,11 @@ const handleEdit = (record: LlmProvider) => {
 const handleDelete = async (id: string) => {
   try {
     await llmProviderService.deleteLlmProvider(id)
-    message.success('删除成功')
+    message.success(i18n.global.t(v_scope + 'delete_success'))
     loadData()
   } catch (error) {
     console.error('删除失败:', error)
-    message.error('删除失败')
+    message.error(i18n.global.t(v_scope + 'delete_failed'))
   }
 }
 
@@ -510,7 +516,7 @@ const handleModalOk = async () => {
     }
  
     if (!formData.application_id) {
-      message.error('应用ID不能为空，请重新选择应用')
+      message.error(i18n.global.t(v_scope + 'application_id_required'))
       return
     }
  
@@ -520,17 +526,17 @@ const handleModalOk = async () => {
 
     if (isEdit.value) {
       await llmProviderService.saveLlmProvider(formData)
-      message.success('更新成功')
+      message.success(i18n.global.t(v_scope + 'update_success'))
     } else {
       await llmProviderService.saveLlmProvider(formData)
-      message.success('创建成功')
+      message.success(i18n.global.t(v_scope + 'create_success'))
     }
 
     modalVisible.value = false
     loadData()
   } catch (error) {
     console.error('保存失败:', error)
-    message.error('保存失败')
+    message.error(i18n.global.t(v_scope + 'save_failed'))
   } finally {
     submitting.value = false
   }
@@ -579,23 +585,23 @@ const resetForm = () => {
 const beforeUpload = async (file: File) => {
   const isImage = file.type.startsWith('image/')
   if (!isImage) {
-    message.error('只能上传图片文件!')
+    message.error(i18n.global.t(v_scope + 'only_upload_image'))
     return false
   }
 
   const isLt5M = file.size / 1024 / 1024 < 5
   if (!isLt5M) {
-    message.error('图片大小不能超过 5MB!')
+    message.error(i18n.global.t(v_scope + 'image_size_limit'))
     return false
   }
 
   try {
     const response = await llmProviderService.uploadIcon(file)
     formData.icon_url = response.data.file_path
-    message.success('图标上传成功')
+    message.success(i18n.global.t(v_scope + 'icon_upload_success'))
   } catch (error) {
     console.error('图标上传失败:', error)
-    message.error('图标上传失败')
+    message.error(i18n.global.t(v_scope + 'icon_upload_failed'))
   }
 
   return false // 阻止自动上传

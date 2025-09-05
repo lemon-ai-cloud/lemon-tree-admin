@@ -17,7 +17,7 @@
             </a-button>
             <template #overlay>
               <a-menu class="app-menu">
-                <a-menu-item-group title="应用列表">
+                <a-menu-item-group :title="$v_translate('application_list')">
                   <template v-if="applicationStore.applications.length > 0">
                     <a-menu-item
                         v-for="app in applicationStore.applications"
@@ -45,8 +45,8 @@
                       <div class="empty-icon">
                         <AppstoreOutlined/>
                       </div>
-                      <div class="empty-text">暂无应用</div>
-                      <div class="empty-hint">点击下方按钮创建应用</div>
+                      <div class="empty-text">{{ $v_translate('no_applications') }}</div>
+                      <div class="empty-hint">{{ $v_translate('create_app_hint') }}</div>
                     </div>
                   </template>
                 </a-menu-item-group>
@@ -75,32 +75,32 @@
                   <SettingOutlined/>
                 </template>
                 <template #title>
-                  应用设置
+                  {{ $v_translate('application_settings') }}
                   <DownOutlined class="submenu-arrow"/>
                 </template>
                 <a-menu-item key="model-management" @click="$router.push('/app-settings/llm-manage')">
                   <template #icon>
                     <ApiOutlined/>
                   </template>
-                  模型管理
+                  {{ $v_translate('model_management') }}
                 </a-menu-item>
                 <a-menu-item key="mcp-tools" @click="$router.push('/app-settings/mcp-tools-manage')">
                   <template #icon>
                     <ToolOutlined/>
                   </template>
-                  MCP工具管理
+                  {{ $v_translate('mcp_tools_management') }}
                 </a-menu-item>
                 <a-menu-item key="internal-tools" @click="$router.push('/app-settings/storage-config')">
                   <template #icon>
                     <FileOutlined/>
                   </template>
-                  存储设置
+                  {{ $v_translate('storage_settings') }}
                 </a-menu-item>
                 <a-menu-item key="internal-tools" @click="$router.push('/app-settings/internal-tools-manage')">
                   <template #icon>
                     <AppstoreOutlined/>
                   </template>
-                  内部工具管理
+                  {{ $v_translate('internal_tools_management') }}
                 </a-menu-item>
               </a-sub-menu>
             </a-menu>
@@ -108,6 +108,15 @@
         </div>
 
         <div class="header-actions">
+          <!-- 语言切换选择器 -->
+          <a-select
+              v-model:value="currentLocale"
+              @change="changeLanguage"
+              class="language-selector"
+              size="small"
+              :options="languageOptions"
+          />
+
           <!-- 用户系统管理下拉菜单 -->
           <a-dropdown placement="bottomRight">
             <a-button type="text" class="system-btn">
@@ -123,13 +132,13 @@
                   <template #icon>
                     <AppstoreOutlined/>
                   </template>
-                  应用管理
+                  {{ $v_translate('application_management') }}
                 </a-menu-item>
                 <a-menu-item @click="$router.push('/system-settings/users')">
                   <template #icon>
                     <TeamOutlined/>
                   </template>
-                  系统用户管理
+                  {{ $v_translate('system_user_management') }}
                 </a-menu-item>
               </a-menu>
             </template>
@@ -145,7 +154,7 @@
                 <a-menu-item disabled>
                   <div class="user-info">
                     <div class="user-name">{{ userStore.userFullName }}</div>
-                    <div class="user-subtitle">当前用户</div>
+                    <div class="user-subtitle">{{ $v_translate('current_user') }}</div>
                   </div>
                 </a-menu-item>
                 <a-menu-divider/>
@@ -153,7 +162,7 @@
                   <template #icon>
                     <LogoutOutlined/>
                   </template>
-                  退出登录
+                  {{ $v_translate('logout') }}
                 </a-menu-item>
               </a-menu>
             </template>
@@ -175,11 +184,11 @@
     <!-- 创建应用对话框 -->
     <a-modal
         v-model:open="showCreateAppDialog"
-        title="创建新应用"
+        :title="$v_translate('create_new_application')"
         @ok="createApp"
         :confirm-loading="creatingApp"
-        :ok-text="'创建'"
-        :cancel-text="'取消'"
+        :ok-text="$v_translate('create')"
+        :cancel-text="$v_translate('cancel')"
         width="500px"
     >
       <a-form
@@ -189,17 +198,17 @@
           layout="vertical"
           @finish="createApp"
       >
-        <a-form-item name="name" label="应用名称">
+        <a-form-item name="name" :label="$v_translate('application_name')">
           <a-input
               v-model:value="newApp.name"
-              placeholder="请输入应用名称"
+              :placeholder="$v_translate('enter_application_name')"
               size="large"
           />
         </a-form-item>
-        <a-form-item name="description" label="应用描述">
+        <a-form-item name="description" :label="$v_translate('application_description')">
           <a-textarea
               v-model:value="newApp.description"
-              placeholder="请输入应用描述"
+              :placeholder="$v_translate('enter_application_description')"
               :rows="4"
               size="large"
           />
@@ -244,6 +253,26 @@ const showAppMenu = ref(false)
 const showCreateAppDialog = ref(false)
 const creatingApp = ref(false)
 
+// 语言切换相关
+const currentLocale = ref(i18n.global.locale.value)
+
+// 语言选项
+const languageOptions = computed(() => {
+  const languages = i18n.global.getLocaleMessage(currentLocale.value).languages as { [key: string]: string }
+  return Object.keys(languages).map(key => ({
+    label: languages[key],
+    value: key
+  }))
+})
+
+// 切换语言
+const changeLanguage = (locale: string) => {
+  i18n.global.locale.value = locale as 'cn' | 'en' | 'jp'
+  currentLocale.value = locale as 'cn' | 'en' | 'jp'
+  // 保存到本地存储
+  localStorage.setItem('locale', locale)
+}
+
 // 新应用表单
 const newApp = reactive({
   name: '',
@@ -253,10 +282,10 @@ const newApp = reactive({
 // 表单验证规则
 const rules = {
   name: [
-    {required: true, message: '请输入应用名称', trigger: 'blur'}
+    {required: true, message: i18n.global.t(v_scope + 'enter_application_name'), trigger: 'blur'}
   ],
   description: [
-    {required: true, message: '请输入应用描述', trigger: 'blur'}
+    {required: true, message: i18n.global.t(v_scope + 'enter_application_description'), trigger: 'blur'}
   ]
 }
 
@@ -268,7 +297,7 @@ const appMenuItems = computed(() => [
     to: '/app-agents'
   },
   {
-    title: '对话管理',
+    title: i18n.global.t(v_scope + 'conversation_management'),
     icon: MessageOutlined,
     to: '/app-conversations'
   }
@@ -306,6 +335,13 @@ const handleLogout = async () => {
 
 // 初始化
 onMounted(async () => {
+  // 从本地存储恢复语言设置
+  const savedLocale = localStorage.getItem('locale')
+  if (savedLocale && ['cn', 'en', 'jp'].includes(savedLocale)) {
+    i18n.global.locale.value = savedLocale as 'cn' | 'en' | 'jp'
+    currentLocale.value = savedLocale as 'cn' | 'en' | 'jp'
+  }
+  
   await applicationStore.initializeApplications()
 })
 </script>
@@ -352,6 +388,11 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+.language-selector {
+  width: 100px;
+  margin-right: 8px;
 }
 
 .app-select-btn,

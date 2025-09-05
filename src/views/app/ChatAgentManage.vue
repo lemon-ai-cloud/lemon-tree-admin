@@ -3,15 +3,15 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="header-left">
-        <h1 class="page-title">智能体管理</h1>
-        <p class="page-description">管理应用下的所有智能体配置</p>
+        <h1 class="page-title">{{ $v_translate('page_title') }}</h1>
+        <p class="page-description">{{ $v_translate('page_description') }}</p>
       </div>
       <div class="header-actions">
         <a-button type="primary" @click="showCreateModal">
           <template #icon>
             <PlusOutlined/>
           </template>
-          新增智能体
+          {{ $v_translate('add_agent') }}
         </a-button>
       </div>
     </div>
@@ -35,17 +35,17 @@
                   <template #icon>
                     <EditOutlined/>
                   </template>
-                  编辑
+                  {{ $v_translate('edit') }}
                 </a-button>
                 <a-popconfirm
-                    title="确定要删除这个智能体吗？"
+                    :title="$v_translate('confirm_delete_agent')"
                     @confirm="handleDelete(record.id)"
                 >
                   <a-button type="link" size="small" danger>
                     <template #icon>
                       <DeleteOutlined/>
                     </template>
-                    删除
+                    {{ $v_translate('delete') }}
                   </a-button>
                 </a-popconfirm>
               </a-space>
@@ -72,19 +72,19 @@
       >
         <a-tabs v-model:activeKey="activeTab" type="card">
           <!-- 基础信息选项卡 -->
-          <a-tab-pane key="basic" tab="基础信息">
+          <a-tab-pane key="basic" :tab="$v_translate('basic_info')">
             <a-row :gutter="16">
               <a-col :span="12">
-                <a-form-item name="name" label="智能体名称">
+                <a-form-item name="name" :label="$v_translate('agent_name')">
                   <a-input
                       v-model:value="formData.name"
-                      placeholder="请输入智能体名称"
+                      :placeholder="$v_translate('enter_agent_name')"
                       size="large"
                   />
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item name="avatar_url" label="智能体头像">
+                <a-form-item name="avatar_url" :label="$v_translate('agent_avatar')">
                   <div class="avatar-upload">
                     <a-upload
                         v-model:file-list="avatarFileList"
@@ -95,7 +95,7 @@
                       <div class="upload-area">
                         <div v-if="!formData.avatar_url" class="upload-placeholder">
                           <PlusOutlined/>
-                          <div>点击上传头像</div>
+                          <div>{{ $v_translate('click_upload_avatar') }}</div>
                         </div>
                         <img
                             v-else
@@ -106,17 +106,17 @@
                       </div>
                     </a-upload>
                     <div class="upload-tips">
-                      支持 JPG、PNG、GIF 格式，文件大小不超过 5MB
+                      {{ $v_translate('upload_tips') }}
                     </div>
                   </div>
                 </a-form-item>
               </a-col>
             </a-row>
 
-            <a-form-item name="description" label="智能体描述">
+            <a-form-item name="description" :label="$v_translate('agent_description')">
               <a-textarea
                   v-model:value="formData.description"
-                  placeholder="请输入智能体描述"
+                  :placeholder="$v_translate('enter_agent_description')"
                   :rows="3"
                   size="large"
               />
@@ -124,7 +124,7 @@
 
             <a-row :gutter="16">
               <a-col :span="12">
-                <a-form-item name="model_temperature" label="模型温度">
+                <a-form-item name="model_temperature" :label="$v_translate('model_temperature')">
                   <a-input-number
                       v-model:value="formData.model_temperature"
                       :min="0"
@@ -136,7 +136,7 @@
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item name="model_top_p" label="模型TopP">
+                <a-form-item name="model_top_p" :label="$v_translate('model_top_p')">
                   <a-input-number
                       v-model:value="formData.model_top_p"
                       :min="0"
@@ -151,12 +151,12 @@
 
             <a-row :gutter="16">
               <a-col :span="12">
-                <a-form-item name="enable_context_length_limit" label="启用上下文长度限制">
+                <a-form-item name="enable_context_length_limit" :label="$v_translate('enable_context_length_limit')">
                   <a-switch v-model:checked="formData.enable_context_length_limit"/>
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item name="context_length_limit" label="上下文长度限制" v-if="formData.enable_context_length_limit">
+                <a-form-item name="context_length_limit" :label="$v_translate('context_length_limit')" v-if="formData.enable_context_length_limit">
                   <a-input-number
                       v-model:value="formData.context_length_limit"
                       :min="1"
@@ -169,12 +169,12 @@
 
             <a-row :gutter="16">
               <a-col :span="12">
-                <a-form-item name="enable_max_output_token_count_limit" label="启用最大输出Token限制">
+                <a-form-item name="enable_max_output_token_count_limit" :label="$v_translate('enable_max_output_token_count_limit')">
                   <a-switch v-model:checked="formData.enable_max_output_token_count_limit"/>
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item name="max_output_token_count_limit" label="最大输出Token数量" v-if="formData.enable_max_output_token_count_limit">
+                <a-form-item name="max_output_token_count_limit" :label="$v_translate('max_output_token_count_limit')" v-if="formData.enable_max_output_token_count_limit">
                   <a-input-number
                       v-model:value="formData.max_output_token_count_limit"
                       :min="1"
@@ -185,19 +185,19 @@
               </a-col>
             </a-row>
 
-            <a-form-item name="default_streamable" label="默认流式返回">
+            <a-form-item name="default_streamable" :label="$v_translate('default_streamable')">
               <a-switch v-model:checked="formData.default_streamable"/>
             </a-form-item>
           </a-tab-pane>
 
           <!-- 聊天选项卡 -->
-          <a-tab-pane key="chat" tab="聊天">
-            <a-form-item name="chat_model_id" label="聊天模型">
+          <a-tab-pane key="chat" :tab="$v_translate('chat')">
+            <a-form-item name="chat_model_id" :label="$v_translate('chat_model')">
               <a-cascader
                   v-model:value="chatModelCascaderValue"
                   :options="modelOptions"
                   :field-names="{ label: 'name', value: 'id', children: 'models' }"
-                  placeholder="请选择聊天模型"
+                  :placeholder="$v_translate('select_chat_model')"
                   size="large"
                   show-search
                   :filter-option="filterModelOption"
@@ -215,10 +215,10 @@
               </a-cascader>
             </a-form-item>
 
-            <a-form-item name="system_prompt" label="系统提示词">
+            <a-form-item name="system_prompt" :label="$v_translate('system_prompt')">
               <a-textarea
                   v-model:value="formData.system_prompt"
-                  placeholder="请输入系统提示词"
+                  :placeholder="$v_translate('enter_system_prompt')"
                   :rows="6"
                   size="large"
               />
@@ -226,13 +226,13 @@
           </a-tab-pane>
 
           <!-- 会话命名选项卡 -->
-          <a-tab-pane key="naming" tab="会话命名">
-            <a-form-item name="conversation_naming_model_id" label="会话命名模型">
+          <a-tab-pane key="naming" :tab="$v_translate('conversation_naming')">
+            <a-form-item name="conversation_naming_model_id" :label="$v_translate('conversation_naming_model')">
               <a-cascader
                   v-model:value="conversationNamingModelCascaderValue"
                   :options="modelOptions"
                   :field-names="{ label: 'name', value: 'id', children: 'models' }"
-                  placeholder="请选择会话命名模型"
+                  :placeholder="$v_translate('select_conversation_naming_model')"
                   size="large"
                   show-search
                   :filter-option="filterModelOption"
@@ -250,10 +250,10 @@
               </a-cascader>
             </a-form-item>
 
-            <a-form-item name="conversation_naming_prompt" label="会话命名提示词">
+            <a-form-item name="conversation_naming_prompt" :label="$v_translate('conversation_naming_prompt')">
               <a-textarea
                   v-model:value="formData.conversation_naming_prompt"
-                  placeholder="请输入会话命名提示词"
+                  :placeholder="$v_translate('enter_conversation_naming_prompt')"
                   :rows="4"
                   size="large"
               />
@@ -268,6 +268,7 @@
 <script setup lang="ts">
 import {ref, reactive, onMounted, computed, watch} from 'vue'
 import {message} from 'ant-design-vue'
+import i18n from '@/i18n.ts'
 import {
   PlusOutlined,
   EditOutlined,
@@ -281,6 +282,11 @@ import llmProviderService from '@/services/llmProviderService'
 import applicationLlmService from '@/services/applicationLlmService'
 import {useApplicationStore} from '@/stores/applicationStore'
 import ResourceUtils from '@/utils/resource-utils'
+
+const v_scope = 'views.app.chat_agent_manage.'
+defineExpose({
+  v_scope
+})
 
 // 应用状态管理
 const applicationStore = useApplicationStore()
@@ -323,49 +329,49 @@ const pagination = reactive({
   total: 0,
   showSizeChanger: true,
   showQuickJumper: true,
-  showTotal: (total: number) => `共 ${total} 条记录`
+  showTotal: (total: number) => i18n.global.t(v_scope + 'total_records', { total })
 })
 
 // 表格列定义
-const columns = [
+const columns = computed(() => [
   {
-    title: '智能体名称',
+    title: i18n.global.t(v_scope + 'agent_name'),
     dataIndex: 'name',
     key: 'name',
     width: 200
   },
   {
-    title: '智能体描述',
+    title: i18n.global.t(v_scope + 'agent_description'),
     dataIndex: 'description',
     key: 'description',
     ellipsis: true
   },
   {
-    title: '创建时间',
+    title: i18n.global.t(v_scope + 'created_time'),
     dataIndex: 'created_at',
     key: 'created_at',
     width: 180
   },
   {
-    title: '操作',
+    title: i18n.global.t(v_scope + 'actions'),
     key: 'action',
     width: 200,
     align: 'center',
     fixed: 'right'
   }
-]
+])
 
 // 计算属性
-const modalTitle = computed(() => isEdit.value ? '编辑智能体' : '新增智能体')
+const modalTitle = computed(() => isEdit.value ? i18n.global.t(v_scope + 'edit_agent') : i18n.global.t(v_scope + 'add_agent'))
 const chatAgents = ref<ChatAgentDto[]>([])
 
 // 表单验证规则
 const formRules = {
-  name: [{required: true, message: '请输入智能体名称', trigger: 'blur'}],
-  description: [{required: true, message: '请输入智能体描述', trigger: 'blur'}],
-  system_prompt: [{required: true, message: '请输入系统提示词', trigger: 'blur'}],
-  chat_model_id: [{required: true, message: '请输入聊天模型ID', trigger: 'blur'}],
-  conversation_naming_model_id: [{required: true, message: '请输入会话命名模型ID', trigger: 'blur'}]
+  name: [{required: true, message: i18n.global.t(v_scope + 'enter_agent_name_required'), trigger: 'blur'}],
+  description: [{required: true, message: i18n.global.t(v_scope + 'enter_agent_description_required'), trigger: 'blur'}],
+  system_prompt: [{required: true, message: i18n.global.t(v_scope + 'enter_system_prompt_required'), trigger: 'blur'}],
+  chat_model_id: [{required: true, message: i18n.global.t(v_scope + 'enter_chat_model_id_required'), trigger: 'blur'}],
+  conversation_naming_model_id: [{required: true, message: i18n.global.t(v_scope + 'enter_conversation_naming_model_id_required'), trigger: 'blur'}]
 }
 
 // 表单引用
@@ -397,7 +403,7 @@ watch(
 // 加载数据
 const loadData = async () => {
   if (!applicationStore.selectedApplication?.id) {
-    message.warning('请先选择一个应用')
+    message.warning(i18n.global.t(v_scope + 'please_select_application'))
     return
   }
 
@@ -412,7 +418,7 @@ const loadData = async () => {
     pagination.total = response.total
   } catch (error) {
     console.error('加载数据失败:', error)
-    message.error('加载数据失败')
+    message.error(i18n.global.t(v_scope + 'load_data_failed'))
   } finally {
     loading.value = false
   }
@@ -484,23 +490,23 @@ const filterModelOption = (inputValue: string, option: any) => {
 const beforeAvatarUpload = async (file: File) => {
   const isImage = file.type.startsWith('image/')
   if (!isImage) {
-    message.error('只能上传图片文件!')
+    message.error(i18n.global.t(v_scope + 'only_upload_image'))
     return false
   }
 
   const isLt5M = file.size / 1024 / 1024 < 5
   if (!isLt5M) {
-    message.error('图片大小不能超过 5MB!')
+    message.error(i18n.global.t(v_scope + 'image_size_limit'))
     return false
   }
 
   try {
     const response = await chatAgentService.uploadAvatar(file)
     formData.avatar_url = response.data.file_path
-    message.success('头像上传成功')
+    message.success(i18n.global.t(v_scope + 'avatar_upload_success'))
   } catch (error) {
     console.error('头像上传失败:', error)
-    message.error('头像上传失败')
+    message.error(i18n.global.t(v_scope + 'avatar_upload_failed'))
   }
 
   return false // 阻止自动上传
@@ -561,7 +567,7 @@ const handleTableChange = (pag: any) => {
 // 显示新增对话框
 const showCreateModal = () => {
   if (!applicationStore.selectedApplication?.id) {
-    message.warning('请先选择一个应用')
+    message.warning(i18n.global.t(v_scope + 'please_select_application'))
     return
   }
 
@@ -604,11 +610,11 @@ const handleEdit = (record: ChatAgentDto) => {
 const handleDelete = async (id: string) => {
   try {
     await chatAgentService.deleteChatAgent(id)
-    message.success('删除成功')
+    message.success(i18n.global.t(v_scope + 'delete_success'))
     loadData()
   } catch (error) {
     console.error('删除失败:', error)
-    message.error('删除失败')
+    message.error(i18n.global.t(v_scope + 'delete_failed'))
   }
 }
 
@@ -618,7 +624,7 @@ const handleModalOk = async () => {
     await formRef.value.validate()
 
     if (!formData.application_id) {
-      message.error('应用ID不能为空，请重新选择应用')
+      message.error(i18n.global.t(v_scope + 'application_id_required'))
       return
     }
 
@@ -626,17 +632,17 @@ const handleModalOk = async () => {
 
     if (isEdit.value) {
       await chatAgentService.saveChatAgent(formData)
-      message.success('更新成功')
+      message.success(i18n.global.t(v_scope + 'update_success'))
     } else {
       await chatAgentService.saveChatAgent(formData)
-      message.success('创建成功')
+      message.success(i18n.global.t(v_scope + 'create_success'))
     }
 
     modalVisible.value = false
     loadData()
   } catch (error) {
     console.error('保存失败:', error)
-    message.error('保存失败')
+    message.error(i18n.global.t(v_scope + 'save_failed'))
   } finally {
     submitting.value = false
   }

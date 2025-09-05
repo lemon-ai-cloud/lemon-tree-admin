@@ -3,7 +3,7 @@
     <div class="page-header">
       <div class="header-content">
         <a-typography-title :level="2" class="page-title">
-          对话管理
+          {{ $v_translate('page_title') }}
         </a-typography-title>
         <a-button
           type="primary"
@@ -13,7 +13,7 @@
           <template #icon>
             <PlusOutlined />
           </template>
-          创建对话
+          {{ $v_translate('create_conversation') }}
         </a-button>
       </div>
     </div>
@@ -23,7 +23,7 @@
         <template #title>
           <a-input
             v-model:value="search"
-            placeholder="搜索对话"
+            :placeholder="$v_translate('search_conversation')"
             size="large"
             allow-clear
           >
@@ -74,19 +74,19 @@
     <!-- 查看对话详情对话框 -->
     <a-modal
       v-model:open="showDialog"
-      title="对话详情"
+      :title="$v_translate('conversation_detail')"
       :footer="null"
       width="800px"
     >
       <div v-if="selectedConversation" class="conversation-detail">
         <a-descriptions :column="1" bordered>
-          <a-descriptions-item label="对话标题">
+          <a-descriptions-item :label="$v_translate('conversation_title')">
             {{ selectedConversation.title }}
           </a-descriptions-item>
-          <a-descriptions-item label="智能体">
+          <a-descriptions-item :label="$v_translate('agent')">
             {{ selectedConversation.agentName }}
           </a-descriptions-item>
-          <a-descriptions-item label="创建时间">
+          <a-descriptions-item :label="$v_translate('created_time')">
             {{ selectedConversation.createdAt }}
           </a-descriptions-item>
         </a-descriptions>
@@ -94,7 +94,7 @@
         <a-divider />
         
         <a-typography-title :level="4" class="messages-title">
-          消息记录
+          {{ $v_translate('message_records') }}
         </a-typography-title>
         
         <div class="messages-container">
@@ -113,7 +113,7 @@
                     </template>
                   </a-avatar>
                   <span class="message-role">
-                    {{ message.role === 'user' ? '用户' : '智能体' }}
+                    {{ message.role === 'user' ? $v_translate('user') : $v_translate('agent_role') }}
                   </span>
                   <span class="message-time">
                     {{ message.timestamp }}
@@ -132,16 +132,16 @@
     <!-- 删除确认对话框 -->
     <a-modal
       v-model:open="showDeleteDialog"
-      title="确认删除"
+      :title="$v_translate('confirm_delete')"
       @ok="confirmDelete"
       :confirm-loading="deleting"
-      ok-text="删除"
-      cancel-text="取消"
+      :ok-text="$v_translate('delete')"
+      :cancel-text="$v_translate('cancel')"
       ok-type="danger"
     >
       <div class="delete-content">
         <ExclamationCircleOutlined class="delete-icon" />
-        <p>确定要删除对话 "{{ conversationToDelete?.title }}" 吗？此操作不可恢复。</p>
+        <p>{{ $v_translate('delete_conversation_confirm', { title: conversationToDelete?.title }) }}</p>
       </div>
     </a-modal>
   </div>
@@ -158,6 +158,12 @@ import {
   RobotOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons-vue'
+import i18n from '@/i18n.ts'
+
+const v_scope = 'views.app.conversation_view.'
+defineExpose({
+  v_scope
+})
 
 // 状态
 const loading = ref(false)
@@ -172,31 +178,31 @@ const search = ref('')
 // 表格列定义
 const columns = [
   {
-    title: '对话标题',
+    title: i18n.global.t(v_scope + 'conversation_title'),
     dataIndex: 'title',
     key: 'title',
     width: 250
   },
   {
-    title: '智能体',
+    title: i18n.global.t(v_scope + 'agent'),
     dataIndex: 'agentName',
     key: 'agentName',
     width: 150
   },
   {
-    title: '消息数量',
+    title: i18n.global.t(v_scope + 'message_count'),
     dataIndex: 'messageCount',
     key: 'messageCount',
     width: 100
   },
   {
-    title: '创建时间',
+    title: i18n.global.t(v_scope + 'created_time'),
     dataIndex: 'createdAt',
     key: 'createdAt',
     width: 180
   },
   {
-    title: '操作',
+    title: i18n.global.t(v_scope + 'actions'),
     key: 'actions',
     width: 120,
     fixed: 'right'

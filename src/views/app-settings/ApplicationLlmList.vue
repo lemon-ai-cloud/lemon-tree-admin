@@ -2,7 +2,7 @@
   <div class="application-llm-list">
     <div class="list-header">
       <div class="header-content">
-        <p>提供商下的所有可用模型 ({{ models.length }} 个)</p>
+        <p>{{ $v_translate('available_models_count', { count: models.length }) }}</p>
         <a-button 
           type="primary" 
           size="small" 
@@ -12,17 +12,17 @@
           <template #icon>
             <ReloadOutlined />
           </template>
-          刷新模型列表
+          {{ $v_translate('refresh_model_list') }}
         </a-button>
       </div>
     </div>
 
     <div v-if="loading" class="loading">
-      加载中...
+      {{ $v_translate('loading') }}
     </div>
 
     <div v-else-if="models.length === 0" class="no-data">
-      暂无模型数据
+      {{ $v_translate('no_model_data') }}
     </div>
 
     <div v-else class="model-table-container">
@@ -46,12 +46,12 @@
           <!-- 模型能力列 -->
           <template v-else-if="column.key === 'abilities'">
             <div class="model-abilities">
-              <a-tag v-if="record.ability_vision" color="blue" size="small">视觉</a-tag>
-              <a-tag v-if="record.ability_network" color="green" size="small">联网</a-tag>
-              <a-tag v-if="record.ability_text_embeddings" color="orange" size="small">嵌入</a-tag>
-              <a-tag v-if="record.ability_thinking" color="purple" size="small">思考</a-tag>
-              <a-tag v-if="record.ability_call_tools" color="cyan" size="small">工具</a-tag>
-              <a-tag v-if="record.ability_reranking" color="red" size="small">重排</a-tag>
+              <a-tag v-if="record.ability_vision" color="blue" size="small">{{ $v_translate('vision') }}</a-tag>
+              <a-tag v-if="record.ability_network" color="green" size="small">{{ $v_translate('network') }}</a-tag>
+              <a-tag v-if="record.ability_text_embeddings" color="orange" size="small">{{ $v_translate('text_embeddings') }}</a-tag>
+              <a-tag v-if="record.ability_thinking" color="purple" size="small">{{ $v_translate('thinking') }}</a-tag>
+              <a-tag v-if="record.ability_call_tools" color="cyan" size="small">{{ $v_translate('call_tools') }}</a-tag>
+              <a-tag v-if="record.ability_reranking" color="red" size="small">{{ $v_translate('reranking') }}</a-tag>
             </div>
           </template>
 
@@ -60,8 +60,8 @@
             <div class="billing-info">
               <div class="billing-currency">{{ record.billing_currency }}</div>
               <div class="billing-prices">
-                <span class="price-item">输入: {{ record.billing_price_input }}</span>
-                <span class="price-item">输出: {{ record.billing_price_output }}</span>
+                <span class="price-item">{{ $v_translate('input') }}: {{ record.billing_price_input }}</span>
+                <span class="price-item">{{ $v_translate('output') }}: {{ record.billing_price_output }}</span>
               </div>
             </div>
           </template>
@@ -70,7 +70,7 @@
           <template v-else-if="column.key === 'action'">
             <div class="model-actions">
               <a-button type="link" size="small" @click="handleEditModel(record)">
-                编辑
+                {{ $v_translate('edit') }}
               </a-button>
               <a-switch
                 :checked="record.enabled"
@@ -86,7 +86,7 @@
     <!-- 编辑模型对话框 -->
     <a-modal
       v-model:open="editModalVisible"
-      title="编辑模型"
+      :title="$v_translate('edit_model')"
       width="600px"
       @ok="handleEditModalOk"
       @cancel="handleEditModalCancel"
@@ -100,47 +100,47 @@
       >
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item name="name" label="模型名称">
+            <a-form-item name="name" :label="$v_translate('model_name')">
               <a-input
                 v-model:value="editFormData.name" disabled
-                placeholder="请输入模型名称"
+                :placeholder="$v_translate('enter_model_name')"
               />
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item name="alias" label="模型别名">
+            <a-form-item name="alias" :label="$v_translate('model_alias')">
               <a-input
                 v-model:value="editFormData.alias"
-                placeholder="请输入模型别名"
+                :placeholder="$v_translate('enter_model_alias')"
               />
             </a-form-item>
           </a-col>
         </a-row>
 
-        <a-form-item label="模型能力">
+        <a-form-item :label="$v_translate('model_abilities')">
           <a-space wrap>
-            <a-checkbox v-model:checked="editFormData.ability_vision">视觉</a-checkbox>
-            <a-checkbox v-model:checked="editFormData.ability_network">联网</a-checkbox>
-            <a-checkbox v-model:checked="editFormData.ability_text_embeddings">文本嵌入</a-checkbox>
-            <a-checkbox v-model:checked="editFormData.ability_thinking">思考</a-checkbox>
-            <a-checkbox v-model:checked="editFormData.ability_call_tools">调用工具</a-checkbox>
-            <a-checkbox v-model:checked="editFormData.ability_reranking">重排</a-checkbox>
+            <a-checkbox v-model:checked="editFormData.ability_vision">{{ $v_translate('vision') }}</a-checkbox>
+            <a-checkbox v-model:checked="editFormData.ability_network">{{ $v_translate('network') }}</a-checkbox>
+            <a-checkbox v-model:checked="editFormData.ability_text_embeddings">{{ $v_translate('text_embeddings') }}</a-checkbox>
+            <a-checkbox v-model:checked="editFormData.ability_thinking">{{ $v_translate('thinking') }}</a-checkbox>
+            <a-checkbox v-model:checked="editFormData.ability_call_tools">{{ $v_translate('call_tools') }}</a-checkbox>
+            <a-checkbox v-model:checked="editFormData.ability_reranking">{{ $v_translate('reranking') }}</a-checkbox>
           </a-space>
         </a-form-item>
 
         <a-row :gutter="16">
           <a-col :span="8">
-            <a-form-item name="billing_currency" label="计费币种">
+            <a-form-item name="billing_currency" :label="$v_translate('billing_currency')">
               <a-auto-complete
                 v-model:value="editFormData.billing_currency"
-                placeholder="请输入或选择币种代码"
+                :placeholder="$v_translate('enter_or_select_currency')"
                 :options="currencyOptions"
                 allow-clear
               />
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item name="billing_price_input" label="输入价格 (每百万Token)">
+            <a-form-item name="billing_price_input" :label="$v_translate('input_price_per_million_tokens')">
               <a-input-number size="large"
                 v-model:value="editFormData.billing_price_input"
                 :min="0"
@@ -151,7 +151,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item name="billing_price_output" label="输出价格 (每百万Token)">
+            <a-form-item name="billing_price_output" :label="$v_translate('output_price_per_million_tokens')">
               <a-input-number
                 v-model:value="editFormData.billing_price_output"
                 :min="0" size="large"
@@ -163,7 +163,7 @@
           </a-col>
         </a-row>
 
-        <a-form-item name="enabled" label="启用状态">
+        <a-form-item name="enabled" :label="$v_translate('enabled_status')">
           <a-switch v-model:checked="editFormData.enabled" />
         </a-form-item>
       </a-form>
@@ -172,11 +172,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, onMounted, watch, computed } from 'vue'
 import { message, Modal } from 'ant-design-vue'
+import i18n from '@/i18n.ts'
 import { ReloadOutlined } from '@ant-design/icons-vue'
 import type { ApplicationLlmDto, SaveApplicationLlmRequest } from '@/dto/applicationLlm'
 import applicationLlmService from '@/services/applicationLlmService'
+
+const v_scope = 'views.app_settings.application_llm_list.'
+defineExpose({
+  v_scope
+})
 
 // Props
 interface Props {
@@ -213,39 +219,39 @@ const editFormData = reactive<SaveApplicationLlmRequest>({
 })
 
 // 常用币种选项
-const currencyOptions = [
-  { value: 'USD', label: '美元 (USD)' },
-  { value: 'CNY', label: '人民币 (CNY)' },
-  { value: 'EUR', label: '欧元 (EUR)' },
-  { value: 'JPY', label: '日元 (JPY)' },
-  { value: 'GBP', label: '英镑 (GBP)' },
-  { value: 'KRW', label: '韩元 (KRW)' },
-  { value: 'HKD', label: '港币 (HKD)' },
-  { value: 'SGD', label: '新加坡元 (SGD)' },
-  { value: 'CAD', label: '加拿大元 (CAD)' },
-  { value: 'AUD', label: '澳元 (AUD)' }
-]
+const currencyOptions = computed(() => [
+  { value: 'USD', label: i18n.global.t(v_scope + 'usd') },
+  { value: 'CNY', label: i18n.global.t(v_scope + 'cny') },
+  { value: 'EUR', label: i18n.global.t(v_scope + 'eur') },
+  { value: 'JPY', label: i18n.global.t(v_scope + 'jpy') },
+  { value: 'GBP', label: i18n.global.t(v_scope + 'gbp') },
+  { value: 'KRW', label: i18n.global.t(v_scope + 'krw') },
+  { value: 'HKD', label: i18n.global.t(v_scope + 'hkd') },
+  { value: 'SGD', label: i18n.global.t(v_scope + 'sgd') },
+  { value: 'CAD', label: i18n.global.t(v_scope + 'cad') },
+  { value: 'AUD', label: i18n.global.t(v_scope + 'aud') }
+])
 
 // 表格列定义
 const columns = [
   {
-    title: '模型名称',
+    title: i18n.global.t(v_scope + 'model_name'),
     key: 'name',
     width: 200,
     ellipsis: true
   },
   {
-    title: '模型能力',
+    title: i18n.global.t(v_scope + 'model_abilities'),
     key: 'abilities',
     width: 300
   },
   {
-    title: '计费信息',
+    title: i18n.global.t(v_scope + 'billing_info'),
     key: 'billing',
     width: 150
   },
   {
-    title: '操作',
+    title: i18n.global.t(v_scope + 'actions'),
     key: 'action',
     width: 120,
     align: 'center'
@@ -254,11 +260,11 @@ const columns = [
 
 // 表单验证规则
 const formRules = {
-  name: [{ required: true, message: '请输入模型名称', trigger: 'blur' }],
-  alias: [{ required: true, message: '请输入模型别名', trigger: 'blur' }],
-  billing_currency: [{ required: true, message: '请选择计费币种', trigger: 'change' }],
-  billing_price_input: [{ required: true, message: '请输入输入价格', trigger: 'blur' }],
-  billing_price_output: [{ required: true, message: '请输入输出价格', trigger: 'blur' }]
+  name: [{ required: true, message: i18n.global.t(v_scope + 'enter_model_name_required'), trigger: 'blur' }],
+  alias: [{ required: true, message: i18n.global.t(v_scope + 'enter_model_alias_required'), trigger: 'blur' }],
+  billing_currency: [{ required: true, message: i18n.global.t(v_scope + 'select_billing_currency_required'), trigger: 'change' }],
+  billing_price_input: [{ required: true, message: i18n.global.t(v_scope + 'enter_input_price_required'), trigger: 'blur' }],
+  billing_price_output: [{ required: true, message: i18n.global.t(v_scope + 'enter_output_price_required'), trigger: 'blur' }]
 }
 
 // 表单引用
@@ -274,7 +280,7 @@ const loadModels = async () => {
     models.value = response.application_llm
   } catch (error) {
     console.error('加载模型列表失败:', error)
-    message.error('加载模型列表失败')
+    message.error(i18n.global.t(v_scope + 'load_model_list_failed'))
   } finally {
     loading.value = false
   }
@@ -317,11 +323,11 @@ const handleEditModel = (model: ApplicationLlmDto) => {
 const handleToggleEnabled = async (model: ApplicationLlmDto, checked: boolean) => {
   try {
     await applicationLlmService.updateEnabledStatus(model.id, checked)
-    message.success('状态更新成功')
+    message.success(i18n.global.t(v_scope + 'status_update_success'))
     loadModels() // 重新加载数据
   } catch (error) {
     console.error('状态更新失败:', error)
-    message.error('状态更新失败')
+    message.error(i18n.global.t(v_scope + 'status_update_failed'))
   }
 }
 
@@ -333,12 +339,12 @@ const handleEditModalOk = async () => {
     submitting.value = true
     await applicationLlmService.saveApplicationLlm(editFormData)
     
-    message.success('保存成功')
+    message.success(i18n.global.t(v_scope + 'save_success'))
     editModalVisible.value = false
     loadModels() // 重新加载数据
   } catch (error) {
     console.error('保存失败:', error)
-    message.error('保存失败')
+    message.error(i18n.global.t(v_scope + 'save_failed'))
   } finally {
     submitting.value = false
   }
@@ -353,10 +359,10 @@ const handleEditModalCancel = () => {
 // 刷新模型列表
 const handleRefreshModels = () => {
   Modal.confirm({
-    title: '确认刷新模型列表',
-    content: '此操作将从提供商获取最新的模型列表并更新到数据库。已存在的模型将被保留，新增的模型将被添加。确定要继续吗？',
-    okText: '确定',
-    cancelText: '取消',
+    title: i18n.global.t(v_scope + 'confirm_refresh_model_list'),
+    content: i18n.global.t(v_scope + 'refresh_model_list_content'),
+    okText: i18n.global.t(v_scope + 'confirm'),
+    cancelText: i18n.global.t(v_scope + 'cancel'),
     onOk: async () => {
       try {
         refreshing.value = true
@@ -364,13 +370,13 @@ const handleRefreshModels = () => {
         // 调用接口刷新模型列表
         await applicationLlmService.fetchAndSaveModels(props.providerId)
         
-        message.success('模型列表刷新成功')
+        message.success(i18n.global.t(v_scope + 'model_list_refresh_success'))
         
         // 重新加载模型列表
         await loadModels()
       } catch (error) {
         console.error('刷新模型列表失败:', error)
-        message.error('刷新模型列表失败')
+        message.error(i18n.global.t(v_scope + 'model_list_refresh_failed'))
       } finally {
         refreshing.value = false
       }

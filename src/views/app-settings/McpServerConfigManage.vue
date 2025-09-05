@@ -3,15 +3,15 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="header-left">
-        <h1 class="page-title">MCP 工具管理</h1>
-        <p class="page-description">管理应用下的所有 MCP 服务器配置</p>
+        <h1 class="page-title">{{ $v_translate('page_title') }}</h1>
+        <p class="page-description">{{ $v_translate('page_description') }}</p>
       </div>
       <div class="header-actions">
         <a-button type="primary" @click="showCreateModal">
           <template #icon>
             <PlusOutlined/>
           </template>
-          新增 MCP 配置
+          {{ $v_translate('add_mcp_config') }}
         </a-button>
       </div>
     </div>
@@ -41,23 +41,23 @@
                   <template #icon>
                     <EditOutlined/>
                   </template>
-                  编辑
+                  {{ $v_translate('edit') }}
                 </a-button>
                 <a-button type="link" size="small" @click="handleViewTools(record)">
                   <template #icon>
                     <ToolOutlined/>
                   </template>
-                  查看工具
+                  {{ $v_translate('view_tools') }}
                 </a-button>
                 <a-popconfirm
-                    title="确定要删除这个MCP配置吗？"
+                    :title="$v_translate('confirm_delete_mcp_config')"
                     @confirm="handleDelete(record.id)"
                 >
                   <a-button type="link" size="small" danger>
                     <template #icon>
                       <DeleteOutlined/>
                     </template>
-                    删除
+                    {{ $v_translate('delete') }}
                   </a-button>
                 </a-popconfirm>
               </a-space>
@@ -84,37 +84,37 @@
       >
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item name="name" label="配置名称">
+            <a-form-item name="name" :label="$v_translate('config_name')">
               <a-input
                   v-model:value="formData.name"
-                  placeholder="请输入配置名称"
+                  :placeholder="$v_translate('enter_config_name')"
               />
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item name="version" label="版本">
+            <a-form-item name="version" :label="$v_translate('version')">
               <a-input
                   v-model:value="formData.version"
-                  placeholder="请输入版本号"
+                  :placeholder="$v_translate('enter_version')"
               />
             </a-form-item>
           </a-col>
         </a-row>
 
-        <a-form-item name="description" label="配置描述">
+        <a-form-item name="description" :label="$v_translate('description')">
           <a-textarea
               v-model:value="formData.description"
-              placeholder="请输入配置描述"
+              :placeholder="$v_translate('enter_config_description')"
               :rows="3"
           />
         </a-form-item>
 
         <a-row :gutter="16">
           <a-col :span="12">
-            <a-form-item name="mcp_server_connect_type" label="连接方式">
+            <a-form-item name="mcp_server_connect_type" :label="$v_translate('connect_type')">
               <a-select
                   v-model:value="formData.mcp_server_connect_type"
-                  placeholder="请选择连接方式"
+                  :placeholder="$v_translate('select_connect_type')"
                   @change="handleConnectTypeChange"
               >
                 <a-select-option value="sse">SSE</a-select-option>
@@ -124,7 +124,7 @@
             </a-form-item>
           </a-col>
           <a-col :span="12">
-            <a-form-item name="mcp_server_timeout" label="超时时间(秒)">
+            <a-form-item name="mcp_server_timeout" :label="$v_translate('timeout_seconds')">
               <a-input-number size="large"
                               v-model:value="formData.mcp_server_timeout"
                               :min="1"
@@ -138,16 +138,16 @@
         <!-- SSE / Streamable HTTP 配置 -->
         <template
             v-if="formData.mcp_server_connect_type === 'sse' || formData.mcp_server_connect_type === 'streamable-http'">
-          <a-form-item name="mcp_server_url" label="服务器URL">
+          <a-form-item name="mcp_server_url" :label="$v_translate('server_url')">
             <a-input
                 v-model:value="formData.mcp_server_url"
-                placeholder="请输入服务器URL"
+                :placeholder="$v_translate('enter_server_url')"
             />
           </a-form-item>
-          <a-form-item name="mcp_server_header" label="请求头(JSON格式)">
+          <a-form-item name="mcp_server_header" :label="$v_translate('request_headers')">
             <a-textarea
                 v-model:value="formData.mcp_server_header"
-                placeholder='请输入请求头，JSON格式，如：{"Authorization": "Bearer token"}'
+                :placeholder="$v_translate('enter_request_headers')"
                 :rows="3"
             />
           </a-form-item>
@@ -155,22 +155,22 @@
 
         <!-- STDIO 配置 -->
         <template v-if="formData.mcp_server_connect_type === 'stdio'">
-          <a-form-item name="mcp_server_command" label="执行命令">
+          <a-form-item name="mcp_server_command" :label="$v_translate('execute_command')">
             <a-input
                 v-model:value="formData.mcp_server_command"
-                placeholder="请输入执行命令"
+                :placeholder="$v_translate('enter_execute_command')"
             />
           </a-form-item>
-          <a-form-item name="mcp_server_args" label="命令参数">
+          <a-form-item name="mcp_server_args" :label="$v_translate('command_args')">
             <a-input
                 v-model:value="formData.mcp_server_args"
-                placeholder="请输入命令参数，多个参数用空格分隔"
+                :placeholder="$v_translate('enter_command_args')"
             />
           </a-form-item>
-          <a-form-item name="mcp_server_env" label="环境变量(JSON格式)">
+          <a-form-item name="mcp_server_env" :label="$v_translate('env_variables')">
             <a-textarea
                 v-model:value="formData.mcp_server_env"
-                placeholder='请输入环境变量，JSON格式，如：{"PATH": "/usr/bin", "NODE_ENV": "production"}'
+                :placeholder="$v_translate('enter_env_variables')"
                 :rows="3"
             />
           </a-form-item>
@@ -181,12 +181,12 @@
     <!-- 查看工具对话框 -->
     <a-modal
         v-model:open="toolsModalVisible"
-        title="MCP 服务器工具列表"
+        :title="$v_translate('mcp_server_tools_title')"
         width="900px"
         @cancel="handleToolsModalCancel">
       <template #footer>
         <div style="text-align: right;">
-          <a-button @click="handleToolsModalCancel">关闭</a-button>
+          <a-button @click="handleToolsModalCancel">{{ $v_translate('close') }}</a-button>
           <a-button
               type="primary"
               @click="handleSyncToolsFromModal"
@@ -196,30 +196,30 @@
             <template #icon>
               <ReloadOutlined/>
             </template>
-            从MCP Server同步工具列表
+            {{ $v_translate('sync_tools_from_mcp_server') }}
           </a-button>
         </div>
       </template>
       <div v-if="toolsLoading" class="tools-loading">
         <a-spin size="large"/>
-        <div style="margin-top: 16px;">正在获取工具列表...</div>
+        <div style="margin-top: 16px;">{{ $v_translate('getting_tools_list') }}</div>
       </div>
       <div v-else-if="tools.length === 0" class="no-tools">
-        该 MCP 服务器暂无可用工具
+        {{ $v_translate('no_available_tools') }}
       </div>
       <div v-else class="tools-list">
         <div v-for="tool in tools" :key="tool.id" class="tool-item">
           <div class="tool-header">
             <h4 class="tool-name">{{ tool.name }}</h4>
-            <a-tag color="blue" size="small">工具</a-tag>
+            <a-tag color="blue" size="small">{{ $v_translate('tool') }}</a-tag>
           </div>
           <div class="tool-title" v-if="tool.title && tool.title !== tool.name">
-            <strong>标题：</strong>{{ tool.title }}
+            <strong>{{ $v_translate('title') }}</strong>{{ tool.title }}
           </div>
           <div class="tool-description">{{ tool.description }}</div>
           <div class="tool-meta">
             <div class="meta-item">
-              <strong>工具ID：</strong>{{ tool.id }}
+              <strong>{{ $v_translate('tool_id') }}</strong>{{ tool.id }}
             </div>
           </div>
         </div>
@@ -231,6 +231,7 @@
 <script setup lang="ts">
 import {ref, reactive, onMounted, computed, watch} from 'vue'
 import {message} from 'ant-design-vue'
+import i18n from '@/i18n.ts'
 import {
   PlusOutlined,
   SearchOutlined,
@@ -246,6 +247,11 @@ import type {
 } from '@/dto/applicationMcpServerConfig'
 import applicationMcpServerConfigService from '@/services/applicationMcpServerConfigService'
 import {useApplicationStore} from '@/stores/applicationStore'
+
+const v_scope = 'views.app_settings.mcp_server_config_manage.'
+defineExpose({
+  v_scope
+})
 
 // 应用状态管理
 const applicationStore = useApplicationStore()
@@ -290,44 +296,44 @@ const pagination = reactive({
   total: 0,
   showSizeChanger: true,
   showQuickJumper: true,
-  showTotal: (total: number) => `共 ${total} 条记录`
+  showTotal: (total: number) => i18n.global.t(v_scope + 'total_records', { total })
 })
 
 // 表格列定义
 const columns = [
   {
-    title: '配置名称',
+    title: i18n.global.t(v_scope + 'config_name'),
     dataIndex: 'name',
     key: 'name',
     width: 150
   },
   {
-    title: '版本',
+    title: i18n.global.t(v_scope + 'version'),
     dataIndex: 'version',
     key: 'version',
     width: 100
   },
   {
-    title: '连接方式',
+    title: i18n.global.t(v_scope + 'connect_type'),
     key: 'connect_type',
     width: 160,
     align: 'center'
   },
   {
-    title: '描述',
+    title: i18n.global.t(v_scope + 'description'),
     dataIndex: 'description',
     key: 'description',
     ellipsis: true
   },
   {
-    title: '超时时间',
+    title: i18n.global.t(v_scope + 'timeout_seconds'),
     dataIndex: 'mcp_server_timeout',
     key: 'mcp_server_timeout',
     width: 100,
     align: 'center'
   },
   {
-    title: '操作',
+    title: i18n.global.t(v_scope + 'actions'),
     key: 'action',
     width: 280,
     align: 'center',
@@ -336,16 +342,16 @@ const columns = [
 ]
 
 // 计算属性
-const modalTitle = computed(() => isEdit.value ? '编辑 MCP 配置' : '新增 MCP 配置')
+const modalTitle = computed(() => isEdit.value ? i18n.global.t(v_scope + 'edit_mcp_config') : i18n.global.t(v_scope + 'add_mcp_config'))
 const mcpConfigs = ref<ApplicationMcpServerConfigDto[]>([])
 
 // 表单验证规则
 const formRules = {
-  name: [{required: true, message: '请输入配置名称', trigger: 'blur'}],
-  description: [{required: true, message: '请输入配置描述', trigger: 'blur'}],
-  version: [{required: true, message: '请输入版本号', trigger: 'blur'}],
-  mcp_server_connect_type: [{required: true, message: '请选择连接方式', trigger: 'change'}],
-  mcp_server_timeout: [{required: true, message: '请输入超时时间', trigger: 'blur'}]
+  name: [{required: true, message: i18n.global.t(v_scope + 'enter_config_name_required'), trigger: 'blur'}],
+  description: [{required: true, message: i18n.global.t(v_scope + 'enter_config_description_required'), trigger: 'blur'}],
+  version: [{required: true, message: i18n.global.t(v_scope + 'enter_version_required'), trigger: 'blur'}],
+  mcp_server_connect_type: [{required: true, message: i18n.global.t(v_scope + 'select_connect_type_required'), trigger: 'change'}],
+  mcp_server_timeout: [{required: true, message: i18n.global.t(v_scope + 'enter_timeout_required'), trigger: 'blur'}]
 }
 
 // 表单引用
@@ -375,7 +381,7 @@ watch(
 // 加载数据
 const loadData = async () => {
   if (!applicationStore.selectedApplication?.id) {
-    message.warning('请先选择一个应用')
+    message.warning(i18n.global.t(v_scope + 'please_select_application'))
     return
   }
 
@@ -388,7 +394,7 @@ const loadData = async () => {
     pagination.total = response.application_mcp_server_configs.length
   } catch (error) {
     console.error('加载数据失败:', error)
-    message.error('加载数据失败')
+    message.error(i18n.global.t(v_scope + 'load_data_failed'))
   } finally {
     loading.value = false
   }
@@ -420,7 +426,7 @@ const handleTableChange = (pag: any) => {
 // 显示新增对话框
 const showCreateModal = () => {
   if (!applicationStore.selectedApplication?.id) {
-    message.warning('请先选择一个应用')
+    message.warning(i18n.global.t(v_scope + 'please_select_application'))
     return
   }
 
@@ -462,7 +468,7 @@ const handleViewTools = async (record: ApplicationMcpServerConfigDto) => {
     tools.value = response.tools
   } catch (error) {
     console.error('获取工具列表失败:', error)
-    message.error('获取工具列表失败')
+    message.error(i18n.global.t(v_scope + 'get_tools_list_failed'))
   } finally {
     toolsLoading.value = false
   }
@@ -483,11 +489,11 @@ const handleSyncToolsFromModal = async () => {
 
   try {
     const response = await applicationMcpServerConfigService.syncMcpServerTools(currentViewingConfigId.value)
-    message.success(response.message || '工具列表同步成功')
+    message.success(response.message || i18n.global.t(v_scope + 'sync_tools_success'))
     tools.value = response.tools
   } catch (error) {
     console.error('同步工具失败:', error)
-    message.error('同步工具失败')
+    message.error(i18n.global.t(v_scope + 'sync_tools_failed'))
   } finally {
     syncingConfigId.value = null
   }
@@ -497,11 +503,11 @@ const handleSyncToolsFromModal = async () => {
 const handleDelete = async (id: string) => {
   try {
     await applicationMcpServerConfigService.deleteApplicationMcpServerConfig(id)
-    message.success('删除成功')
+    message.success(i18n.global.t(v_scope + 'delete_success'))
     loadData()
   } catch (error) {
     console.error('删除失败:', error)
-    message.error('删除失败')
+    message.error(i18n.global.t(v_scope + 'delete_failed'))
   }
 }
 
@@ -521,7 +527,7 @@ const handleModalOk = async () => {
     await formRef.value.validate()
 
     if (!formData.application_id) {
-      message.error('应用ID不能为空，请重新选择应用')
+      message.error(i18n.global.t(v_scope + 'application_id_required'))
       return
     }
 
@@ -529,17 +535,17 @@ const handleModalOk = async () => {
 
     if (isEdit.value) {
       await applicationMcpServerConfigService.saveApplicationMcpServerConfig(formData)
-      message.success('更新成功')
+      message.success(i18n.global.t(v_scope + 'update_success'))
     } else {
       await applicationMcpServerConfigService.saveApplicationMcpServerConfig(formData)
-      message.success('创建成功')
+      message.success(i18n.global.t(v_scope + 'create_success'))
     }
 
     modalVisible.value = false
     loadData()
   } catch (error) {
     console.error('保存失败:', error)
-    message.error('保存失败')
+    message.error(i18n.global.t(v_scope + 'save_failed'))
   } finally {
     submitting.value = false
   }

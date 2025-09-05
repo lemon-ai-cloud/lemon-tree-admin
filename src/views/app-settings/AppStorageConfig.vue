@@ -3,15 +3,15 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="header-left">
-        <h1 class="page-title">存储配置</h1>
-        <p class="page-description">配置应用的存储方式，支持文件系统和S3存储</p>
+        <h1 class="page-title">{{ $v_translate('page_title') }}</h1>
+        <p class="page-description">{{ $v_translate('page_description') }}</p>
       </div>
       <div class="header-actions">
         <a-button type="primary" @click="handleSave" :loading="saving">
           <template #icon>
             <SaveOutlined/>
           </template>
-          保存配置
+          {{ $v_translate('save_config') }}
         </a-button>
       </div>
     </div>
@@ -26,19 +26,19 @@
             layout="vertical"
         >
           <!-- 存储类型选择 -->
-          <a-form-item name="type" label="存储类型">
+          <a-form-item name="type" :label="$v_translate('storage_type')">
             <a-radio-group v-model:value="formData.type" @change="handleStorageTypeChange">
-              <a-radio value="file_system">文件系统</a-radio>
-              <a-radio value="s3">S3存储</a-radio>
+              <a-radio value="file_system">{{ $v_translate('file_system') }}</a-radio>
+              <a-radio value="s3">{{ $v_translate('s3_storage') }}</a-radio>
             </a-radio-group>
           </a-form-item>
 
           <!-- 文件系统配置 -->
           <template v-if="formData.type === 'file_system'">
-            <a-form-item name="root_path" label="根路径">
+            <a-form-item name="root_path" :label="$v_translate('root_path')">
               <a-input
                   v-model:value="formData.root_path"
-                  placeholder="请输入文件系统根路径，如：/data/storage"
+                  :placeholder="$v_translate('enter_root_path')"
                   size="large"
               />
             </a-form-item>
@@ -48,58 +48,58 @@
           <template v-if="formData.type === 's3'">
             <a-row :gutter="16">
               <a-col :span="12">
-                <a-form-item name="endpoint" label="Endpoint">
+                <a-form-item name="endpoint" :label="$v_translate('endpoint')">
                   <a-input
                       v-model:value="formData.endpoint"
-                      placeholder="请输入S3存储桶endpoint"
+                      :placeholder="$v_translate('enter_endpoint')"
                       size="large"
                   />
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item name="region" label="Region">
+                <a-form-item name="region" :label="$v_translate('region')">
                   <a-input
                       v-model:value="formData.region"
-                      placeholder="请输入S3存储桶区域"
+                      :placeholder="$v_translate('enter_region')"
                       size="large"
                   />
                 </a-form-item>
               </a-col>
             </a-row>
 
-            <a-form-item name="bucket_name" label="存储桶名称">
+            <a-form-item name="bucket_name" :label="$v_translate('bucket_name')">
               <a-input
                   v-model:value="formData.bucket_name"
-                  placeholder="请输入S3存储桶名称"
+                  :placeholder="$v_translate('enter_bucket_name')"
                   size="large"
               />
             </a-form-item>
 
             <a-row :gutter="16">
               <a-col :span="12">
-                <a-form-item name="secret_id" label="Secret ID">
+                <a-form-item name="secret_id" :label="$v_translate('secret_id')">
                   <a-input
                       v-model:value="formData.secret_id"
-                      placeholder="请输入S3存储安全ID"
+                      :placeholder="$v_translate('enter_secret_id')"
                       size="large"
                   />
                 </a-form-item>
               </a-col>
               <a-col :span="12">
-                <a-form-item name="secret_key" label="Secret Key">
+                <a-form-item name="secret_key" :label="$v_translate('secret_key')">
                   <a-input-password
                       v-model:value="formData.secret_key"
-                      placeholder="请输入S3存储密钥"
+                      :placeholder="$v_translate('enter_secret_key')"
                       size="large"
                   />
                 </a-form-item>
               </a-col>
             </a-row>
 
-            <a-form-item name="key_prefix" label="Key前缀">
+            <a-form-item name="key_prefix" :label="$v_translate('key_prefix')">
               <a-input
                   v-model:value="formData.key_prefix"
-                  placeholder="请输入S3存储文件key前缀，用于设置根路径"
+                  :placeholder="$v_translate('enter_key_prefix')"
                   size="large"
               />
             </a-form-item>
@@ -121,10 +121,16 @@
 <script setup lang="ts">
 import {ref, reactive, onMounted, computed, watch} from 'vue'
 import {message} from 'ant-design-vue'
+import i18n from '@/i18n.ts'
 import {SaveOutlined} from '@ant-design/icons-vue'
 import type {ApplicationStorageConfigDto, SaveApplicationStorageConfigRequest} from '@/dto/applicationStorageConfig'
 import applicationStorageConfigService from '@/services/applicationStorageConfigService'
 import {useApplicationStore} from '@/stores/applicationStore'
+
+const v_scope = 'views.app_settings.app_storage_config.'
+defineExpose({
+  v_scope
+})
 
 // 应用状态管理
 const applicationStore = useApplicationStore()
@@ -150,17 +156,17 @@ const formData = reactive<SaveApplicationStorageConfigRequest>({
 // 表单验证规则
 const formRules = computed(() => {
   const rules: any = {
-    type: [{required: true, message: '请选择存储类型', trigger: 'change'}]
+    type: [{required: true, message: i18n.global.t(v_scope + 'select_storage_type_required'), trigger: 'change'}]
   }
 
   if (formData.type === 'file_system') {
-    rules.root_path = [{required: true, message: '请输入文件系统根路径', trigger: 'blur'}]
+    rules.root_path = [{required: true, message: i18n.global.t(v_scope + 'enter_root_path_required'), trigger: 'blur'}]
   } else if (formData.type === 's3') {
-    rules.endpoint = [{required: true, message: '请输入S3存储桶endpoint', trigger: 'blur'}]
-    rules.region = [{required: true, message: '请输入S3存储桶区域', trigger: 'blur'}]
-    rules.bucket_name = [{required: true, message: '请输入S3存储桶名称', trigger: 'blur'}]
-    rules.secret_id = [{required: true, message: '请输入S3存储安全ID', trigger: 'blur'}]
-    rules.secret_key = [{required: true, message: '请输入S3存储密钥', trigger: 'blur'}]
+    rules.endpoint = [{required: true, message: i18n.global.t(v_scope + 'enter_endpoint_required'), trigger: 'blur'}]
+    rules.region = [{required: true, message: i18n.global.t(v_scope + 'enter_region_required'), trigger: 'blur'}]
+    rules.bucket_name = [{required: true, message: i18n.global.t(v_scope + 'enter_bucket_name_required'), trigger: 'blur'}]
+    rules.secret_id = [{required: true, message: i18n.global.t(v_scope + 'enter_secret_id_required'), trigger: 'blur'}]
+    rules.secret_key = [{required: true, message: i18n.global.t(v_scope + 'enter_secret_key_required'), trigger: 'blur'}]
   }
 
   return rules
@@ -193,7 +199,7 @@ watch(
 // 加载配置
 const loadConfig = async () => {
   if (!applicationStore.selectedApplication?.id) {
-    message.warning('请先选择一个应用')
+    message.warning(i18n.global.t(v_scope + 'please_select_application'))
     return
   }
 
@@ -224,7 +230,7 @@ const loadConfig = async () => {
     }
   } catch (error) {
     console.error('加载配置失败:', error)
-    message.error('加载配置失败')
+    message.error(i18n.global.t(v_scope + 'load_config_failed'))
   } finally {
     loading.value = false
   }
@@ -251,20 +257,20 @@ const handleSave = async () => {
     await formRef.value.validate()
 
     if (!formData.application_id) {
-      message.error('应用ID不能为空，请重新选择应用')
+      message.error(i18n.global.t(v_scope + 'application_id_required'))
       return
     }
 
     saving.value = true
 
     await applicationStorageConfigService.saveApplicationStorageConfig(formData)
-    message.success('配置保存成功')
+    message.success(i18n.global.t(v_scope + 'config_save_success'))
     
     // 重新加载配置以获取最新的ID
     await loadConfig()
   } catch (error) {
     console.error('保存配置失败:', error)
-    message.error('保存配置失败')
+    message.error(i18n.global.t(v_scope + 'config_save_failed'))
   } finally {
     saving.value = false
   }
@@ -297,9 +303,9 @@ const resetForm = () => {
 // 获取存储类型描述
 const getStorageTypeDescription = () => {
   if (formData.type === 'file_system') {
-    return '文件系统存储：将文件存储在服务器的本地文件系统中。适用于单机部署或内网环境。'
+    return i18n.global.t(v_scope + 'file_system_description')
   } else if (formData.type === 's3') {
-    return 'S3存储：将文件存储在兼容S3协议的云存储服务中。适用于分布式部署或需要高可用性的场景。'
+    return i18n.global.t(v_scope + 's3_storage_description')
   }
   return ''
 }
