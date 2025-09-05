@@ -90,7 +90,7 @@
                   </template>
                   {{ $v_translate('mcp_tools_management') }}
                 </a-menu-item>
-                <a-menu-item key="internal-tools" @click="$router.push('/app-settings/storage-config')">
+                <a-menu-item key="storage-config" @click="$router.push('/app-settings/storage-config')">
                   <template #icon>
                     <FileOutlined/>
                   </template>

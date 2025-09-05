@@ -29,7 +29,7 @@ export default {
     view_tools: 'View Tools',
     delete: 'Delete',
     confirm_delete_mcp_config: 'Are you sure to delete this MCP config?',
-    total_records: 'Total {{total}} records',
+    total_records: 'Total {total} records',
     mcp_server_tools_list: 'MCP Server Tools List',
     close: 'Close',
     sync_tools_from_mcp_server: 'Sync Tools List from MCP Server',
@@ -86,4 +86,5 @@ export default {
     create_success: 'Created successfully',
     save_failed: 'Failed to save',
     application_id_required: 'Application ID cannot be empty, please reselect application',
+    actions: 'Actions',
 }

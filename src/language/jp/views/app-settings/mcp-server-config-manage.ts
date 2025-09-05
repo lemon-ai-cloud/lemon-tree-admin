@@ -29,7 +29,7 @@ export default {
     view_tools: 'ツール表示',
     delete: '削除',
     confirm_delete_mcp_config: 'このMCP設定を削除してもよろしいですか？',
-    total_records: '合計 {{total}} 件のレコード',
+    total_records: '合計 {total} 件のレコード',
     mcp_server_tools_list: 'MCPサーバーツールリスト',
     close: '閉じる',
     sync_tools_from_mcp_server: 'MCP Serverからツールリストを同期',
@@ -86,4 +86,5 @@ export default {
     create_success: '作成に成功しました',
     save_failed: '保存に失敗しました',
     application_id_required: 'アプリケーションIDは空にできません。アプリケーションを再選択してください',
+    actions: '操作',
 }

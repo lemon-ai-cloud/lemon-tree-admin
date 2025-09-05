@@ -217,7 +217,7 @@ const rules = {
 }
 
 // 表格列定义
-const columns = [
+const columns = computed(() => [
   {
     title: i18n.global.t(v_scope + 'application_name'),
     dataIndex: 'name',
@@ -242,7 +242,7 @@ const columns = [
     width: 120,
     fixed: 'right'
   }
-]
+])
 
 // 过滤后的应用列表
 const filteredApplications = computed(() => {
@@ -258,15 +258,6 @@ const filteredApplications = computed(() => {
 // 格式化日期
 const formatDate = (dateString: string) => {
   return new Date(dateString).toLocaleString('zh-CN')
-}
-
-// 获取应用列表
-const fetchApplications = async () => {
-  try {
-    await applicationStore.fetchApplications()
-  } catch (error) {
-    console.error('获取应用列表失败:', error)
-  }
 }
 
 // 编辑应用

@@ -24,21 +24,6 @@
     <!-- 主要内容区域 -->
     <div class="content-area">
       <a-card class="user-card">
-        <!-- 搜索栏 -->
-        <div class="search-section">
-          <a-input
-            v-model:value="search"
-            :placeholder="$v_translate('search_placeholder')"
-            size="large"
-            class="search-field"
-            allow-clear
-          >
-            <template #prefix>
-              <SearchOutlined />
-            </template>
-          </a-input>
-        </div>
-
         <!-- 用户列表 -->
         <div class="table-section">
           <a-table
@@ -290,7 +275,7 @@ const rules = {
 }
 
 // 表格列定义
-const columns = [
+const columns = computed(() => [
   {
     title: i18n.global.t(v_scope + 'user_name'),
     dataIndex: 'name',
@@ -321,7 +306,7 @@ const columns = [
     width: 120,
     fixed: 'right'
   }
-]
+])
 
 // 过滤后的用户列表
 const filteredUsers = computed(() => {
@@ -460,14 +445,6 @@ onMounted(() => {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-.search-section {
-  padding: 24px 24px 0;
-}
-
-.search-field {
-  max-width: 400px;
-}
-
 .table-section {
   padding: 0 24px 24px;
 }
@@ -561,11 +538,7 @@ onMounted(() => {
     align-items: flex-start;
     gap: 16px;
   }
-  
-  .search-field {
-    max-width: 100%;
-  }
-  
+
   .action-buttons {
     flex-direction: column;
     gap: 4px;

@@ -59,7 +59,7 @@ const router = createRouter({
                 },
                 {
                     path: '/app-settings/storage-config',
-                    name: 'app-mcp-tools-manage',
+                    name: 'app-storage-config',
                     component: () => import('@/views/app-settings/AppStorageConfig.vue'),
                     meta: {requiresApp: true}
                 },

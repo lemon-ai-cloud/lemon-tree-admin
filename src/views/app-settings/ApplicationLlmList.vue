@@ -233,7 +233,7 @@ const currencyOptions = computed(() => [
 ])
 
 // 表格列定义
-const columns = [
+const columns = computed(() => [
   {
     title: i18n.global.t(v_scope + 'model_name'),
     key: 'name',
@@ -256,7 +256,7 @@ const columns = [
     width: 120,
     align: 'center'
   }
-]
+])
 
 // 表单验证规则
 const formRules = {

@@ -300,7 +300,7 @@ const pagination = reactive({
 })
 
 // 表格列定义
-const columns = [
+const columns = computed(() => [
   {
     title: i18n.global.t(v_scope + 'config_name'),
     dataIndex: 'name',
@@ -311,7 +311,7 @@ const columns = [
     title: i18n.global.t(v_scope + 'version'),
     dataIndex: 'version',
     key: 'version',
-    width: 100
+    width: 120
   },
   {
     title: i18n.global.t(v_scope + 'connect_type'),
@@ -329,7 +329,7 @@ const columns = [
     title: i18n.global.t(v_scope + 'timeout_seconds'),
     dataIndex: 'mcp_server_timeout',
     key: 'mcp_server_timeout',
-    width: 100,
+    width: 180,
     align: 'center'
   },
   {
@@ -339,7 +339,7 @@ const columns = [
     align: 'center',
     fixed: 'right'
   }
-]
+])
 
 // 计算属性
 const modalTitle = computed(() => isEdit.value ? i18n.global.t(v_scope + 'edit_mcp_config') : i18n.global.t(v_scope + 'add_mcp_config'))

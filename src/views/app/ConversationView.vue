@@ -176,7 +176,7 @@ const conversationToDelete = ref<any>(null)
 const search = ref('')
 
 // 表格列定义
-const columns = [
+const columns = computed(() => [
   {
     title: i18n.global.t(v_scope + 'conversation_title'),
     dataIndex: 'title',
@@ -207,7 +207,7 @@ const columns = [
     width: 120,
     fixed: 'right'
   }
-]
+])
 
 // 过滤后的对话列表
 const filteredConversations = computed(() => {

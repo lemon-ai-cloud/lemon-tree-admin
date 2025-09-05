@@ -29,7 +29,7 @@ export default {
     view_tools: '查看工具',
     delete: '删除',
     confirm_delete_mcp_config: '确定要删除这个MCP配置吗？',
-    total_records: '共 {{total}} 条记录',
+    total_records: '共 {total} 条记录',
     mcp_server_tools_list: 'MCP 服务器工具列表',
     close: '关闭',
     sync_tools_from_mcp_server: '从MCP Server同步工具列表',
@@ -86,4 +86,5 @@ export default {
     create_success: '创建成功',
     save_failed: '保存失败',
     application_id_required: '应用ID不能为空，请重新选择应用',
+    actions: '操作',
 }

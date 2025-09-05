@@ -304,7 +304,7 @@ const pagination = reactive({
 })
 
 // 表格列定义
-const columns = [
+const columns = computed(() => [
   {
     title: i18n.global.t(v_scope + 'icon'),
     key: 'icon',
@@ -342,7 +342,7 @@ const columns = [
     align: 'center',
     fixed: 'right'
   }
-]
+])
 
 // 计算属性
 const modalTitle = computed(() => isEdit.value ? i18n.global.t(v_scope + 'edit_provider') : i18n.global.t(v_scope + 'add_provider'))
