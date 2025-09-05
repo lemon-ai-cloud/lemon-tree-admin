@@ -1,29 +1,29 @@
 <template>
   <a-layout class="lemon-theme">
-        <!-- 顶部工具栏 -->
+    <!-- 顶部工具栏 -->
     <a-layout-header class="main-navbar">
       <div class="header-content">
         <div class="header-left">
           <img src="../../assets/images/common/logo-horizontal-banner.png" class="logo-image" alt="Logo"/>
-          
+
           <!-- 应用选择下拉菜单 -->
           <a-dropdown v-model:open="showAppMenu" placement="bottomRight">
             <a-button type="text" class="app-select-btn">
               <template #icon>
-                <AppstoreOutlined />
+                <AppstoreOutlined/>
               </template>
               {{ applicationStore.selectedAppName }}
-              <DownOutlined />
+              <DownOutlined/>
             </a-button>
             <template #overlay>
               <a-menu class="app-menu">
                 <a-menu-item-group title="应用列表">
                   <template v-if="applicationStore.applications.length > 0">
                     <a-menu-item
-                      v-for="app in applicationStore.applications"
-                      :key="app.id"
-                      @click="selectApp(app)"
-                      :class="{ 
+                        v-for="app in applicationStore.applications"
+                        :key="app.id"
+                        @click="selectApp(app)"
+                        :class="{
                         'ant-menu-item-selected': applicationStore.selectedApplication?.id === app.id,
                         'app-menu-item-selected': applicationStore.selectedApplication?.id === app.id 
                       }"
@@ -31,9 +31,9 @@
                       <div class="app-menu-item">
                         <div class="app-name">
                           {{ app.name }}
-                          <CheckOutlined 
-                            v-if="applicationStore.selectedApplication?.id === app.id" 
-                            class="selected-icon" 
+                          <CheckOutlined
+                              v-if="applicationStore.selectedApplication?.id === app.id"
+                              class="selected-icon"
                           />
                         </div>
                         <div class="app-description">{{ app.description }}</div>
@@ -43,7 +43,7 @@
                   <template v-else>
                     <div class="empty-apps">
                       <div class="empty-icon">
-                        <AppstoreOutlined />
+                        <AppstoreOutlined/>
                       </div>
                       <div class="empty-text">暂无应用</div>
                       <div class="empty-hint">点击下方按钮创建应用</div>
@@ -58,41 +58,41 @@
           <div v-if="applicationStore.selectedApplication" class="app-menu-bar">
             <a-menu mode="horizontal" class="app-menu-horizontal">
               <a-menu-item
-                v-for="item in appMenuItems"
-                :key="item.to"
-                @click="$router.push(item.to)"
-                :class="{ 'ant-menu-item-selected': $route.path === item.to }"
+                  v-for="item in appMenuItems"
+                  :key="item.to"
+                  @click="$router.push(item.to)"
+                  :class="{ 'ant-menu-item-selected': $route.path === item.to }"
               >
                 <template #icon>
-                  <component :is="item.icon" />
+                  <component :is="item.icon"/>
                 </template>
                 {{ item.title }}
               </a-menu-item>
-              
+
               <!-- 应用设置二级菜单 -->
               <a-sub-menu key="settings" class="settings-submenu">
                 <template #icon>
-                  <SettingOutlined />
+                  <SettingOutlined/>
                 </template>
                 <template #title>
                   应用设置
-                  <DownOutlined class="submenu-arrow" />
+                  <DownOutlined class="submenu-arrow"/>
                 </template>
                 <a-menu-item key="model-management" @click="$router.push('/app-settings/llm-manage')">
                   <template #icon>
-                    <ApiOutlined />
+                    <ApiOutlined/>
                   </template>
                   模型管理
                 </a-menu-item>
                 <a-menu-item key="mcp-tools" @click="$router.push('/app-settings/mcp-tools-manage')">
                   <template #icon>
-                    <ToolOutlined />
+                    <ToolOutlined/>
                   </template>
                   MCP工具管理
                 </a-menu-item>
                 <a-menu-item key="internal-tools" @click="$router.push('/app-settings/internal-tools-manage')">
                   <template #icon>
-                    <AppstoreOutlined />
+                    <AppstoreOutlined/>
                   </template>
                   内部工具管理
                 </a-menu-item>
@@ -109,27 +109,21 @@
                 <SettingOutlined/>
               </template>
               系统管理
-              <DownOutlined />
+              <DownOutlined/>
             </a-button>
             <template #overlay>
               <a-menu class="system-menu">
                 <a-menu-item @click="$router.push('/system-settings/applications')">
                   <template #icon>
-                    <AppstoreOutlined />
+                    <AppstoreOutlined/>
                   </template>
                   应用管理
                 </a-menu-item>
                 <a-menu-item @click="$router.push('/system-settings/users')">
                   <template #icon>
-                    <TeamOutlined />
+                    <TeamOutlined/>
                   </template>
                   系统用户管理
-                </a-menu-item>
-                <a-menu-item @click="$router.push('/system-settings/llm-providers')">
-                  <template #icon>
-                    <ApiOutlined />
-                  </template>
-                  大模型提供商管理
                 </a-menu-item>
               </a-menu>
             </template>
@@ -138,7 +132,7 @@
           <!-- 用户菜单 -->
           <a-dropdown placement="bottomRight">
             <a-button type="text" class="user-btn">
-              <UserOutlined />
+              <UserOutlined/>
             </a-button>
             <template #overlay>
               <a-menu class="user-menu">
@@ -148,10 +142,10 @@
                     <div class="user-subtitle">当前用户</div>
                   </div>
                 </a-menu-item>
-                <a-menu-divider />
+                <a-menu-divider/>
                 <a-menu-item @click="handleLogout">
                   <template #icon>
-                    <LogoutOutlined />
+                    <LogoutOutlined/>
                   </template>
                   退出登录
                 </a-menu-item>
@@ -174,34 +168,34 @@
 
     <!-- 创建应用对话框 -->
     <a-modal
-      v-model:open="showCreateAppDialog"
-      title="创建新应用"
-      @ok="createApp"
-      :confirm-loading="creatingApp"
-      :ok-text="'创建'"
-      :cancel-text="'取消'"
-      width="500px"
+        v-model:open="showCreateAppDialog"
+        title="创建新应用"
+        @ok="createApp"
+        :confirm-loading="creatingApp"
+        :ok-text="'创建'"
+        :cancel-text="'取消'"
+        width="500px"
     >
       <a-form
-        ref="createAppForm"
-        :model="newApp"
-        :rules="rules"
-        layout="vertical"
-        @finish="createApp"
+          ref="createAppForm"
+          :model="newApp"
+          :rules="rules"
+          layout="vertical"
+          @finish="createApp"
       >
         <a-form-item name="name" label="应用名称">
           <a-input
-            v-model:value="newApp.name"
-            placeholder="请输入应用名称"
-            size="large"
+              v-model:value="newApp.name"
+              placeholder="请输入应用名称"
+              size="large"
           />
         </a-form-item>
         <a-form-item name="description" label="应用描述">
           <a-textarea
-            v-model:value="newApp.description"
-            placeholder="请输入应用描述"
-            :rows="4"
-            size="large"
+              v-model:value="newApp.description"
+              placeholder="请输入应用描述"
+              :rows="4"
+              size="large"
           />
         </a-form-item>
       </a-form>
@@ -210,25 +204,22 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore.ts'
-import { useApplicationStore } from '@/stores/applicationStore.ts'
+import {computed, onMounted, reactive, ref} from 'vue'
+import {useRouter} from 'vue-router'
+import {useUserStore} from '@/stores/userStore.ts'
+import {useApplicationStore} from '@/stores/applicationStore.ts'
 import {
-  AppstoreOutlined,
-  DownOutlined,
-  SettingOutlined,
-  UserOutlined,
-  TeamOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  MenuOutlined,
-  RobotOutlined,
-  MessageOutlined,
-  LogoutOutlined,
   ApiOutlined,
+  AppstoreOutlined,
   CheckOutlined,
-  ToolOutlined
+  DownOutlined,
+  LogoutOutlined,
+  MessageOutlined,
+  RobotOutlined,
+  SettingOutlined,
+  TeamOutlined,
+  ToolOutlined,
+  UserOutlined
 } from '@ant-design/icons-vue'
 
 const router = useRouter()
@@ -249,10 +240,10 @@ const newApp = reactive({
 // 表单验证规则
 const rules = {
   name: [
-    { required: true, message: '请输入应用名称', trigger: 'blur' }
+    {required: true, message: '请输入应用名称', trigger: 'blur'}
   ],
   description: [
-    { required: true, message: '请输入应用描述', trigger: 'blur' }
+    {required: true, message: '请输入应用描述', trigger: 'blur'}
   ]
 }
 
@@ -267,7 +258,7 @@ const appMenuItems = computed(() => [
     title: '对话管理',
     icon: MessageOutlined,
     to: '/app-conversations'
-  },
+  }
 ])
 
 // 选择应用
@@ -275,7 +266,6 @@ const selectApp = (app: any) => {
   applicationStore.selectApplication(app)
   showAppMenu.value = false
 }
-
 
 
 // 创建应用
@@ -422,12 +412,12 @@ onMounted(async () => {
   font-size: 14px;
   margin: 0;
   border-radius: 0;
-  
+
   &:hover {
     background-color: #F5F5F5;
     color: #5ab067;
   }
-  
+
   .anticon {
     font-size: 14px;
     margin-right: 8px;
@@ -468,14 +458,14 @@ onMounted(async () => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    
+
     .selected-icon {
       color: #5ab067;
       font-size: 14px;
       margin-left: 8px;
     }
   }
-  
+
   .app-description {
     font-size: 12px;
     color: #666666;
@@ -487,12 +477,12 @@ onMounted(async () => {
 .app-menu-item-selected {
   background-color: #f6ffed !important;
   border-right: 3px solid #5ab067 !important;
-  
+
   .app-name {
     color: #5ab067 !important;
     font-weight: 600 !important;
   }
-  
+
   .app-description {
     color: #52c41a !important;
   }
@@ -501,7 +491,7 @@ onMounted(async () => {
 // 应用菜单项悬停效果
 .ant-menu-item:hover {
   background-color: #f0f9ff !important;
-  
+
   &.app-menu-item-selected {
     background-color: #f6ffed !important;
   }
@@ -513,20 +503,20 @@ onMounted(async () => {
   background: #FAFAFA;
   border-radius: 6px;
   margin: 8px 16px;
-  
+
   .empty-icon {
     font-size: 32px;
     color: #CCCCCC;
     margin-bottom: 8px;
   }
-  
+
   .empty-text {
     font-size: 14px;
     color: #666666;
     font-weight: 500;
     margin-bottom: 4px;
   }
-  
+
   .empty-hint {
     font-size: 12px;
     color: #999999;
@@ -538,7 +528,7 @@ onMounted(async () => {
     font-weight: 500;
     color: #333333;
   }
-  
+
   .user-subtitle {
     font-size: 12px;
     color: #666666;
@@ -589,12 +579,12 @@ onMounted(async () => {
   .header-content {
     padding: 0 16px;
   }
-  
+
   .app-select-btn,
   .system-btn {
     display: none;
   }
-  
+
   .secondary-nav {
     position: fixed;
     z-index: 1000;
@@ -610,13 +600,13 @@ onMounted(async () => {
     margin: 0 8px;
     padding: 0 16px;
     white-space: nowrap;
-    
+
     &:hover {
       color: #5ab067;
       border-bottom-color: #5ab067;
     }
   }
-  
+
   &.ant-menu-submenu-open .ant-menu-submenu-title {
     color: #5ab067;
     border-bottom-color: #5ab067;
@@ -629,19 +619,19 @@ onMounted(async () => {
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 160px;
-  
+
   .ant-menu-item {
     height: 40px;
     line-height: 40px;
     padding: 0 16px;
     margin: 0;
     border-radius: 0;
-    
+
     &:hover {
       background-color: #F5F5F5;
       color: #5ab067;
     }
-    
+
     .anticon {
       margin-right: 8px;
       font-size: 14px;

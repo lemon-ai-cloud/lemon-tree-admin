@@ -15,48 +15,6 @@
         </a-button>
       </div>
     </div>
-
-    <!-- 搜索和筛选区域 -->
-    <div class="search-section">
-      <a-card>
-        <a-form layout="inline" :model="searchForm" @finish="handleSearch">
-          <a-form-item name="name" label="配置名称">
-            <a-input
-                v-model:value="searchForm.name"
-                placeholder="请输入配置名称"
-                allow-clear
-            />
-          </a-form-item>
-          <a-form-item name="connect_type" label="连接方式">
-            <a-select
-                v-model:value="searchForm.connect_type"
-                placeholder="请选择连接方式"
-                allow-clear
-                style="width: 200px"
-            >
-              <a-select-option value="sse">SSE</a-select-option>
-              <a-select-option value="stdio">STDIO</a-select-option>
-              <a-select-option value="streamable-http">Streamable HTTP</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" html-type="submit">
-              <template #icon>
-                <SearchOutlined/>
-              </template>
-              搜索
-            </a-button>
-            <a-button style="margin-left: 8px" @click="handleReset">
-              <template #icon>
-                <ReloadOutlined/>
-              </template>
-              重置
-            </a-button>
-          </a-form-item>
-        </a-form>
-      </a-card>
-    </div>
-
     <!-- 数据表格 -->
     <div class="table-section">
       <a-card>
@@ -168,17 +126,18 @@
           <a-col :span="12">
             <a-form-item name="mcp_server_timeout" label="超时时间(秒)">
               <a-input-number size="large"
-                  v-model:value="formData.mcp_server_timeout"
-                  :min="1"
-                  :max="300"
-                  style="width: 100%"
+                              v-model:value="formData.mcp_server_timeout"
+                              :min="1"
+                              :max="300"
+                              style="width: 100%"
               />
             </a-form-item>
           </a-col>
         </a-row>
 
         <!-- SSE / Streamable HTTP 配置 -->
-        <template v-if="formData.mcp_server_connect_type === 'sse' || formData.mcp_server_connect_type === 'streamable-http'">
+        <template
+            v-if="formData.mcp_server_connect_type === 'sse' || formData.mcp_server_connect_type === 'streamable-http'">
           <a-form-item name="mcp_server_url" label="服务器URL">
             <a-input
                 v-model:value="formData.mcp_server_url"
@@ -224,10 +183,25 @@
         v-model:open="toolsModalVisible"
         title="MCP 服务器工具列表"
         width="900px"
-        @cancel="handleToolsModalCancel"
-        :footer="null">
+        @cancel="handleToolsModalCancel">
+      <template #footer>
+        <div style="text-align: right;">
+          <a-button @click="handleToolsModalCancel">关闭</a-button>
+          <a-button
+              type="primary"
+              @click="handleSyncToolsFromModal"
+              :loading="syncingConfigId === currentViewingConfigId"
+              style="margin-left: 8px;"
+          >
+            <template #icon>
+              <ReloadOutlined/>
+            </template>
+            从MCP Server同步工具列表
+          </a-button>
+        </div>
+      </template>
       <div v-if="toolsLoading" class="tools-loading">
-        <a-spin size="large" />
+        <a-spin size="large"/>
         <div style="margin-top: 16px;">正在获取工具列表...</div>
       </div>
       <div v-else-if="tools.length === 0" class="no-tools">
@@ -265,7 +239,11 @@ import {
   DeleteOutlined,
   ToolOutlined
 } from '@ant-design/icons-vue'
-import type {ApplicationMcpServerConfigDto, SaveApplicationMcpServerConfigRequest, ApplicationMcpServerToolDto} from '@/dto/applicationMcpServerConfig'
+import type {
+  ApplicationMcpServerConfigDto,
+  SaveApplicationMcpServerConfigRequest,
+  ApplicationMcpServerToolDto
+} from '@/dto/applicationMcpServerConfig'
 import applicationMcpServerConfigService from '@/services/applicationMcpServerConfigService'
 import {useApplicationStore} from '@/stores/applicationStore'
 
@@ -280,6 +258,8 @@ const isEdit = ref(false)
 const toolsModalVisible = ref(false)
 const toolsLoading = ref(false)
 const tools = ref<ApplicationMcpServerToolDto[]>([])
+const syncingConfigId = ref<string | null>(null)
+const currentViewingConfigId = ref<string | null>(null)
 
 // 表单数据
 const formData = reactive<SaveApplicationMcpServerConfigRequest>({
@@ -475,6 +455,7 @@ const handleViewTools = async (record: ApplicationMcpServerConfigDto) => {
   toolsModalVisible.value = true
   toolsLoading.value = true
   tools.value = []
+  currentViewingConfigId.value = record.id
 
   try {
     const response = await applicationMcpServerConfigService.getMcpServerTools(record.id)
@@ -491,6 +472,25 @@ const handleViewTools = async (record: ApplicationMcpServerConfigDto) => {
 const handleToolsModalCancel = () => {
   toolsModalVisible.value = false
   tools.value = []
+  currentViewingConfigId.value = null
+}
+
+// 从模态框同步工具
+const handleSyncToolsFromModal = async () => {
+  if (!currentViewingConfigId.value) return
+
+  syncingConfigId.value = currentViewingConfigId.value
+
+  try {
+    const response = await applicationMcpServerConfigService.syncMcpServerTools(currentViewingConfigId.value)
+    message.success(response.message || '工具列表同步成功')
+    tools.value = response.tools
+  } catch (error) {
+    console.error('同步工具失败:', error)
+    message.error('同步工具失败')
+  } finally {
+    syncingConfigId.value = null
+  }
 }
 
 // 删除处理
@@ -626,10 +626,6 @@ const getConnectTypeLabel = (type: string) => {
     }
   }
 
-  .search-section {
-    margin-bottom: 24px;
-  }
-
   .table-section {
     // 表格样式
   }
@@ -647,6 +643,10 @@ const getConnectTypeLabel = (type: string) => {
 }
 
 .tools-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px;
+
   .tool-item {
     border: 1px solid #f0f0f0;
     border-radius: 6px;

@@ -38,6 +38,14 @@ class ApplicationMcpServerConfigService {
     const response = await apiClient.get(`/application-mcp-server-configs/${configId}/tools`)
     return response.data
   }
+
+  /**
+   * 同步MCP服务器的工具列表
+   */
+  async syncMcpServerTools(configId: string): Promise<McpToolsResponse & { message: string }> {
+    const response = await apiClient.post(`/application-mcp-server-configs/${configId}/sync-tools`)
+    return response.data
+  }
 }
 
 export default new ApplicationMcpServerConfigService()
