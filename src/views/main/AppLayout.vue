@@ -92,7 +92,7 @@
                 </a-menu-item>
                 <a-menu-item key="internal-tools" @click="$router.push('/app-settings/storage-config')">
                   <template #icon>
-                    <AppstoreOutlined/>
+                    <FileOutlined/>
                   </template>
                   存储设置
                 </a-menu-item>
@@ -216,6 +216,7 @@ import {useUserStore} from '@/stores/userStore.ts'
 import {useApplicationStore} from '@/stores/applicationStore.ts'
 import {
   ApiOutlined,
+  FileOutlined,
   AppstoreOutlined,
   CheckOutlined,
   DownOutlined,
