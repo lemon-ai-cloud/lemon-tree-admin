@@ -90,6 +90,12 @@
                   </template>
                   MCP工具管理
                 </a-menu-item>
+                <a-menu-item key="internal-tools" @click="$router.push('/app-settings/storage-config')">
+                  <template #icon>
+                    <AppstoreOutlined/>
+                  </template>
+                  存储设置
+                </a-menu-item>
                 <a-menu-item key="internal-tools" @click="$router.push('/app-settings/internal-tools-manage')">
                   <template #icon>
                     <AppstoreOutlined/>

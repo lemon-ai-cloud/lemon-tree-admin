@@ -2,19 +2,18 @@
   <div class="application-management lemon-theme">
     <!-- 页面头部 -->
     <PageHeader
-      title="应用管理"
-      subtitle="管理系统应用和配置"
-      :icon="AppstoreOutlined"
+        title="应用管理"
+        subtitle="管理系统应用和配置"
+        :icon="AppstoreOutlined"
     >
       <template #actions>
         <a-button
-          type="primary"
-          size="large"
-          @click="showDialog = true"
-          class="create-btn"
-        >
+            type="primary"
+            size="large"
+            @click="showDialog = true"
+            class="create-btn">
           <template #icon>
-            <PlusOutlined />
+            <PlusOutlined/>
           </template>
           创建应用
         </a-button>
@@ -27,27 +26,27 @@
         <!-- 搜索栏 -->
         <div class="search-section">
           <a-input
-            v-model:value="search"
-            placeholder="搜索应用名称或描述"
-            size="large"
-            class="search-field"
-            allow-clear
+              v-model:value="search"
+              placeholder="搜索应用名称或描述"
+              size="large"
+              class="search-field"
+              allow-clear
           >
             <template #prefix>
-              <SearchOutlined />
+              <SearchOutlined/>
             </template>
           </a-input>
         </div>
-        
+
         <!-- 应用列表 -->
         <div class="table-section">
           <a-table
-            :columns="columns"
-            :data-source="filteredApplications"
-            :loading="applicationStore.isLoading"
-            :pagination="false"
-            class="application-table"
-            row-key="id"
+              :columns="columns"
+              :data-source="filteredApplications"
+              :loading="applicationStore.isLoading"
+              :pagination="false"
+              class="application-table"
+              row-key="id"
           >
             <!-- 创建时间列 -->
             <template #bodyCell="{ column, record }">
@@ -56,39 +55,39 @@
                   {{ formatDate(record.created_at) }}
                 </span>
               </template>
-              
+
               <!-- 操作列 -->
               <template v-if="column.key === 'actions'">
                 <div class="action-buttons">
                   <a-button
-                    type="text"
-                    size="small"
-                    @click="editApplication(record)"
-                    class="action-btn"
+                      type="text"
+                      size="small"
+                      @click="editApplication(record)"
+                      class="action-btn"
                   >
                     <template #icon>
-                      <EditOutlined />
+                      <EditOutlined/>
                     </template>
                   </a-button>
                   <a-button
-                    type="text"
-                    size="small"
-                    danger
-                    @click="deleteApplication(record)"
-                    class="action-btn"
+                      type="text"
+                      size="small"
+                      danger
+                      @click="deleteApplication(record)"
+                      class="action-btn"
                   >
                     <template #icon>
-                      <DeleteOutlined />
+                      <DeleteOutlined/>
                     </template>
                   </a-button>
                 </div>
               </template>
             </template>
-            
+
             <!-- 空状态 -->
             <template #emptyText>
               <div class="empty-state">
-                <AppstoreOutlined class="empty-icon" />
+                <AppstoreOutlined class="empty-icon"/>
                 <a-typography-title :level="4" class="empty-title">
                   暂无应用数据
                 </a-typography-title>
@@ -96,12 +95,12 @@
                   点击"创建应用"按钮添加第一个应用
                 </a-typography-text>
                 <a-button
-                  type="primary"
-                  @click="showDialog = true"
-                  class="empty-action"
+                    type="primary"
+                    @click="showDialog = true"
+                    class="empty-action"
                 >
                   <template #icon>
-                    <PlusOutlined />
+                    <PlusOutlined/>
                   </template>
                   创建应用
                 </a-button>
@@ -114,28 +113,28 @@
 
     <!-- 创建/编辑应用对话框 -->
     <a-modal
-      v-model:open="showDialog"
-      :title="editingApplication ? '编辑应用' : '创建应用'"
-      @ok="saveApplication"
-      :confirm-loading="applicationStore.isSaving"
-      :ok-text="editingApplication ? '更新' : '创建'"
-      :cancel-text="'取消'"
-      width="600px"
+        v-model:open="showDialog"
+        :title="editingApplication ? '编辑应用' : '创建应用'"
+        @ok="saveApplication"
+        :confirm-loading="applicationStore.isSaving"
+        :ok-text="editingApplication ? '更新' : '创建'"
+        :cancel-text="'取消'"
+        width="600px"
     >
       <a-form
-        ref="formRef"
-        :model="form"
-        :rules="rules"
-        layout="vertical"
-        @finish="saveApplication"
+          ref="formRef"
+          :model="form"
+          :rules="rules"
+          layout="vertical"
+          @finish="saveApplication"
       >
         <a-row :gutter="16">
           <a-col :span="24">
             <a-form-item name="name" label="应用名称">
               <a-input
-                v-model:value="form.name"
-                placeholder="请输入应用名称"
-                size="large"
+                  v-model:value="form.name"
+                  placeholder="请输入应用名称"
+                  size="large"
               />
             </a-form-item>
           </a-col>
@@ -143,10 +142,10 @@
           <a-col :span="24">
             <a-form-item name="description" label="应用描述">
               <a-textarea
-                v-model:value="form.description"
-                placeholder="请输入应用描述"
-                :rows="4"
-                size="large"
+                  v-model:value="form.description"
+                  placeholder="请输入应用描述"
+                  :rows="4"
+                  size="large"
               />
             </a-form-item>
           </a-col>
@@ -156,16 +155,16 @@
 
     <!-- 删除确认对话框 -->
     <a-modal
-      v-model:open="showDeleteDialog"
-      title="确认删除"
-      @ok="confirmDelete"
-      :confirm-loading="applicationStore.isDeleting"
-      ok-text="删除"
-      cancel-text="取消"
-      ok-type="danger"
+        v-model:open="showDeleteDialog"
+        title="确认删除"
+        @ok="confirmDelete"
+        :confirm-loading="applicationStore.isDeleting"
+        ok-text="删除"
+        cancel-text="取消"
+        ok-type="danger"
     >
       <div class="delete-content">
-        <ExclamationCircleOutlined class="delete-icon" />
+        <ExclamationCircleOutlined class="delete-icon"/>
         <p>确定要删除应用 "{{ applicationToDelete?.name }}" 吗？此操作不可恢复。</p>
       </div>
     </a-modal>
@@ -173,9 +172,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
-import { useApplicationStore } from '@/stores/applicationStore.ts'
-import type { Application } from '@/dto/application.ts'
+import {computed, onMounted, reactive, ref} from 'vue'
+import {useApplicationStore} from '@/stores/applicationStore.ts'
+import type {Application} from '@/dto/application.ts'
 import PageHeader from '@/components/PageHeader.vue'
 import {
   AppstoreOutlined,
@@ -204,10 +203,10 @@ const form = reactive({
 // 表单验证规则
 const rules = {
   name: [
-    { required: true, message: '请输入应用名称', trigger: 'blur' }
+    {required: true, message: '请输入应用名称', trigger: 'blur'}
   ],
   description: [
-    { required: true, message: '请输入应用描述', trigger: 'blur' }
+    {required: true, message: '请输入应用描述', trigger: 'blur'}
   ]
 }
 
@@ -242,11 +241,11 @@ const columns = [
 // 过滤后的应用列表
 const filteredApplications = computed(() => {
   if (!search.value) return applicationStore.applications
-  
+
   const searchLower = search.value.toLowerCase()
-  return applicationStore.applications.filter(app => 
-    app.name.toLowerCase().includes(searchLower) ||
-    app.description.toLowerCase().includes(searchLower)
+  return applicationStore.applications.filter(app =>
+      app.name.toLowerCase().includes(searchLower) ||
+      app.description.toLowerCase().includes(searchLower)
   )
 })
 
@@ -281,7 +280,7 @@ const deleteApplication = (application: Application) => {
 // 确认删除
 const confirmDelete = async () => {
   if (!applicationToDelete.value) return
-  
+
   try {
     await applicationStore.deleteApplication(applicationToDelete.value.id)
     showDeleteDialog.value = false
@@ -298,12 +297,12 @@ const saveApplication = async (values: any) => {
       name: form.name,
       description: form.description
     }
-    
+
     if (editingApplication.value) {
       // 更新应用
       appData.id = editingApplication.value.id
     }
-    
+
     await applicationStore.saveApplication(appData)
     closeDialog()
   } catch (error) {
@@ -413,12 +412,12 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 12px;
-  
+
   .delete-icon {
     font-size: 24px;
     color: #ff4d4f;
   }
-  
+
   p {
     margin: 0;
     color: #333333;
@@ -430,17 +429,17 @@ onMounted(() => {
   .application-management {
     padding: 16px;
   }
-  
+
   .header-content {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
-  
+
   .search-field {
     max-width: 100%;
   }
-  
+
   .action-buttons {
     flex-direction: column;
     gap: 4px;

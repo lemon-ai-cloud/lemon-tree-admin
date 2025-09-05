@@ -19,7 +19,7 @@ const router = createRouter({
                 {
                     path: '',
                     name: 'dashboard',
-                    component: () => import('@/views/app/AgentView.vue')
+                    component: () => import('@/views/app/ChatAgentManage.vue')
                 },
                 {
                     path: '/system-settings/users',
@@ -36,7 +36,7 @@ const router = createRouter({
                 {
                     path: '/app-agents',
                     name: 'app-agents',
-                    component: () => import('@/views/app/AgentView.vue'),
+                    component: () => import('@/views/app/ChatAgentManage.vue'),
                     meta: {requiresApp: true}
                 },
                 {
@@ -55,6 +55,12 @@ const router = createRouter({
                     path: '/app-settings/mcp-tools-manage',
                     name: 'app-mcp-tools-manage',
                     component: () => import('@/views/app-settings/McpServerConfigManage.vue'),
+                    meta: {requiresApp: true}
+                },
+                {
+                    path: '/app-settings/storage-config',
+                    name: 'app-mcp-tools-manage',
+                    component: () => import('@/views/app-settings/AppStorageConfig.vue'),
                     meta: {requiresApp: true}
                 },
                 {
