@@ -114,7 +114,7 @@
               <template #icon>
                 <SettingOutlined/>
               </template>
-              系统管理
+              {{ $v_translate('system_settings')}}
               <DownOutlined/>
             </a-button>
             <template #overlay>
@@ -228,6 +228,12 @@ import {
   ToolOutlined,
   UserOutlined
 } from '@ant-design/icons-vue'
+import i18n from '@/i18n.ts'
+
+const v_scope = 'views.main.app_layout.'
+defineExpose({
+  v_scope
+})
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -257,7 +263,7 @@ const rules = {
 // 应用菜单项（二级导航）
 const appMenuItems = computed(() => [
   {
-    title: '智能体管理',
+    title: i18n.global.t(v_scope + 'application_agent_manage'),
     icon: RobotOutlined,
     to: '/app-agents'
   },
