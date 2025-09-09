@@ -90,4 +90,6 @@ export default {
     create_success: 'Created successfully',
     save_failed: 'Failed to save',
     application_id_required: 'Application ID cannot be empty, please reselect application',
+    manage_tools: 'Manage Tools',
+    manage_tools_for: 'Manage Tools for {{name}}',
 }

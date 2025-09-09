@@ -31,11 +31,23 @@
           <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'action'">
               <a-space>
+                <a-button type="link" size="small" @click="handleChat(record)">
+                  <template #icon>
+                    <MessageOutlined/>
+                  </template>
+                  {{ $v_translate('chat') }}
+                </a-button>
                 <a-button type="link" size="small" @click="handleEdit(record)">
                   <template #icon>
                     <EditOutlined/>
                   </template>
                   {{ $v_translate('edit') }}
+                </a-button>
+                <a-button type="link" size="small" @click="handleManageTools(record)">
+                  <template #icon>
+                    <ToolOutlined/>
+                  </template>
+                  {{ $v_translate('manage_tools') }}
                 </a-button>
                 <a-popconfirm
                     :title="$v_translate('confirm_delete_agent')"
@@ -262,6 +274,40 @@
         </a-tabs>
       </a-form>
     </a-modal>
+
+    <!-- 聊天对话框 -->
+    <a-modal
+        v-model:open="chatModalVisible"
+        :title="selectedChatAgent ? `${$v_translate('chat_with')} ${selectedChatAgent.name}` : ''"
+        width="90%"
+        :footer="null"
+        :destroy-on-close="true"
+        class="chat-modal"
+    >
+      <ChatAgentConversationManage
+          v-if="selectedChatAgent"
+          :chat-agent-id="selectedChatAgent.id"
+          :chat-agent-name="selectedChatAgent.name"
+          :system-prompt="selectedChatAgent.system_prompt"
+      />
+    </a-modal>
+
+    <!-- 工具管理对话框 -->
+    <a-modal
+        v-model:open="toolManageModalVisible"
+        :title="selectedToolManageAgent ? `管理 ${selectedToolManageAgent.name} 的工具` : ''"
+        width="800px"
+        :footer="null"
+        :destroy-on-close="true"
+        class="tool-manage-modal"
+    >
+      <ChatAgentMcpServerToolManage
+          v-if="selectedToolManageAgent"
+          :chat-agent-id="selectedToolManageAgent.id"
+          :chat-agent-name="selectedToolManageAgent.name"
+          @close="toolManageModalVisible = false"
+      />
+    </a-modal>
   </div>
 </template>
 
@@ -272,7 +318,9 @@ import i18n from '@/i18n.ts'
 import {
   PlusOutlined,
   EditOutlined,
-  DeleteOutlined
+  DeleteOutlined,
+  MessageOutlined,
+  ToolOutlined
 } from '@ant-design/icons-vue'
 import type {ChatAgentDto, SaveChatAgentRequest} from '@/dto/chatAgent'
 import type {LlmProvider} from '@/dto/llmProvider'
@@ -280,8 +328,11 @@ import type {ApplicationLlmDto} from '@/dto/applicationLlm'
 import chatAgentService from '@/services/chatAgentService'
 import llmProviderService from '@/services/llmProviderService'
 import applicationLlmService from '@/services/applicationLlmService'
+import chatAgentMcpServerToolService from '@/services/chatAgentMcpServerToolService'
 import {useApplicationStore} from '@/stores/applicationStore'
 import ResourceUtils from '@/utils/resource-utils'
+import ChatAgentConversationManage from './ChatAgentConversationManage.vue'
+import ChatAgentMcpServerToolManage from './ChatAgentMcpServerToolManage.vue'
 
 const v_scope = 'views.app.chat_agent_manage.'
 defineExpose({
@@ -301,6 +352,14 @@ const avatarFileList = ref<any[]>([])
 const modelOptions = ref<any[]>([])
 const chatModelCascaderValue = ref<string[]>([])
 const conversationNamingModelCascaderValue = ref<string[]>([])
+
+// 聊天对话框相关
+const chatModalVisible = ref(false)
+const selectedChatAgent = ref<ChatAgentDto | null>(null)
+
+// 工具管理对话框相关
+const toolManageModalVisible = ref(false)
+const selectedToolManageAgent = ref<ChatAgentDto | null>(null)
 
 // 表单数据
 const formData = reactive<SaveChatAgentRequest>({
@@ -329,7 +388,7 @@ const pagination = reactive({
   total: 0,
   showSizeChanger: true,
   showQuickJumper: true,
-  showTotal: (total: number) => i18n.global.t(v_scope + 'total_records', { total })
+  showTotal: (total: number) => `共 ${total} 条记录`
 })
 
 // 表格列定义
@@ -355,7 +414,7 @@ const columns = computed(() => [
   {
     title: i18n.global.t(v_scope + 'actions'),
     key: 'action',
-    width: 200,
+    width: 350,
     align: 'center',
     fixed: 'right'
   }
@@ -606,6 +665,18 @@ const handleEdit = (record: ChatAgentDto) => {
   modalVisible.value = true
 }
 
+// 聊天处理
+const handleChat = (record: ChatAgentDto) => {
+  selectedChatAgent.value = record
+  chatModalVisible.value = true
+}
+
+// 工具管理处理
+const handleManageTools = (record: ChatAgentDto) => {
+  selectedToolManageAgent.value = record
+  toolManageModalVisible.value = true
+}
+
 // 删除处理
 const handleDelete = async (id: string) => {
   try {
@@ -762,6 +833,14 @@ const resetForm = () => {
     margin-top: 8px;
     color: #8c8c8c;
     font-size: 12px;
+  }
+}
+
+.chat-modal {
+  .ant-modal-body {
+    padding: 0;
+    height: 80vh;
+    overflow: hidden;
   }
 }
 </style>
