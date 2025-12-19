@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import {useUserStore} from '@/stores/userStore'
+import {useApplicationStore} from '@/stores/applicationStore'
 import AppLayout from '@/views/main/AppLayout.vue'
 
 const router = createRouter({
@@ -77,6 +78,7 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach(async (to, from, next) => {
     const userStore = useUserStore()
+    const applicationStore = useApplicationStore()
 
     // 如果用户未初始化，先初始化
     if (!userStore.isAuthenticated && userStore.token) {
@@ -91,8 +93,12 @@ router.beforeEach(async (to, from, next) => {
     } else {
         // 检查是否需要选择应用
         if (to.meta.requiresApp) {
-            const selectedApp = localStorage.getItem('selectedApp')
-            if (!selectedApp) {
+            // 如果应用列表为空，先初始化
+            if (applicationStore.applications.length === 0) {
+                await applicationStore.initializeApplications()
+            }
+            // 检查是否有选中的应用
+            if (!applicationStore.selectedApplication) {
                 // 如果没有选择应用，跳转到首页
                 next('/')
                 return

@@ -3,6 +3,7 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 
 // API基础配置
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://43.133.197.173:12833/api/v1'
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:12833/api/v1'
 
 // 创建axios实例
