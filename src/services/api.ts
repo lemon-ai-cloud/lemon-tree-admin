@@ -3,8 +3,8 @@
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse } from 'axios'
 
 // API基础配置
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://43.133.197.173:12833/api/v1'
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:12833/api/v1'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://manage.vrtalk.online:12833/api/v1'
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:12833/api/v1'
 
 // 创建axios实例
 const apiClient: AxiosInstance = axios.create({
@@ -36,10 +36,14 @@ apiClient.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      // Token过期或无效，清除本地存储并跳转到登录页
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
-      window.location.href = '/login'
+      const url = String(error.config?.url ?? '')
+      // 登录失败也常返回 401，此时不应整页跳转，否则登录页来不及展示错误信息
+      const isLoginRequest = url.includes('/users/login')
+      if (!isLoginRequest) {
+        localStorage.removeItem('token')
+        localStorage.removeItem('user')
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
